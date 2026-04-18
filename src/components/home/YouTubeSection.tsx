@@ -54,8 +54,8 @@ function VideoCard({ video, index }: { video: YouTubeVideo; index: number }) {
         cursor: "pointer",
         background: "var(--bg-card)",
         border: "1px solid var(--border)",
-        group: "video-card",
       }}
+      className="group video-card"
     >
       {/* Thumbnail */}
       <img

@@ -4,6 +4,7 @@ import { ServiceCards } from "@/components/home/ServiceCards";
 import { YouTubeSection } from "@/components/home/YouTubeSection";
 import { adminDb } from "@/lib/firebase-admin";
 import type { YouTubeVideo, GalleryPhoto, Testimonial } from "@/types";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 
@@ -39,23 +40,26 @@ function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
   return (
     <section className="section" style={{ background: "var(--bg-primary)" }}>
       <div className="container">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-8)", flexWrap: "wrap", gap: "var(--space-4)" }}>
-          <div>
-            <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-              Our Work
-            </span>
-            <h2 style={{ marginTop: "var(--space-2)" }}>
-              Featured Gallery
-            </h2>
+        <ScrollReveal>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-8)", flexWrap: "wrap", gap: "var(--space-4)" }}>
+            <div>
+              <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
+                Our Work
+              </span>
+              <h2 style={{ marginTop: "var(--space-2)" }}>
+                Featured Gallery
+              </h2>
+            </div>
+            <Link href="/gallery" className="btn btn-ghost btn-sm" style={{ display: "inline-flex", gap: 6 }}>
+              View All <ArrowRight size={14} />
+            </Link>
           </div>
-          <Link href="/gallery" className="btn btn-ghost btn-sm" style={{ display: "inline-flex", gap: 6 }}>
-            View All <ArrowRight size={14} />
-          </Link>
-        </div>
+        </ScrollReveal>
 
         {photos.length === 0 ? (
           // Placeholder masonry
-          <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
+          <ScrollReveal delay={0.2}>
+            <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
@@ -81,9 +85,11 @@ function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          </ScrollReveal>
         ) : (
-          <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
+          <ScrollReveal delay={0.2}>
+            <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
             {photos.map((photo, i) => (
               <Link
                 key={photo.id}
@@ -111,7 +117,8 @@ function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
                 </div>
               </Link>
             ))}
-          </div>
+            </div>
+          </ScrollReveal>
         )}
       </div>
       <style>{`
@@ -141,8 +148,9 @@ function InfiniteHighlights() {
 
   return (
     <section style={{ overflow: "hidden", padding: "var(--space-6) 0", background: "var(--bg-card)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-      <div 
-        className="infinite-marquee"
+      <ScrollReveal>
+        <div 
+          className="infinite-marquee"
         style={{ 
           display: "flex", 
           gap: "var(--space-5)", 
@@ -173,12 +181,10 @@ function InfiniteHighlights() {
           </div>
         ))}
       </div>
+      </ScrollReveal>
       <style>{`
         .infinite-marquee {
           animation: marquee-scroll 40s linear infinite;
-        }
-        .infinite-marquee:hover {
-          animation-play-state: paused;
         }
         @keyframes marquee-scroll {
           0% { transform: translateX(0); }

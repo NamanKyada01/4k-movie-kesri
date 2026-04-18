@@ -5,16 +5,10 @@ export async function GET() {
   try {
     const email = "4kmovie2672.2@gmail.com";
     
-    // Check if the user already exists
     const usersRef = adminDb.collection("adminUsers");
-    const snapshot = await usersRef.where("email", "==", email).get();
-
-    if (!snapshot.empty) {
-      return NextResponse.json({ message: "Admin user already exists." });
-    }
-
-    // Create the master admin record
-    await usersRef.add({
+    
+    // Create the master admin record with the email AS the document ID
+    await usersRef.doc(email).set({
       email,
       name: "Master Admin",
       role: "owner",
@@ -23,7 +17,7 @@ export async function GET() {
       isActive: true
     });
 
-    return NextResponse.json({ message: "Successfully seeded initial master admin!" });
+    return NextResponse.json({ message: "Successfully seeded initial master admin with correct document ID!" });
   } catch (error: any) {
     console.error("Failed to seed admin:", error);
     return NextResponse.json(

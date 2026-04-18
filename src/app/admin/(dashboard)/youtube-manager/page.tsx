@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Youtube, Plus, Loader2, Trash2 } from "lucide-react";
+import { Video, Plus, Loader2, Trash2 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
 import type { YouTubeVideo } from "@/types";
@@ -158,7 +158,7 @@ export default function YouTubeManagerPage() {
             </div>
           ) : videos.length === 0 ? (
             <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)", background: "var(--bg-elevated)", borderRadius: "var(--radius-lg)" }}>
-              <Youtube size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
+              <Video size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
               <p>No videos added yet.</p>
             </div>
           ) : (

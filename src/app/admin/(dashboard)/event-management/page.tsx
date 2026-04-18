@@ -71,7 +71,7 @@ export default function EventManagementPage() {
       };
 
       const docRef = await addDoc(collection(db, "events"), newEvent);
-      setEvents(prev => [{ id: docRef.id, ...(newEvent as Event) }, ...prev]);
+      setEvents(prev => [{ ...newEvent, id: docRef.id } as Event, ...prev]);
       
       toast.success("Event created successfully!");
       setName("");

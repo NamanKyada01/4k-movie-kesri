@@ -116,6 +116,38 @@ export async function addAdminUser(
     role,
     permissions: role === 'owner' ? ['*'] : ['manage_content', 'manage_events'],
     createdAt: Date.now(),
+    isActive: true
   });
   return { success: true };
+}
+
+// ─── Get All Admin Users ──────────────────────────────────────────────────
+export async function getAllAdminUsers() {
+  try {
+    const snap = await adminDb.collection('adminUsers').orderBy('createdAt', 'desc').get();
+    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Failed to get admin users:', error);
+    return [];
+  }
+}
+
+// ─── Delete Admin User ────────────────────────────────────────────────────
+export async function deleteAdminUser(email: string) {
+  try {
+    await adminDb.collection('adminUsers').doc(email).delete();
+    
+    // Also delete their Firebase Auth account if it exists
+    try {
+      const user = await adminAuth.getUserByEmail(email);
+      await adminAuth.deleteUser(user.uid);
+    } catch {
+      // Ignored if they haven't logged in yet
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete admin:', error);
+    return { success: false, error: 'Failed to delete user' };
+  }
 }

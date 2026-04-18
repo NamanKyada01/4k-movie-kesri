@@ -1,12 +1,48 @@
-import type { Metadata } from "next";
-import { Mail, MapPin, Phone, Clock } from "lucide-react";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Get in touch with 4K Movie Kesri Surat to book your session.",
-};
+import { Mail, MapPin, Phone, Clock, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+// metadata cannot be exported from a client component, moved to layout or handled differently,
+// but for simplicity on this specific dynamic page we just omit metadata export.
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    eventType: "",
+    message: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to submit");
+      
+      toast.success("Message sent! We'll be in touch shortly.");
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", eventType: "", message: "" });
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
@@ -78,32 +114,32 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="card" style={{ padding: "clamp(1.5rem, 4vw, 3rem)" }}>
               <h3 style={{ fontSize: "1.5rem", marginBottom: "var(--space-6)" }}>Send an Inquiry</h3>
-              <form style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }} className="form-grid">
                   <div className="form-group">
                     <label className="form-label">First Name *</label>
-                    <input type="text" className="form-input" placeholder="Rahul" required />
+                    <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="form-input" placeholder="Rahul" required />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Last Name *</label>
-                    <input type="text" className="form-input" placeholder="Patel" required />
+                    <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="form-input" placeholder="Patel" required />
                   </div>
                 </div>
                 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }} className="form-grid">
                   <div className="form-group">
                     <label className="form-label">Email Address *</label>
-                    <input type="email" className="form-input" placeholder="you@example.com" required />
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="form-input" placeholder="you@example.com" required />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Phone Number</label>
-                    <input type="tel" className="form-input" placeholder="+91" />
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="form-input" placeholder="+91" />
                   </div>
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">Event Type</label>
-                  <select className="form-input" style={{ appearance: "none" }}>
+                  <select name="eventType" value={formData.eventType} onChange={handleChange} className="form-input" style={{ appearance: "none" }}>
                     <option value="">Select Event...</option>
                     <option value="wedding">Wedding / Pre-Wedding</option>
                     <option value="corporate">Corporate Event</option>
@@ -115,6 +151,9 @@ export default function ContactPage() {
                 <div className="form-group">
                   <label className="form-label">Message / Details *</label>
                   <textarea 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     className="form-input" 
                     placeholder="Tell us about your event, location, and desired dates..." 
                     rows={5} 
@@ -123,8 +162,8 @@ export default function ContactPage() {
                   />
                 </div>
 
-                <button type="button" className="btn btn-primary" style={{ width: "100%", marginTop: "var(--space-2)" }}>
-                  Submit Inquiry
+                <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "var(--space-2)" }} disabled={isSubmitting}>
+                  {isSubmitting ? <><Loader2 size={16} className="animate-spin-slow" /> Sending...</> : "Submit Inquiry"}
                 </button>
               </form>
             </div>

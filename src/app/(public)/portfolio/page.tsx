@@ -6,6 +6,7 @@ export const metadata: Metadata = {
 };
 
 import { adminDb } from "@/lib/firebase-admin";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 import type { GalleryPhoto } from "@/types";
 import Link from "next/link";
 
@@ -28,7 +29,8 @@ export default async function PortfolioPage() {
 
   return (
     <>
-      <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
+      <CinemaBackground theme={{ primary: "teal", secondary: "amber" }} />
+      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 800 }}>
           <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
             Featured Collections

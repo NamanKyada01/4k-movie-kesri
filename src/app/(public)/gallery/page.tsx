@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { adminDb } from "@/lib/firebase-admin";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 import type { GalleryPhoto } from "@/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
@@ -22,8 +23,9 @@ export default async function GalleryPage() {
 
   return (
     <>
+      <CinemaBackground theme={{ primary: "blue", secondary: "teal" }} />
       {/* Header */}
-      <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
+      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 800 }}>
           <ScrollReveal>
             <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>

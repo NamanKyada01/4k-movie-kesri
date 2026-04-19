@@ -48,6 +48,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const { user, adminData, loading, logout } = useAuth();
   const router   = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    // Close sidebar on route change
+    setSidebarOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -77,6 +83,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div style={{ display: "flex", minHeight: "100svh", background: "var(--bg-primary)" }}>
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, backdropFilter: "blur(4px)" }}
+          className="admin-sidebar-overlay"
+        />
+      )}
       <aside
         style={{
           width: "var(--sidebar-width)",
@@ -88,10 +102,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           borderRight: "1px solid var(--border)",
           display: "flex",
           flexDirection: "column",
-          zIndex: "var(--z-nav)",
+          zIndex: 101,
           overflowY: "auto",
           overflowX: "hidden",
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.3s ease",
         }}
+        className="admin-sidebar"
       >
         {/* Brand */}
         <div style={{ padding: "var(--space-5) var(--space-5) var(--space-4)", borderBottom: "1px solid var(--border)" }}>
@@ -207,18 +224,28 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* ── Main Content ─────────────────────────────────────────────────── */}
-      <div style={{ marginLeft: "var(--sidebar-width)", flex: 1, display: "flex", flexDirection: "column", minHeight: "100svh" }}>
+      <div 
+        style={{ 
+          marginLeft: 0, 
+          paddingLeft: "var(--sidebar-width)", // This will be overriden in mobile styles
+          flex: 1, 
+          display: "flex", 
+          flexDirection: "column", 
+          minHeight: "100svh" 
+        }} 
+        className="admin-main-wrapper"
+      >
         {/* Top bar */}
         <header
           style={{
             position: "sticky",
             top: 0,
-            zIndex: "var(--z-raised)",
+            zIndex: 90,
             background: "var(--bg-glass)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
             borderBottom: "1px solid var(--border)",
-            padding: "0 var(--space-8)",
+            padding: "0 var(--space-4) 0 clamp(1rem, 4vw, 2rem)",
             height: "var(--topbar-height)",
             display: "flex",
             alignItems: "center",
@@ -226,6 +253,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             gap: "var(--space-4)",
           }}
         >
+          {/* Mobile Menu Toggle */}
+          <button 
+             onClick={() => setSidebarOpen(true)}
+             style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-primary)", padding: 8, display: "none" }}
+             className="admin-mobile-toggle"
+          >
+             <Edit3 size={20} />
+          </button>
+
           {/* Page breadcrumb — rendered by each page as <h1> */}
           <div id="admin-topbar-title" />
 
@@ -253,10 +289,21 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Page content */}
-        <main style={{ flex: 1, padding: "var(--space-8)" }}>
+        <main style={{ flex: 1, padding: "clamp(1rem, 4vw, 2rem)" }}>
           {children}
         </main>
       </div>
+
+      <style>{`
+        @media (min-width: 1025px) {
+          .admin-sidebar { transform: translateX(0) !important; }
+          .admin-sidebar-overlay { display: none !important; }
+        }
+        @media (max-width: 1024px) {
+          .admin-main-wrapper { padding-left: 0 !important; }
+          .admin-mobile-toggle { display: flex !important; }
+        }
+      `}</style>
     </div>
   );
 }

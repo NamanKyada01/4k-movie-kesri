@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ServiceCards } from "@/components/home/ServiceCards";
 import { YouTubeSection } from "@/components/home/YouTubeSection";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 import { adminDb } from "@/lib/firebase-admin";
 import type { YouTubeVideo, GalleryPhoto, Testimonial } from "@/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -208,7 +209,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   const displayItems = testimonials.length > 0 ? testimonials : mockTestimonials.map((t, i) => ({ ...t, id: String(i), featured: true, status: "approved" as const, createdAt: Date.now(), clientPhoto: undefined }));
 
   return (
-    <section className="section" style={{ background: "var(--bg-secondary)" }}>
+    <section className="section" style={{ background: "transparent" }}>
       <div className="container">
         <div style={{ textAlign: "center", marginBottom: "var(--space-10)" }}>
           <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
@@ -331,6 +332,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <CinemaBackground theme={{ primary: "amber", secondary: "gold" }} />
       <HeroSection 
         title={content?.heroTitle} 
         subtitle={content?.heroSubtitle} 

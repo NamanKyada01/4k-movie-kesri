@@ -163,7 +163,7 @@ function VideoCard({ video, index }: { video: YouTubeVideo; index: number }) {
 
 export function YouTubeSection({ videos }: YouTubeSectionProps) {
   return (
-    <section className="section" style={{ background: "var(--bg-primary)" }}>
+    <section className="section" style={{ background: "transparent" }}>
       <div className="container">
         {/* Header */}
         <motion.div

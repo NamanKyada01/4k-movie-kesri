@@ -108,9 +108,6 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
         paddingTop: "var(--nav-height)",
       }}
     >
-      {/* Ambient orbs */}
-      <AmbientOrbs />
-
       {/* Subtle noise texture overlay */}
       <div
         style={{

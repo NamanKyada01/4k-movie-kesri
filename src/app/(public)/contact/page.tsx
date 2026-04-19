@@ -3,6 +3,7 @@
 import { Mail, MapPin, Phone, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 
 // metadata cannot be exported from a client component, moved to layout or handled differently,
 // but for simplicity on this specific dynamic page we just omit metadata export.
@@ -45,7 +46,8 @@ export default function ContactPage() {
 
   return (
     <>
-      <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
+      <CinemaBackground theme={{ primary: "violet", secondary: "rose" }} />
+      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
         <div className="container">
           <div style={{ textAlign: "center", maxWidth: 600, margin: "0 auto", marginBottom: "var(--space-10)" }}>
             <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>

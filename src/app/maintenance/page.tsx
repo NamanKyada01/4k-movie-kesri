@@ -1,14 +1,13 @@
-"use client";
-
 import { motion } from "framer-motion";
 import { Camera, Clock } from "lucide-react";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 
 export default function MaintenancePage() {
   return (
     <div 
       style={{ 
         minHeight: "100svh", 
-        background: "var(--bg-primary)", 
+        background: "transparent", 
         display: "flex", 
         flexDirection: "column", 
         alignItems: "center", 
@@ -17,9 +16,7 @@ export default function MaintenancePage() {
         textAlign: "center"
       }}
     >
-      {/* Ambient backgrounds */}
-      <div style={{ position: "fixed", top: "-10%", right: "-10%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(232,85,10,0.08) 0%, transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
-      <div style={{ position: "fixed", bottom: "-10%", left: "-10%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%)", filter: "blur(80px)", pointerEvents: "none" }} />
+      <CinemaBackground theme={{ primary: "sepia", secondary: "blue" }} />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}

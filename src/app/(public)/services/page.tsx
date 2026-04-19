@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Camera, Video, MonitorPlay, Users, PackageOpen, Award, CheckCircle2 } from "lucide-react";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 
 const servicesList = [
   {
@@ -66,7 +67,8 @@ const itemVariants = {
 export default function ServicesPage() {
   return (
     <>
-      <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)", position: "relative", overflow: "hidden" }}>
+      <CinemaBackground theme={{ primary: "cyan", secondary: "emerald" }} />
+      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)", position: "relative", overflow: "hidden" }}>
         {/* Ambient Glow */}
         <div style={{ position: "absolute", top: "10%", right: "-5%", width: "30vw", height: "30vw", background: "radial-gradient(circle, rgba(232,85,10,0.05) 0%, transparent 70%)", filter: "blur(80px)", pointerEvents: "none" }} />
         

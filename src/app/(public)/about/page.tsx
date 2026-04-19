@@ -6,6 +6,7 @@ export const metadata: Metadata = {
 };
 
 import { adminDb } from "@/lib/firebase-admin";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 
 export default async function AboutPage() {
   let aboutText = "";
@@ -22,7 +23,8 @@ export default async function AboutPage() {
 
   return (
     <>
-      <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
+      <CinemaBackground theme={{ primary: "indigo", secondary: "violet" }} />
+      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
         <div className="container" style={{ maxWidth: 800 }}>
           <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
             Who We Are

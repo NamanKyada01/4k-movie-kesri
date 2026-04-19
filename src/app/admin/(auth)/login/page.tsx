@@ -8,6 +8,10 @@ import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, ArrowRight, ArrowLeft, Camera, Loader2, ShieldCheck } from "lucide-react";
+import Particles from "@/components/ui/Particles";
+import { StarBorder } from "@/components/ui/StarBorder";
+import DecryptedText from "@/components/ui/DecryptedText";
+import { Magnet } from "@/components/ui/Magnet";
 
 export default function AdminLoginPage() {
   const [step, setStep]       = useState<"email" | "otp">("email");
@@ -89,264 +93,340 @@ export default function AdminLoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "var(--bg-primary)",
+        background: "#080808",
         padding: "var(--space-4)",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Background orbs */}
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-        <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "50vw", height: "50vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(232,85,10,0.08) 0%, transparent 70%)", filter: "blur(80px)" }} />
-        <div style={{ position: "absolute", bottom: "-20%", right: "-10%", width: "40vw", height: "40vw", borderRadius: "50%", background: "radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%)", filter: "blur(80px)" }} />
+      {/* Cinematic Particles */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+        <Particles
+          particleCount={100}
+          particleColors={["#ffffff", "#E8550A", "#C9A84C"]}
+          moveSpeed={0.5}
+          sizeRange={[1, 3]}
+          alphaRange={[0.1, 0.4]}
+        />
       </div>
 
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 900,
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          borderRadius: "var(--radius-2xl)",
-          overflow: "hidden",
-          border: "1px solid var(--border)",
-          boxShadow: "var(--shadow-lg)",
-          position: "relative",
-          zIndex: 1,
-        }}
-        className="login-grid"
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 900 }}
       >
-        {/* Left Panel — Branding */}
-        <div
-          style={{
-            background: `linear-gradient(160deg, #1a0800 0%, #0E0E0E 50%, #0a0500 100%)`,
-            padding: "var(--space-12)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            position: "relative",
+        <StarBorder 
+          as="div" 
+          color="#E8550A" 
+          speed="4s"
+          style={{ 
+            borderRadius: "var(--radius-2xl)", 
             overflow: "hidden",
+            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)"
           }}
         >
-          {/* Decorative circles */}
-          <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", border: "1px solid rgba(232,85,10,0.15)" }} />
-          <div style={{ position: "absolute", top: -30, right: -30, width: 140, height: 140, borderRadius: "50%", border: "1px solid rgba(232,85,10,0.08)" }} />
-          <div style={{ position: "absolute", bottom: -40, left: -40, width: 160, height: 160, borderRadius: "50%", border: "1px solid rgba(232,85,10,0.1)" }} />
-
-          {/* Icon */}
           <div
             style={{
-              width: 64,
-              height: 64,
-              borderRadius: "50%",
-              border: "2px solid var(--accent)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: "var(--space-6)",
-              background: "var(--accent-muted)",
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              background: "rgba(13, 13, 13, 0.95)",
+              backdropFilter: "blur(10px)",
             }}
+            className="login-grid"
           >
-            <Camera size={28} color="var(--accent)" />
-          </div>
-
-          {/* Brand name */}
-          <div style={{ marginBottom: "var(--space-6)" }}>
-            <div style={{ fontFamily: "var(--font-heading)", fontWeight: 900, fontSize: "1.6rem", color: "var(--text-primary)", lineHeight: 1.1, letterSpacing: "-0.03em", marginBottom: 4 }}>
-              4K MOVIE<br />KESRI SURAT
-            </div>
-            <div style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
-              Admin Panel
-            </div>
-          </div>
-
-          {/* Quote */}
-          <blockquote
-            style={{
-              borderLeft: "3px solid var(--accent)",
-              paddingLeft: "var(--space-4)",
-              marginBottom: "var(--space-8)",
-            }}
-          >
-            <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", fontStyle: "italic", lineHeight: 1.6, margin: 0 }}>
-              &ldquo;Every Frame<br />Tells a Story&rdquo;
-            </p>
-          </blockquote>
-
-          {/* Security notice */}
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-            <ShieldCheck size={14} color="var(--text-muted)" />
-            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Secured with 2-Factor Authentication</span>
-          </div>
-        </div>
-
-        {/* Right Panel — Form */}
-        <div
-          style={{
-            background: "var(--bg-card)",
-            padding: "var(--space-12)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <AnimatePresence mode="wait">
-            {/* Step 1: Email */}
-            {step === "email" && (
+            {/* Left Panel — Branding */}
+            <div
+              style={{
+                background: `linear-gradient(160deg, rgba(232, 85, 10, 0.05) 0%, rgba(14, 14, 14, 0) 50%)`,
+                padding: "var(--space-12)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                position: "relative",
+                borderRight: "1px solid rgba(255, 255, 255, 0.05)"
+              }}
+            >
               <motion.div
-                key="email"
-                initial={{ x: -30, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -30, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
               >
-                <h2 style={{ fontSize: "1.75rem", marginBottom: "var(--space-1)" }}>
-                  Welcome Back
-                </h2>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-8)" }}>
-                  Enter your admin email to continue. An OTP will be sent.
-                </p>
-
-                <form onSubmit={handleEmailSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, color: "var(--text-muted)", marginBottom: "var(--space-2)", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                      Email Address
-                    </label>
-                    <div style={{ position: "relative" }}>
-                      <Mail size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="admin@4kmoviekesri.com"
-                        className="input-field"
-                        style={{ paddingLeft: 44 }}
-                        id="admin-email"
-                        autoFocus
-                      />
-                    </div>
-                  </div>
-
-                  {error && (
-                    <div className="badge badge-error" style={{ padding: "8px 14px", borderRadius: "var(--radius-lg)", width: "100%", justifyContent: "flex-start", fontSize: "0.8rem" }}>
-                      {error}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn btn-primary btn-lg"
-                    style={{ width: "100%", justifyContent: "center" }}
-                    id="send-otp-btn"
-                  >
-                    {loading ? (
-                      <><Loader2 size={16} className="animate-spin" /> Sending OTP...</>
-                    ) : (
-                      <>Continue <ArrowRight size={16} /></>
-                    )}
-                  </button>
-                </form>
-              </motion.div>
-            )}
-
-            {/* Step 2: OTP */}
-            {step === "otp" && (
-              <motion.div
-                key="otp"
-                initial={{ x: 30, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 30, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              >
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--success-bg)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "var(--space-5)" }}>
-                  <Lock size={22} color="var(--success)" />
+                {/* Icon */}
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: "50%",
+                    border: "2px solid var(--accent)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "var(--space-8)",
+                    background: "rgba(232, 85, 10, 0.1)",
+                  }}
+                >
+                  <Camera size={28} color="var(--accent)" />
                 </div>
-                <h2 style={{ fontSize: "1.75rem", marginBottom: "var(--space-1)" }}>
-                  Verify OTP
-                </h2>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-8)" }}>
-                  Enter the 6-digit code sent to{" "}
-                  <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{email}</span>
-                </p>
 
-                <form onSubmit={handleOtpSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
-                  {/* OTP boxes */}
-                  <div style={{ display: "flex", gap: "var(--space-2)", justifyContent: "center" }} onPaste={handleOtpPaste}>
-                    {otp.map((digit, i) => (
-                      <input
-                        key={i}
-                        id={`otp-${i}`}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(i, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                        style={{
-                          width: 48,
-                          height: 56,
-                          textAlign: "center",
-                          fontSize: "1.5rem",
-                          fontWeight: 700,
-                          fontFamily: "var(--font-mono)",
-                          background: "var(--bg-elevated)",
-                          border: `2px solid ${digit ? "var(--accent)" : "var(--border)"}`,
-                          borderRadius: "var(--radius-lg)",
-                          color: "var(--text-primary)",
-                          outline: "none",
-                          transition: "border-color var(--transition-fast)",
-                        }}
-                        autoFocus={i === 0}
-                      />
-                    ))}
+                {/* Brand name */}
+                <div style={{ marginBottom: "var(--space-8)" }}>
+                  <DecryptedText 
+                    text="4K MOVIE"
+                    className="branding-title"
+                    animateOn="view"
+                    speed={80}
+                    style={{ 
+                      fontFamily: "var(--font-heading)", 
+                      fontWeight: 900, 
+                      fontSize: "2rem", 
+                      color: "var(--text-primary)", 
+                      lineHeight: 1, 
+                      letterSpacing: "-0.03em"
+                    }}
+                  />
+                  <br />
+                  <DecryptedText 
+                    text="KESRI SURAT"
+                    animateOn="view"
+                    speed={100}
+                    style={{ 
+                      fontFamily: "var(--font-heading)", 
+                      fontWeight: 900, 
+                      fontSize: "1.6rem", 
+                      color: "var(--text-primary)", 
+                      lineHeight: 1, 
+                      letterSpacing: "-0.03em"
+                    }}
+                  />
+                  <div style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: 8, fontWeight: 700 }}>
+                    Command Center
                   </div>
+                </div>
 
-                  {error && (
-                    <div className="badge badge-error" style={{ padding: "8px 14px", borderRadius: "var(--radius-lg)", width: "100%", justifyContent: "flex-start", fontSize: "0.8rem" }}>
-                      {error}
-                    </div>
-                  )}
+                {/* Quote */}
+                <blockquote
+                  style={{
+                    borderLeft: "3px solid var(--accent)",
+                    paddingLeft: "var(--space-4)",
+                    marginBottom: "var(--space-8)",
+                  }}
+                >
+                  <p style={{ fontSize: "1.05rem", color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.6, margin: 0 }}>
+                    &ldquo;Every Frame Tells a Story&rdquo;
+                  </p>
+                </blockquote>
 
-                  <button
-                    type="submit"
-                    disabled={loading || otp.join("").length < 6}
-                    className="btn btn-primary btn-lg"
-                    style={{ width: "100%", justifyContent: "center" }}
-                    id="verify-otp-btn"
-                  >
-                    {loading ? (
-                      <><Loader2 size={16} /> Verifying...</>
-                    ) : (
-                      <>Verify & Login <ArrowRight size={16} /></>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setStep("email"); setError(""); setOtp(Array(6).fill("")); }}
-                    style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}
-                  >
-                    <ArrowLeft size={14} /> Back to Email
-                  </button>
-                </form>
+                {/* Security notice */}
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", opacity: 0.6 }}>
+                  <ShieldCheck size={16} color="var(--accent)" />
+                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontWeight: 500 }}>Secured Access Layer v2.4</span>
+                </div>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
 
-          <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", textAlign: "center", marginTop: "var(--space-8)" }}>
-            Session persists for 30 days · Secure 2FA
-          </p>
-        </div>
-      </div>
+            {/* Right Panel — Form */}
+            <div
+              style={{
+                padding: "var(--space-12)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {/* Step 1: Email */}
+                {step === "email" && (
+                  <motion.div
+                    key="email"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -20, opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <DecryptedText 
+                      text="Welcome Back"
+                      className="step-title"
+                      style={{ fontSize: "1.75rem", fontWeight: 800, marginBottom: "var(--space-2)" }}
+                    />
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-10)" }}>
+                      Identify your administrative credentials to request access.
+                    </p>
+
+                    <form onSubmit={handleEmailSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+                      <div className="form-field">
+                        <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 700, color: "var(--accent)", marginBottom: "var(--space-3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                          Admin Identifier
+                        </label>
+                        <div style={{ position: "relative" }}>
+                          <Mail size={16} style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", color: "var(--accent)", opacity: 0.5 }} />
+                          <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Email address..."
+                            className="admin-login-input"
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+
+                      {error && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }} 
+                          animate={{ opacity: 1, y: 0 }}
+                          style={{ color: "var(--error)", fontSize: "0.8rem", background: "rgba(239, 68, 68, 0.1)", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid rgba(239, 68, 68, 0.2)" }}
+                        >
+                          {error}
+                        </motion.div>
+                      )}
+
+                      <Magnet padding={40} magnetStrength={3}>
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="btn btn-primary btn-xl"
+                          style={{ width: "100%", height: "56px", fontSize: "0.9rem" }}
+                        >
+                          {loading ? (
+                            <><Loader2 size={16} className="animate-spin" /> Verifying...</>
+                          ) : (
+                            <>Initialize Access <ArrowRight size={16} /></>
+                          )}
+                        </button>
+                      </Magnet>
+                    </form>
+                  </motion.div>
+                )}
+
+                {/* Step 2: OTP */}
+                {step === "otp" && (
+                  <motion.div
+                    key="otp"
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 20, opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(232, 85, 10, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "var(--space-5)" }}>
+                      <Lock size={22} color="var(--accent)" />
+                    </div>
+                    <h2 style={{ fontSize: "1.75rem", marginBottom: "var(--space-1)", fontWeight: 800 }}>
+                      Verify Sequence
+                    </h2>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-10)" }}>
+                      Enter the multi-factor code sent to your terminal.
+                    </p>
+
+                    <form onSubmit={handleOtpSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-8)" }}>
+                      {/* OTP boxes */}
+                      <div style={{ display: "flex", gap: "var(--space-3)", justifyContent: "center" }} onPaste={handleOtpPaste}>
+                        {otp.map((digit, i) => (
+                          <input
+                            key={i}
+                            id={`otp-${i}`}
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            maxLength={1}
+                            value={digit}
+                            onChange={(e) => handleOtpChange(i, e.target.value)}
+                            onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                            className="otp-field-premium"
+                            autoFocus={i === 0}
+                          />
+                        ))}
+                      </div>
+
+                      {error && (
+                        <div style={{ color: "var(--error)", fontSize: "0.8rem", background: "rgba(239, 68, 68, 0.1)", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid rgba(239, 68, 68, 0.2)" }}>
+                          {error}
+                        </div>
+                      )}
+
+                      <Magnet padding={40} magnetStrength={3}>
+                        <button
+                          type="submit"
+                          disabled={loading || otp.join("").length < 6}
+                          className="btn btn-primary btn-xl"
+                          style={{ width: "100%", height: "56px" }}
+                        >
+                          {loading ? (
+                            <><Loader2 size={16} className="animate-spin" /> Authenticating...</>
+                          ) : (
+                            <>Complete Protocol <ArrowRight size={16} /></>
+                          )}
+                        </button>
+                      </Magnet>
+
+                      <button
+                        type="button"
+                        onClick={() => { setStep("email"); setError(""); setOtp(Array(6).fill("")); }}
+                        style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: 6, justifyContent: "center", opacity: 0.7 }}
+                      >
+                        <ArrowLeft size={14} /> Reset Identifier
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div style={{ textAlign: "center", marginTop: "var(--space-12)", opacity: 0.3 }}>
+                <p style={{ fontSize: "0.6rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>
+                  Surat · Gujarat · India
+                </p>
+              </div>
+            </div>
+          </div>
+        </StarBorder>
+      </motion.div>
 
       <style>{`
-        .login-grid { grid-template-columns: 1fr 1fr !important; }
-        @media (max-width: 640px) {
-          .login-grid { grid-template-columns: 1fr !important; }
-          .login-grid > div:first-child { display: none !important; }
+        .admin-login-input {
+          width: 100%;
+          padding: 14px 0 14px 30px;
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+          color: white;
+          font-family: var(--font-body);
+          font-size: 1rem;
+          transition: border-color 0.4s ease;
+          outline: none;
+        }
+        .admin-login-input:focus {
+          border-bottom-color: var(--accent);
+        }
+        
+        .otp-field-premium {
+          width: 44px;
+          height: 56px;
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: 800;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          color: var(--accent);
+          outline: none;
+          transition: all 0.3s ease;
+        }
+        .otp-field-premium:focus {
+          background: rgba(232, 85, 10, 0.05);
+          border-color: var(--accent);
+          box-shadow: 0 0 20px rgba(232, 85, 10, 0.2);
+          transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+          .login-grid { 
+            grid-template-columns: 1fr !important; 
+          }
+          .login-grid > div:first-child { 
+            display: none !important; 
+          }
         }
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

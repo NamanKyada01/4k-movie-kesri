@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { StarBorder } from "@/components/ui/StarBorder";
 
 const services = [
   {
@@ -37,7 +38,7 @@ const services = [
 
 export function ServiceCards() {
   return (
-    <section className="section" style={{ background: "var(--bg-secondary)" }}>
+    <section className="section" style={{ background: "transparent" }}>
       <div className="container">
         {/* Header */}
         <motion.div
@@ -51,7 +52,7 @@ export function ServiceCards() {
             What We Do
           </span>
           <h2 style={{ marginTop: "var(--space-2)" }}>
-            Our Services
+            Our Professional Services
           </h2>
         </motion.div>
 
@@ -59,8 +60,8 @@ export function ServiceCards() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "var(--space-5)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "var(--space-6)",
           }}
         >
           {services.map((service, i) => (
@@ -70,62 +71,86 @@ export function ServiceCards() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
-              className="card card-accent-hover"
               style={{ position: "relative" }}
             >
-              {service.tag && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "var(--space-4)",
-                    right: "var(--space-4)",
+              <StarBorder
+                thickness={2}
+                color="rgba(232, 85, 10, 0.5)"
+                speed="8s"
+                className="w-full h-full"
+              >
+                <div 
+                  className="card card-accent-hover"
+                  style={{ 
+                    width: "100%", 
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "var(--space-8)",
+                    border: "none", // Let StarBorder handle the "border" look
+                    background: "var(--bg-card)",
+                    borderRadius: "inherit"
                   }}
                 >
-                  <span className="badge badge-accent">{service.tag}</span>
+                  {service.tag && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "var(--space-4)",
+                        right: "var(--space-4)",
+                      }}
+                    >
+                      <span className="badge badge-accent">{service.tag}</span>
+                    </div>
+                  )}
+                  <div
+                    style={{
+                      fontSize: "2.5rem",
+                      marginBottom: "var(--space-5)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {service.icon}
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "1.25rem",
+                      fontWeight: 700,
+                      marginBottom: "var(--space-3)",
+                      color: "var(--text-primary)",
+                      letterSpacing: "-0.01em"
+                    }}
+                  >
+                    {service.title}
+                  </h3>
+                  <p style={{ fontSize: "0.9rem", lineHeight: 1.8, marginBottom: "var(--space-6)", color: "var(--text-muted)" }}>
+                    {service.description}
+                  </p>
+                  <Link
+                    href={service.href}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      color: "var(--accent)",
+                      transition: "gap var(--transition-fast)",
+                      marginTop: "auto",
+                      paddingTop: "var(--space-4)",
+                      borderTop: "1px solid var(--border)"
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.gap = "12px";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.gap = "8px";
+                    }}
+                  >
+                    Explore Service <ArrowRight size={14} />
+                  </Link>
                 </div>
-              )}
-              <div
-                style={{
-                  fontSize: "2rem",
-                  marginBottom: "var(--space-4)",
-                  lineHeight: 1,
-                }}
-              >
-                {service.icon}
-              </div>
-              <h3
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 700,
-                  marginBottom: "var(--space-3)",
-                  color: "var(--text-primary)",
-                }}
-              >
-                {service.title}
-              </h3>
-              <p style={{ fontSize: "0.85rem", lineHeight: 1.7, marginBottom: "var(--space-5)", color: "var(--text-muted)" }}>
-                {service.description}
-              </p>
-              <Link
-                href={service.href}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  color: "var(--accent)",
-                  transition: "gap var(--transition-fast)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.gap = "10px";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.gap = "6px";
-                }}
-              >
-                Explore <ArrowRight size={14} />
-              </Link>
+              </StarBorder>
             </motion.div>
           ))}
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Particles } from "@/components/ui/Particles";
 
 type OrbColor = 
   | "amber" 
@@ -75,16 +76,16 @@ export function CinemaBackground({ theme }: CinemaBackgroundProps) {
           }} 
         />
       )}
+      {/* Dynamic Particles Background */}
+      <div style={{ position: "absolute", inset: 0, opacity: 0.4, zIndex: 0 }}>
+        <Particles 
+          particleCount={60}
+          particleColors={["#E8550A", "#FFB800", "#ffffff"]}
+          speed={0.05}
+          particleBaseSize={80}
+        />
+      </div>
 
-      {/* Overlay Grain/Noise (reusing global if needed, but here's a local one for extra depth) */}
-      <div 
-        style={{ 
-          position: "absolute", 
-          inset: 0, 
-          opacity: 0.02, 
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` 
-        }} 
-      />
     </div>
   );
 }

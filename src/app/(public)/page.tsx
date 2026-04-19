@@ -8,6 +8,7 @@ import type { YouTubeVideo, GalleryPhoto, Testimonial } from "@/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
+import TiltedCard from "@/components/ui/TiltedCard";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -228,73 +229,54 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
           }}
         >
           {displayItems.map((t) => (
-            <div key={t.id} className="card" style={{ position: "relative" }}>
-              {/* Quote mark */}
-              <div style={{ fontSize: "3rem", color: "var(--accent)", opacity: 0.2, lineHeight: 1, marginBottom: "var(--space-3)", fontFamily: "serif" }}>
-                &ldquo;
-              </div>
-              <p style={{ fontSize: "0.9rem", lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: "var(--space-5)", fontStyle: "italic" }}>
-                {t.text}
-              </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <TiltedCard
+              key={t.id}
+              containerHeight="400px"
+              containerWidth="100%"
+              imageHeight="100%"
+              imageWidth="100%"
+              rotateAmplitude={10}
+              scaleOnHover={1.02}
+              showTooltip={false}
+              className="testimonial-tilted-card"
+            >
+              <div 
+                className="card" 
+                style={{ 
+                  height: "100%", 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  justifyContent: "space-between",
+                  background: "var(--bg-card)",
+                  padding: "var(--space-8)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-xl)"
+                }}
+              >
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)" }}>{t.clientName}</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--accent)", marginTop: 2 }}>{t.eventType}</div>
+                  <div style={{ fontSize: "3rem", color: "var(--accent)", opacity: 0.2, lineHeight: 1, marginBottom: "var(--space-3)", fontFamily: "serif" }}>
+                    &ldquo;
+                  </div>
+                  <p style={{ fontSize: "0.95rem", lineHeight: 1.8, color: "var(--text-secondary)", marginBottom: "var(--space-5)", fontStyle: "italic" }}>
+                    {t.text}
+                  </p>
                 </div>
-                <div style={{ display: "flex", gap: 2 }}>
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} size={13} fill="var(--gold)" color="var(--gold)" />
-                  ))}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--border)", paddingTop: "var(--space-4)" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)" }}>{t.clientName}</div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--accent)", marginTop: 2 }}>{t.eventType}</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 2 }}>
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} size={13} fill="var(--gold)" color="var(--gold)" />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            </TiltedCard>
           ))}
         </div>
       </div>
-    </section>
-  );
-}
-
-// ─── Stats Banner ─────────────────────────────────────────────────────────
-function StatsBanner() {
-  return (
-    <section
-      style={{
-        background: "linear-gradient(135deg, var(--accent) 0%, #8B2E00 100%)",
-        padding: "clamp(2.5rem, 5vw, 4rem) 0",
-      }}
-    >
-      <div
-        className="container stats-banner-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "var(--space-6)",
-          textAlign: "center",
-        }}
-      >
-        {[
-          { number: "500+",  label: "Events Covered" },
-          { number: "10K+",  label: "Photos Delivered" },
-          { number: "98%",   label: "Client Satisfaction" },
-          { number: "8+",    label: "Years of Excellence" },
-        ].map((stat) => (
-          <div key={stat.label}>
-            <div style={{ fontFamily: "var(--font-heading)", fontWeight: 900, fontSize: "clamp(2rem, 4vw, 3rem)", color: "#fff", lineHeight: 1 }}>
-              {stat.number}
-            </div>
-            <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.75)", marginTop: "var(--space-2)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              {stat.label}
-            </div>
-          </div>
-        ))}
-      </div>
-      <style>{`
-        .stats-banner-grid { grid-template-columns: repeat(4, 1fr) !important; }
-        @media (max-width: 640px) {
-          .stats-banner-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-      `}</style>
     </section>
   );
 }
@@ -342,7 +324,6 @@ export default async function HomePage() {
       <ServiceCards />
       <YouTubeSection videos={videos} />
       <TestimonialsSection testimonials={testimonials} />
-      <StatsBanner />
       <CtaSection text={content?.contactFooterText} />
     </>
   );

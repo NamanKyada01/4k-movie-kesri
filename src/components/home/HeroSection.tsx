@@ -103,25 +103,11 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
-        background: "var(--bg-primary)",
+        background: "transparent",
         marginTop: "calc(var(--nav-height) * -1)",
         paddingTop: "var(--nav-height)",
       }}
     >
-      {/* Subtle noise texture overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 2,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "200px 200px",
-          opacity: 0.4,
-          pointerEvents: "none",
-        }}
-      />
-
       {/* Main Content */}
       <div
         className="container"

@@ -84,7 +84,7 @@ function AnimatedStat({ number, label }: { number: string; label: string }) {
   );
 }
 
-export function HeroSection() {
+export function HeroSection({ title, subtitle }: { title?: string; subtitle?: string }) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -164,20 +164,15 @@ export function HeroSection() {
             marginBottom: "var(--space-5)",
             maxWidth: 900,
             marginInline: "auto",
+            textTransform: "uppercase",
           }}
         >
-          We Capture Moments{" "}
-          <br />
-          That Last{" "}
-          <span
-            style={{
-              color: "var(--accent)",
-              display: "inline-block",
-              position: "relative",
-            }}
-          >
-            Forever
-          </span>
+          {title || (
+            <>
+              We Capture Moments <br />
+              That Last <span style={{ color: "var(--accent)" }}>Forever</span>
+            </>
+          )}
         </motion.h1>
 
         {/* Tagline */}
@@ -194,9 +189,13 @@ export function HeroSection() {
             lineHeight: 1.6,
           }}
         >
-          4K Cinematic Photography & Videography · Surat, Gujarat
-          <br />
-          Weddings · Events · Portraits · Corporate · Products
+          {subtitle || (
+            <>
+              4K Cinematic Photography & Videography · Surat, Gujarat
+              <br />
+              Weddings · Events · Portraits · Corporate · Products
+            </>
+          )}
         </motion.p>
 
         {/* CTA Buttons */}

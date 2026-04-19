@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings, Loader2, Save, Globe, Phone, Mail, Instagram, Facebook, Video } from "lucide-react";
+import { Settings, Loader2, Save, Globe, Phone, Mail, Camera, Link as LinkIcon, Video } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
@@ -139,14 +139,14 @@ export default function SiteSettingsPage() {
         {/* SOCIAL LINKS */}
         <div className="card">
            <h3 style={{ fontSize: "1rem", marginBottom: "var(--space-5)", display: "flex", alignItems: "center", gap: 8 }}>
-             <Instagram size={18} color="var(--accent)" />
+             <Camera size={18} color="var(--accent)" />
              Social Media Links
            </h3>
            
            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
               <div>
                <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>
-                 <Instagram size={14} /> Instagram URL
+                 <Camera size={14} /> Instagram URL
                </label>
                <input 
                  type="url" 
@@ -159,7 +159,7 @@ export default function SiteSettingsPage() {
 
              <div>
                <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>
-                 <Facebook size={14} /> Facebook URL
+                 <LinkIcon size={14} /> Facebook URL
                </label>
                <input 
                  type="url" 

@@ -17,16 +17,18 @@ export const metadata: Metadata = {
 // Fetch data server-side
 async function getHomeData() {
   try {
-    const [videosSnap, photosSnap, testimonialsSnap] = await Promise.all([
+    const [videosSnap, photosSnap, testimonialsSnap, contentSnap] = await Promise.all([
       adminDb.collection("youtubeVideos").orderBy("order").limit(4).get(),
       adminDb.collection("gallery").where("featured", "==", true).limit(6).get(),
       adminDb.collection("testimonials").where("status", "==", "approved").where("featured", "==", true).limit(6).get(),
+      adminDb.collection("settings").doc("globalContent").get(),
     ]);
 
     return {
       videos: videosSnap.docs.map((d) => ({ id: d.id, ...d.data() })) as YouTubeVideo[],
       photos: photosSnap.docs.map((d) => ({ id: d.id, ...d.data() })) as GalleryPhoto[],
       testimonials: testimonialsSnap.docs.map((d) => ({ id: d.id, ...d.data() })) as Testimonial[],
+      content: contentSnap.exists ? contentSnap.data() : null,
     };
   } catch {
     return { videos: [], photos: [], testimonials: [] };
@@ -297,7 +299,7 @@ function StatsBanner() {
 }
 
 // ─── CTA Section ──────────────────────────────────────────────────────────
-function CtaSection() {
+function CtaSection({ text }: { text?: string }) {
   return (
     <section className="section" style={{ background: "var(--bg-primary)", textAlign: "center" }}>
       <div className="container" style={{ maxWidth: 640 }}>
@@ -308,14 +310,14 @@ function CtaSection() {
           Ready to Tell Your Story?
         </h2>
         <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "var(--space-8)" }}>
-          Whether it&apos;s a wedding, corporate event, or personal portrait session — we&apos;d love to capture your moments.
+          {text || "Whether it's a wedding, corporate event, or personal portrait session — we'd love to capture your moments."}
         </p>
         <div style={{ display: "flex", gap: "var(--space-4)", justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/contact" className="btn btn-primary btn-xl">
             Book a Session
           </Link>
-          <Link href="/pricing" className="btn btn-ghost btn-xl">
-            View Pricing
+          <Link href="/gallery" className="btn btn-ghost btn-xl">
+            Browse Gallery
           </Link>
         </div>
       </div>
@@ -325,18 +327,21 @@ function CtaSection() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────
 export default async function HomePage() {
-  const { videos, photos, testimonials } = await getHomeData();
+  const { videos, photos, testimonials, content } = await getHomeData();
 
   return (
     <>
-      <HeroSection />
+      <HeroSection 
+        title={content?.heroTitle} 
+        subtitle={content?.heroSubtitle} 
+      />
       <InfiniteHighlights />
       <FeaturedWorks photos={photos} />
       <ServiceCards />
       <YouTubeSection videos={videos} />
       <TestimonialsSection testimonials={testimonials} />
       <StatsBanner />
-      <CtaSection />
+      <CtaSection text={content?.contactFooterText} />
     </>
   );
 }

@@ -21,7 +21,19 @@ const services = [
   "Videography (4K)",
 ];
 
-export function Footer() {
+export function Footer({ config }: { config?: any }) {
+  const instagramUrl = config?.instagramUrl || "#";
+  const youtubeUrl = config?.youtubeUrl || "#";
+  const facebookUrl = config?.facebookUrl || "#";
+  const supportEmail = config?.supportEmail || "4kmovie2672.2@gmail.com";
+  const supportPhone = config?.supportPhone || "+91 XXXXX XXXXX";
+
+  const socialLinks = [
+    { label: "Instagram", href: instagramUrl, svg: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> },
+    { label: "YouTube",   href: youtubeUrl,   svg: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> },
+    { label: "Facebook",  href: facebookUrl,  svg: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
+  ];
+
   return (
     <footer
       style={{
@@ -73,14 +85,12 @@ export function Footer() {
             </p>
             {/* Social */}
             <div style={{ display: "flex", gap: "var(--space-3)" }}>
-              {[
-                { label: "Instagram", href: "#", svg: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> },
-                { label: "YouTube",   href: "#", svg: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> },
-                { label: "Facebook",  href: "#", svg: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
-              ].map(({ label, href, svg }) => (
+              {socialLinks.map(({ label, href, svg }) => (
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   style={{
                     width: 36,
@@ -162,8 +172,8 @@ export function Footer() {
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
               {[
-                { icon: Phone,   text: "+91 XXXXX XXXXX", href: "tel:+91XXXXXXXXXX" },
-                { icon: Mail,    text: "4kmovie2672.2@gmail.com", href: "mailto:4kmovie2672.2@gmail.com" },
+                { icon: Phone,   text: supportPhone, href: `tel:${supportPhone.replace(/[^0-9+]/g, "")}` },
+                { icon: Mail,    text: supportEmail, href: `mailto:${supportEmail}` },
                 { icon: MapPin,  text: "Surat, Gujarat, India", href: "#" },
               ].map(({ icon: Icon, text, href }) => (
                 <a

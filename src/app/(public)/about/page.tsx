@@ -5,7 +5,21 @@ export const metadata: Metadata = {
   description: "Learn about the team and vision behind 4K Movie Kesri Surat.",
 };
 
-export default function AboutPage() {
+import { adminDb } from "@/lib/firebase-admin";
+
+export default async function AboutPage() {
+  let aboutText = "";
+  try {
+    const contentDoc = await adminDb.collection("settings").doc("globalContent").get();
+    if (contentDoc.exists) {
+      aboutText = contentDoc.data()?.aboutText || "";
+    }
+  } catch (err) {
+    console.error("About page fetch error:", err);
+  }
+
+  const defaultAbout = "Since opening our doors in Surat, Gujarat, 4K Movie Kesri has been driven by a singular passion: turning fleeting moments into timeless masterpieces. We believe that photography isn't just about clicking a button; it's about anticipating emotions, managing brilliant lighting, and crafting a cinematic narrative.";
+
   return (
     <>
       <section className="section" style={{ background: "var(--bg-primary)", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
@@ -17,11 +31,13 @@ export default function AboutPage() {
             The Visionaries Behind The Lens
           </h1>
           <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "var(--space-6)" }}>
-            Since opening our doors in Surat, Gujarat, <strong>4K Movie Kesri</strong> has been driven by a singular passion: turning fleeting moments into timeless masterpieces. We believe that photography isn't just about clicking a button; it's about anticipating emotions, managing brilliant lighting, and crafting a cinematic narrative.
+             {aboutText || defaultAbout}
           </p>
-          <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.7 }}>
-            With over 8 years of industry experience, top-tier 4K cinema cameras, and a dedicated team of editors and directors, we bring a true Hollywood-style production level to weddings and corporate events across India.
-          </p>
+          {!aboutText && (
+             <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.7 }}>
+               With over 8 years of industry experience, top-tier 4K cinema cameras, and a dedicated team of editors and directors, we bring a true Hollywood-style production level to weddings and corporate events across India.
+             </p>
+          )}
         </div>
       </section>
 

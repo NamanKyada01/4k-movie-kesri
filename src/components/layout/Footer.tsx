@@ -10,6 +10,8 @@ const quickLinks = [
   { label: "Services",  href: "/services" },
   { label: "Blog",      href: "/blog" },
   { label: "Pricing",   href: "/pricing" },
+  { label: "Dhyey TV",  href: "/dhyey-tv" },
+  { label: "Admin Login", href: "/admin/login" },
 ];
 
 const services = [
@@ -235,7 +237,9 @@ export function Footer({ config }: { config?: any }) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; }
         }
         @media (max-width: 550px) {
-          .footer-grid { grid-template-columns: 1fr !important; }
+          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: var(--space-8) !important; }
+          .footer-grid > div:first-child { grid-column: span 2 !important; }
+          .footer-grid > div:last-child { grid-column: span 2 !important; }
         }
       `}</style>
     </footer>

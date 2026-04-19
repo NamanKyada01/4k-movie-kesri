@@ -47,10 +47,10 @@ function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
         <ScrollReveal>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-8)", flexWrap: "wrap", gap: "var(--space-4)" }}>
             <div>
-              <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
+              <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
                 Our Work
               </span>
-              <h2 style={{ marginTop: "var(--space-2)" }}>
+              <h2 style={{ marginTop: "var(--space-1)", fontSize: "clamp(1.5rem, 5vw, 2.22rem)" }}>
                 Featured Gallery
               </h2>
             </div>
@@ -128,9 +128,6 @@ function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
       <style>{`
         @media (max-width: 768px) {
           .gallery-masonry { column-count: 2 !important; }
-        }
-        @media (max-width: 500px) {
-          .gallery-masonry { column-count: 1 !important; }
         }
       `}</style>
     </section>
@@ -212,69 +209,67 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   return (
     <section className="section" style={{ background: "transparent" }}>
       <div className="container">
-        <div style={{ textAlign: "center", marginBottom: "var(--space-10)" }}>
-          <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
+        <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-6), 6vw, var(--space-10))" }}>
+          <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
             Client Love
           </span>
-          <h2 style={{ marginTop: "var(--space-2)" }}>
+          <h2 style={{ marginTop: "var(--space-1)", fontSize: "clamp(1.5rem, 5vw, 2.22rem)" }}>
             What Our Clients Say
           </h2>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "var(--space-5)",
-          }}
-        >
-          {displayItems.map((t) => (
-            <TiltedCard
-              key={t.id}
-              containerHeight="400px"
-              containerWidth="100%"
-              imageHeight="100%"
-              imageWidth="100%"
-              rotateAmplitude={10}
-              scaleOnHover={1.02}
-              showTooltip={false}
-              className="testimonial-tilted-card"
-            >
-              <div 
-                className="card" 
-                style={{ 
-                  height: "100%", 
-                  display: "flex", 
-                  flexDirection: "column", 
-                  justifyContent: "space-between",
-                  background: "var(--bg-card)",
-                  padding: "var(--space-8)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-xl)"
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: "3rem", color: "var(--accent)", opacity: 0.2, lineHeight: 1, marginBottom: "var(--space-3)", fontFamily: "serif" }}>
-                    &ldquo;
+        {/* Testimonials Container */}
+        <div className="testimonials-wrapper">
+          <div className="testimonials-carousel" style={{ display: "flex", gap: "var(--space-4)", overflowX: "auto", paddingBottom: "var(--space-6)", scrollSnapType: "x mandatory", scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            {displayItems.map((t) => (
+              <div key={t.id} style={{ minWidth: "280px", flex: "0 0 100%", scrollSnapAlign: "center", maxWidth: "340px" }} className="testimonial-card-item">
+                <TiltedCard
+                  containerHeight="360px"
+                  containerWidth="100%"
+                  imageHeight="100%"
+                  imageWidth="100%"
+                  rotateAmplitude={12}
+                  scaleOnHover={1.02}
+                  showTooltip={false}
+                  className="testimonial-tilted-card"
+                >
+                  <div 
+                    className="card" 
+                    style={{ 
+                      height: "100%", 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      justifyContent: "space-between",
+                      background: "var(--bg-card)",
+                      padding: "var(--space-5)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "var(--radius-xl)"
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: "2.5rem", color: "var(--accent)", opacity: 0.2, lineHeight: 1, marginBottom: "var(--space-2)", fontFamily: "serif" }}>
+                        &ldquo;
+                      </div>
+                      <p style={{ fontSize: "0.82rem", lineHeight: 1.6, color: "var(--text-secondary)", marginBottom: "var(--space-4)", fontStyle: "italic" }}>
+                        {t.text}
+                      </p>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--border)", paddingTop: "var(--space-3)" }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--text-primary)" }}>{t.clientName}</div>
+                        <div style={{ fontSize: "0.7rem", color: "var(--accent)", marginTop: 2 }}>{t.eventType}</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 2 }}>
+                        {Array.from({ length: t.rating }).map((_, i) => (
+                          <Star key={i} size={11} fill="var(--gold)" color="var(--gold)" />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <p style={{ fontSize: "0.95rem", lineHeight: 1.8, color: "var(--text-secondary)", marginBottom: "var(--space-5)", fontStyle: "italic" }}>
-                    {t.text}
-                  </p>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--border)", paddingTop: "var(--space-4)" }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)" }}>{t.clientName}</div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--accent)", marginTop: 2 }}>{t.eventType}</div>
-                  </div>
-                  <div style={{ display: "flex", gap: 2 }}>
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star key={i} size={13} fill="var(--gold)" color="var(--gold)" />
-                    ))}
-                  </div>
-                </div>
+                </TiltedCard>
               </div>
-            </TiltedCard>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -286,10 +281,10 @@ function CtaSection({ text }: { text?: string }) {
   return (
     <section className="section" style={{ background: "var(--bg-primary)", textAlign: "center" }}>
       <div className="container" style={{ maxWidth: 640 }}>
-        <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
+        <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
           Let&apos;s Work Together
         </span>
-        <h2 style={{ marginTop: "var(--space-2)", marginBottom: "var(--space-4)" }}>
+        <h2 style={{ marginTop: "var(--space-1)", marginBottom: "var(--space-4)", fontSize: "clamp(1.6rem, 5vw, 2.4rem)" }}>
           Ready to Tell Your Story?
         </h2>
         <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "var(--space-8)" }}>
@@ -325,6 +320,15 @@ export default async function HomePage() {
       <YouTubeSection videos={videos} />
       <TestimonialsSection testimonials={testimonials} />
       <CtaSection text={content?.contactFooterText} />
+
+      <style>{`
+        .testimonials-carousel::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) {
+          .section { padding: var(--space-8) 0 !important; }
+          .testimonials-carousel { padding-left: var(--space-4) !important; padding-right: var(--space-4) !important; margin-left: calc(var(--space-4) * -1) !important; margin-right: calc(var(--space-4) * -1) !important; }
+          .testimonial-card-item { min-width: 85vw !important; }
+        }
+      `}</style>
     </>
   );
 }

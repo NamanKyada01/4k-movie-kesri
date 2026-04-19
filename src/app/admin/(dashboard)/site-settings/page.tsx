@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Settings, Loader2, Save, Globe, Phone, Mail, Camera, Link as LinkIcon, Video } from "lucide-react";
+import { Settings, Loader2, Save, Globe, Phone, Mail, Camera, Link as LinkIcon, Video, Tv } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ export default function SiteSettingsPage() {
   const [instagramUrl, setInstagramUrl] = useState("");
   const [facebookUrl, setFacebookUrl] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [dhyeyTvUrl, setDhyeyTvUrl] = useState("");
 
   useEffect(() => {
     fetchSettings();
@@ -34,6 +35,7 @@ export default function SiteSettingsPage() {
         setInstagramUrl(data.instagramUrl || "");
         setFacebookUrl(data.facebookUrl || "");
         setYoutubeUrl(data.youtubeUrl || "");
+        setDhyeyTvUrl(data.dhyeyTvUrl || "");
       }
     } catch (err) {
       toast.error("Failed to load settings.");
@@ -53,7 +55,8 @@ export default function SiteSettingsPage() {
           supportPhone, 
           instagramUrl, 
           facebookUrl, 
-          youtubeUrl 
+          youtubeUrl,
+          dhyeyTvUrl 
         },
         { merge: true }
       );
@@ -182,6 +185,32 @@ export default function SiteSettingsPage() {
                  placeholder="https://youtube.com/..."
                />
              </div>
+           </div>
+        </div>
+
+        {/* DHYEY TV */}
+        <div className="card" style={{ gridColumn: "1 / -1" }}>
+           <h3 style={{ fontSize: "1rem", marginBottom: "var(--space-5)", display: "flex", alignItems: "center", gap: 8 }}>
+             <Tv size={18} color="var(--accent)" />
+             Dhyey TV – Live Stream Broadcasting
+           </h3>
+           <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "var(--space-4)" }}>
+             Paste the full YouTube Live watch URL or a YouTube video ID below. This is what will be embedded on the public <strong>/dhyey-tv</strong> page. Update this whenever the stream link changes.
+           </p>
+           <div>
+             <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>
+               <Tv size={14} /> YouTube Live URL or Video ID
+             </label>
+             <input 
+               type="url" 
+               value={dhyeyTvUrl} 
+               onChange={e => setDhyeyTvUrl(e.target.value)} 
+               style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)", fontFamily: "monospace", fontSize: "0.85rem" }} 
+               placeholder="https://youtu.be/eQuoqPa1XIE"
+             />
+             <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 6 }}>
+               Accepted: full YouTube URL (e.g. <code>https://youtu.be/VIDEO_ID</code>) or just the video ID (e.g. <code>eQuoqPa1XIE</code>)
+             </p>
            </div>
         </div>
 

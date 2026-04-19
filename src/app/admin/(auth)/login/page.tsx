@@ -10,8 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, ArrowRight, ArrowLeft, Camera, Loader2, ShieldCheck } from "lucide-react";
 import Particles from "@/components/ui/Particles";
 import { StarBorder } from "@/components/ui/StarBorder";
-import DecryptedText from "@/components/ui/DecryptedText";
-import { Magnet } from "@/components/ui/Magnet";
+import ShinyText from "@/components/ui/ShinyText";
+import BlurText from "@/components/ui/BlurText";
 
 export default function AdminLoginPage() {
   const [step, setStep]       = useState<"email" | "otp">("email");
@@ -121,9 +121,8 @@ export default function AdminLoginPage() {
           color="#E8550A" 
           speed="4s"
           style={{ 
-            borderRadius: "var(--radius-2xl)", 
-            overflow: "hidden",
-            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)"
+            borderRadius: "var(--radius-2xl)",
+            background: "transparent"
           }}
         >
           <div
@@ -172,30 +171,26 @@ export default function AdminLoginPage() {
 
                 {/* Brand name */}
                 <div style={{ marginBottom: "var(--space-8)" }}>
-                  <DecryptedText 
+                  <ShinyText 
                     text="4K MOVIE"
                     className="branding-title"
-                    animateOn="view"
-                    speed={80}
+                    speed={3}
                     style={{ 
                       fontFamily: "var(--font-heading)", 
                       fontWeight: 900, 
                       fontSize: "2rem", 
-                      color: "var(--text-primary)", 
                       lineHeight: 1, 
                       letterSpacing: "-0.03em"
                     }}
                   />
                   <br />
-                  <DecryptedText 
+                  <ShinyText 
                     text="KESRI SURAT"
-                    animateOn="view"
-                    speed={100}
+                    speed={3}
                     style={{ 
                       fontFamily: "var(--font-heading)", 
                       fontWeight: 900, 
                       fontSize: "1.6rem", 
-                      color: "var(--text-primary)", 
                       lineHeight: 1, 
                       letterSpacing: "-0.03em"
                     }}
@@ -245,10 +240,11 @@ export default function AdminLoginPage() {
                     exit={{ x: -20, opacity: 0 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <DecryptedText 
+                    <BlurText 
                       text="Welcome Back"
                       className="step-title"
-                      style={{ fontSize: "1.75rem", fontWeight: 800, marginBottom: "var(--space-2)" }}
+                      direction="bottom"
+                      delay={0.08}
                     />
                     <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-10)" }}>
                       Identify your administrative credentials to request access.
@@ -283,20 +279,18 @@ export default function AdminLoginPage() {
                         </motion.div>
                       )}
 
-                      <Magnet padding={40} magnetStrength={3}>
-                        <button
-                          type="submit"
-                          disabled={loading}
-                          className="btn btn-primary btn-xl"
-                          style={{ width: "100%", height: "56px", fontSize: "0.9rem" }}
-                        >
-                          {loading ? (
-                            <><Loader2 size={16} className="animate-spin" /> Verifying...</>
-                          ) : (
-                            <>Initialize Access <ArrowRight size={16} /></>
-                          )}
-                        </button>
-                      </Magnet>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="btn btn-primary btn-xl"
+                        style={{ width: "100%", height: "56px", fontSize: "0.9rem" }}
+                      >
+                        {loading ? (
+                          <><Loader2 size={16} className="animate-spin" /> Verifying...</>
+                        ) : (
+                          <>Initialize Access <ArrowRight size={16} /></>
+                        )}
+                      </button>
                     </form>
                   </motion.div>
                 )}
@@ -313,10 +307,13 @@ export default function AdminLoginPage() {
                     <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(232, 85, 10, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "var(--space-5)" }}>
                       <Lock size={22} color="var(--accent)" />
                     </div>
-                    <h2 style={{ fontSize: "1.75rem", marginBottom: "var(--space-1)", fontWeight: 800 }}>
-                      Verify Sequence
-                    </h2>
-                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-10)" }}>
+                    <BlurText 
+                      text="Verify Sequence"
+                      className="step-title"
+                      direction="bottom"
+                      delay={0.08}
+                    />
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "var(--space-10)", marginTop: "var(--space-2)" }}>
                       Enter the multi-factor code sent to your terminal.
                     </p>
 
@@ -346,20 +343,18 @@ export default function AdminLoginPage() {
                         </div>
                       )}
 
-                      <Magnet padding={40} magnetStrength={3}>
-                        <button
-                          type="submit"
-                          disabled={loading || otp.join("").length < 6}
-                          className="btn btn-primary btn-xl"
-                          style={{ width: "100%", height: "56px" }}
-                        >
-                          {loading ? (
-                            <><Loader2 size={16} className="animate-spin" /> Authenticating...</>
-                          ) : (
-                            <>Complete Protocol <ArrowRight size={16} /></>
-                          )}
-                        </button>
-                      </Magnet>
+                      <button
+                        type="submit"
+                        disabled={loading || otp.join("").length < 6}
+                        className="btn btn-primary btn-xl"
+                        style={{ width: "100%", height: "56px" }}
+                      >
+                        {loading ? (
+                          <><Loader2 size={16} className="animate-spin" /> Authenticating...</>
+                        ) : (
+                          <>Complete Protocol <ArrowRight size={16} /></>
+                        )}
+                      </button>
 
                       <button
                         type="button"

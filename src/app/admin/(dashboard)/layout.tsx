@@ -8,6 +8,7 @@ import { Camera, LayoutDashboard, Image, PlayCircle, Calendar as CalendarIcon, W
 import { useTheme } from "next-themes";
 import { useState, useEffect as useEffectReact } from "react";
 import { ReactNode } from "react";
+import Particles from "@/components/ui/Particles";
 
 const navItems = [
   { label: "Dashboard",           href: "/admin/dashboard",           icon: LayoutDashboard },
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Staff Management",    href: "/admin/staff",               icon: Users },
   { label: "Blog Manager",        href: "/admin/blog-manager",        icon: FileText },
   { label: "Content Editor",      href: "/admin/content-editor",      icon: Edit3 },
+  { label: "Invoices",            href: "/admin/invoices",            icon: FileText },
   { label: "Site Settings",       href: "/admin/site-settings",       icon: Settings },
   { label: "Inquiries",           href: "/admin/inquiries",           icon: MessageSquare },
   { label: "Testimonials",        href: "/admin/testimonials",        icon: Star },
@@ -81,7 +83,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100svh", background: "var(--bg-primary)" }}>
+    <div style={{ display: "flex", minHeight: "100svh", background: "var(--bg-primary)", position: "relative" }}>
+      {/* Subtle Admin Particles */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.3 }}>
+        <Particles
+          particleCount={50}
+          particleColors={["var(--accent)", "var(--text-muted)"]}
+          moveSpeed={0.2}
+          sizeRange={[0.5, 2]}
+          alphaRange={[0.05, 0.15]}
+        />
+      </div>
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
       {/* Overlay for mobile */}
       {sidebarOpen && (
@@ -107,6 +119,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           overflowX: "hidden",
           transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.3s ease",
+          backdropFilter: "blur(20px)",
         }}
         className="admin-sidebar"
       >
@@ -146,7 +159,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        {/* Quick Add */}
         <div style={{ padding: "var(--space-3) var(--space-5)" }}>
           <Link
             href="/admin/event-management?action=new"
@@ -231,7 +243,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           flex: 1, 
           display: "flex", 
           flexDirection: "column", 
-          minHeight: "100svh" 
+          minHeight: "100svh",
+          position: "relative",
+          zIndex: 1
         }} 
         className="admin-main-wrapper"
       >
@@ -241,9 +255,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             position: "sticky",
             top: 0,
             zIndex: 90,
-            background: "var(--bg-glass)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            background: "rgba(var(--bg-primary-rgb, 13, 13, 13), 0.7)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
             borderBottom: "1px solid var(--border)",
             padding: "0 var(--space-4) 0 clamp(1rem, 4vw, 2rem)",
             height: "var(--topbar-height)",
@@ -303,6 +317,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           .admin-main-wrapper { padding-left: 0 !important; }
           .admin-mobile-toggle { display: flex !important; }
         }
+        .w-full { width: 100%; }
       `}</style>
     </div>
   );

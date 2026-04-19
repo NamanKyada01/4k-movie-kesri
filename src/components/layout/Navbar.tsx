@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Camera } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { StaggeredMenu } from "@/components/ui/StaggeredMenu";
 
 const navLinks = [
   { label: "Home",      href: "/" },
@@ -15,6 +16,7 @@ const navLinks = [
   { label: "Blog",      href: "/blog" },
   { label: "About",     href: "/about" },
   { label: "Contact",   href: "/contact" },
+  { label: "Dhyey TV",  href: "/dhyey-tv", live: true },
 ];
 
 export function Navbar() {
@@ -131,23 +133,35 @@ export function Navbar() {
                   href={link.href}
                   style={{
                     fontSize: "0.85rem",
-                    fontWeight: 500,
-                    color: isActive ? "var(--accent)" : "var(--text-secondary)",
+                    fontWeight: link.live ? 600 : 500,
+                    color: isActive ? "var(--accent)" : link.live ? "#E6C364" : "var(--text-secondary)",
                     transition: "color var(--transition-fast)",
                     position: "relative",
                     paddingBottom: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive)
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        "var(--text-primary)";
+                        link.live ? "#fdd977" : "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive)
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        "var(--text-secondary)";
+                        link.live ? "#E6C364" : "var(--text-secondary)";
                   }}
                 >
+                  {link.live && (
+                    <span style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: "#ef4444",
+                      boxShadow: "0 0 6px 2px rgba(239,68,68,0.6)",
+                      display: "inline-block",
+                      flexShrink: 0,
+                    }} />
+                  )}
                   {link.label}
                   {isActive && (
                     <span
@@ -196,60 +210,20 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu (Cinematic Staggered) */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              position: "fixed",
-              top: "var(--nav-height)",
-              left: 0,
-              right: 0,
-              zIndex: "var(--z-overlay)",
-              background: "var(--bg-glass)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-              borderBottom: "1px solid var(--border)",
-              padding: "var(--space-4) var(--space-6) var(--space-6)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "var(--space-1)",
+          <StaggeredMenu
+            isOpen={menuOpen}
+            onClose={() => setMenuOpen(false)}
+            links={navLinks}
+            pathname={pathname}
+            socials={{
+              instagram: "https://instagram.com",
+              youtube: "https://youtube.com",
+              facebook: "https://facebook.com"
             }}
-          >
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  style={{
-                    padding: "0.75rem 0",
-                    fontSize: "1rem",
-                    fontWeight: 500,
-                    color: isActive ? "var(--accent)" : "var(--text-primary)",
-                    borderBottom: "1px solid var(--border)",
-                    display: "block",
-                  }}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-            <Link
-              href="/contact"
-              className="btn btn-primary"
-              style={{ marginTop: "var(--space-4)", textAlign: "center" }}
-            >
-              Book Now
-            </Link>
-          </motion.div>
+          />
         )}
       </AnimatePresence>
 

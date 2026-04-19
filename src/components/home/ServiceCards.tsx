@@ -46,12 +46,13 @@ export function ServiceCards() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          style={{ marginBottom: "var(--space-10)" }}
+          style={{ marginBottom: "clamp(var(--space-6), 5vw, var(--space-10))" }}
+          className="section-header-compact"
         >
-          <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
+          <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
             What We Do
           </span>
-          <h2 style={{ marginTop: "var(--space-2)" }}>
+          <h2 style={{ marginTop: "var(--space-1)", fontSize: "clamp(1.5rem, 5vw, 2.2rem)" }}>
             Our Professional Services
           </h2>
         </motion.div>
@@ -80,13 +81,13 @@ export function ServiceCards() {
                 className="w-full h-full"
               >
                 <div 
-                  className="card card-accent-hover"
+                  className="card card-accent-hover service-card-inner"
                   style={{ 
                     width: "100%", 
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    padding: "var(--space-8)",
+                    padding: "clamp(var(--space-5), 4vw, var(--space-8))",
                     border: "none", // Let StarBorder handle the "border" look
                     background: "var(--bg-card)",
                     borderRadius: "inherit"
@@ -138,7 +139,8 @@ export function ServiceCards() {
                       transition: "gap var(--transition-fast)",
                       marginTop: "auto",
                       paddingTop: "var(--space-4)",
-                      borderTop: "1px solid var(--border)"
+                      borderTop: "1px solid var(--border)",
+                      fontSize: "0.8rem"
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLAnchorElement).style.gap = "12px";
@@ -160,13 +162,21 @@ export function ServiceCards() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          style={{ textAlign: "center", marginTop: "var(--space-10)" }}
+          style={{ textAlign: "center", marginTop: "var(--space-8)" }}
         >
-          <Link href="/services" className="btn btn-outline-accent btn-lg">
+          <Link href="/services" className="btn btn-outline-accent btn-md">
             View All Services
           </Link>
         </motion.div>
       </div>
+
+      <style>{`
+        @media (max-width: 600px) {
+          .section-header-compact h2 { font-size: 1.6rem !important; }
+          .service-card-inner { padding: var(--space-5) !important; }
+          .service-card-inner h3 { fontSize: 1.1rem !important; }
+        }
+      `}</style>
     </section>
   );
 }

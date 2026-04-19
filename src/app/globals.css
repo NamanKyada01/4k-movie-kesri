@@ -25,7 +25,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -46,6 +45,17 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+}
+
+/* Ensure utility classes can override base headings */
+h1:where([class*='text-']), 
+h2:where([class*='text-']), 
+h3:where([class*='text-']), 
+h4:where([class*='text-']), 
+h5:where([class*='text-']), 
+h6:where([class*='text-']) {
+  font-size: inherit;
+  line-height: inherit;
 }
 
 h1 { font-size: clamp(2.5rem, 5vw, 5rem); }
@@ -104,18 +114,19 @@ a {
 
 /* ─────────────── CARD ─────────────── */
 .card {
-  background: var(--bg-card);
+  background: var(--bg-secondary); /* Slightly darker than primary for depth */
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  box-shadow: var(--shadow-card);
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  padding: var(--space-8); /* Increased default padding */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
   border-color: var(--border-strong);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .card-accent-hover:hover {

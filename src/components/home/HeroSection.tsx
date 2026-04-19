@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Play, ArrowRight, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import BlurText from "@/components/ui/BlurText";
+
 
 // Stats data
 const stats = [
@@ -135,28 +137,35 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
         </motion.div>
 
         {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+        <div
           style={{
-            fontSize: "clamp(2.8rem, 7vw, 6.5rem)",
-            fontWeight: 900,
-            lineHeight: 1.05,
-            letterSpacing: "-0.03em",
             marginBottom: "var(--space-5)",
             maxWidth: 900,
             marginInline: "auto",
-            textTransform: "uppercase",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           {title || (
             <>
-              We Capture Moments <br />
-              That Last <span style={{ color: "var(--accent)" }}>Forever</span>
+              <BlurText
+                text="We Capture Moments"
+                delay={0.06}
+                animateBy="words"
+                direction="bottom"
+                className="hero-title-blur"
+              />
+              <BlurText
+                text="That Last Forever"
+                delay={0.06}
+                animateBy="words"
+                direction="bottom"
+                className="hero-title-blur accent-text"
+              />
             </>
           )}
-        </motion.h1>
+        </div>
 
         {/* Tagline */}
         <motion.p
@@ -164,13 +173,14 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.5 }}
           style={{
-            fontSize: "clamp(0.95rem, 2vw, 1.15rem)",
+            fontSize: "clamp(0.85rem, 1.8vw, 1.15rem)",
             color: "var(--text-muted)",
             marginBottom: "var(--space-8)",
             maxWidth: 520,
             marginInline: "auto",
-            lineHeight: 1.6,
+            lineHeight: 1.5,
           }}
+          className="hero-tagline"
         >
           {subtitle || (
             <>
@@ -194,11 +204,11 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
             marginBottom: "var(--space-16)",
           }}
         >
-          <Link href="/gallery" className="btn btn-primary btn-xl">
+          <Link href="/gallery" className="btn btn-primary hero-cta-btn">
             View Our Work
-            <ArrowRight size={18} />
+            <ArrowRight size={16} />
           </Link>
-          <Link href="/contact" className="btn btn-ghost btn-xl">
+          <Link href="/contact" className="btn btn-ghost hero-cta-btn">
             Book a Session
           </Link>
         </motion.div>
@@ -261,8 +271,27 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
       </motion.div>
 
       <style>{`
-        @media (max-width: 600px) {
+        .hero-title-blur {
+          font-family: var(--font-heading);
+          font-weight: 900;
+          font-size: clamp(2rem, 6vw, 4.2rem);
+          line-height: 1.1;
+          letter-spacing: -0.03em;
+          text-transform: uppercase;
+          color: var(--text-primary);
+          justify-content: center;
+        }
+        .hero-title-blur.accent-text {
+          color: var(--accent);
+        }
+        @media (max-width: 768px) {
+          .hero-title-blur { font-size: 2.2rem; }
+          .hero-tagline { font-size: 0.85rem !important; max-width: 320px !important; }
+          .hero-cta-btn { padding: 10px 20px !important; font-size: 0.82rem !important; height: auto !important; }
           .hero-stats { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 480px) {
+           .hero-title-blur { font-size: 1.8rem; }
         }
       `}</style>
     </section>

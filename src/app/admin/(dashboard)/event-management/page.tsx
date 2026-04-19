@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CalendarDays, Plus, Loader2, Link as LinkIcon, Trash2, Edit } from "lucide-react";
+import { CalendarDays, Plus, Loader2, Link as LinkIcon, Trash2, Edit, ChevronRight } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
 import type { Event } from "@/types";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
 
 export default function EventManagementPage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -108,112 +110,149 @@ export default function EventManagementPage() {
   };
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div style={{ marginBottom: "var(--space-8)" }}>
-        <h1 style={{ fontSize: "1.6rem", marginBottom: 4 }}>Event Management</h1>
+        <h1 style={{ fontSize: "1.8rem", marginBottom: 4, fontWeight: 800 }}>Event Management</h1>
         <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Log client events and manage Google Drive delivery links.</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--space-6)" }} className="manager-layout">
         
         {/* Add Form */}
-        <div className="card" style={{ marginBottom: "var(--space-6)" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "var(--space-5)", display: "flex", alignItems: "center", gap: 8 }}>
+        <SpotlightCard className="card" style={{ marginBottom: "var(--space-2)", padding: "var(--space-6)" }} spotlightColor="rgba(232, 85, 10, 0.05)">
+          <h3 style={{ fontSize: "1.1rem", marginBottom: "var(--space-6)", display: "flex", alignItems: "center", gap: 8, fontWeight: 700 }}>
             <Plus size={18} color="var(--accent)" />
             Create New Event
           </h3>
           
-          <form onSubmit={handleAddEvent} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--space-4)", alignItems: "end" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Event Name</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} placeholder="e.g. Rahul & Priya Wedding" />
+          <form onSubmit={handleAddEvent} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--space-5)", alignItems: "end" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <label style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Event Name</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem" }} placeholder="e.g. Rahul & Priya Wedding" />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Client Name</label>
-              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} placeholder="e.g. Rahul Patel" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <label style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Client Name</label>
+              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} required style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem" }} placeholder="e.g. Rahul Patel" />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Date</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <label style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Date</label>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} required style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem" }} />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Drive Delivering Link (Optional)</label>
-              <input type="url" value={driveLink} onChange={e => setDriveLink(e.target.value)} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} placeholder="https://drive.google.com/..." />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <label style={{ fontSize: "0.72rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Drive Link (Optional)</label>
+              <input type="url" value={driveLink} onChange={e => setDriveLink(e.target.value)} style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem" }} placeholder="https://drive.google.com/..." />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ padding: "11px 16px" }} disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 size={18} className="animate-spin-slow" /> : "Create Event"}
+            <button type="submit" className="btn btn-primary" style={{ height: 46, fontWeight: 700 }} disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : "Deploy Event"}
             </button>
           </form>
-        </div>
+        </SpotlightCard>
 
-        {/* Events Table */}
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ padding: "var(--space-5) var(--space-6)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-             <h3 style={{ fontSize: "1rem", margin: 0 }}>All Events ({events.length})</h3>
+        {/* Events Table Container */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="card" 
+          style={{ padding: 0, overflow: "hidden", border: "1px solid var(--border)" }}
+        >
+          <div style={{ padding: "var(--space-5) var(--space-6)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.01)" }}>
+             <h3 style={{ fontSize: "1.1rem", margin: 0, fontWeight: 700 }}>Event Registry ({events.length})</h3>
           </div>
 
           {isLoading ? (
-            <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-10)" }}>
-              <Loader2 size={32} className="animate-spin-slow" color="var(--text-muted)" />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 16 }}>
+              <Loader2 size={32} className="animate-spin" color="var(--accent)" />
+              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Retrieving archives...</p>
             </div>
           ) : events.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)" }}>
-              <CalendarDays size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
-              <p>No events logged yet.</p>
+            <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-muted)" }}>
+              <CalendarDays size={48} style={{ margin: "0 auto 16px", opacity: 0.1 }} />
+              <p style={{ fontSize: "1rem" }}>No events found in the ledger.</p>
             </div>
           ) : (
              <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--bg-elevated)" }}>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Event</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Client</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Date</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Status</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Deliverable</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "center", color: "var(--text-muted)", fontWeight: 600 }}>Actions</th>
+                  <tr style={{ textAlign: "left", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid var(--border)" }}>
+                    <th style={{ padding: "16px 24px", color: "var(--text-muted)", fontWeight: 600, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Event Name</th>
+                    <th style={{ padding: "16px 24px", color: "var(--text-muted)", fontWeight: 600, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Partner / Client</th>
+                    <th style={{ padding: "16px 24px", color: "var(--text-muted)", fontWeight: 600, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Scheduled Date</th>
+                    <th style={{ padding: "16px 24px", color: "var(--text-muted)", fontWeight: 600, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Status</th>
+                    <th style={{ padding: "16px 24px", color: "var(--text-muted)", fontWeight: 600, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Deliverable</th>
+                    <th style={{ padding: "16px 24px", color: "var(--text-muted)", fontWeight: 600, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center" }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {events.map((event) => (
-                    <tr key={event.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "var(--space-4)", fontWeight: 600 }}>{event.name}</td>
-                      <td style={{ padding: "var(--space-4)", color: "var(--text-secondary)" }}>{event.clientName}</td>
-                      <td style={{ padding: "var(--space-4)", color: "var(--text-secondary)" }}>{new Date(event.date).toLocaleDateString()}</td>
-                      <td style={{ padding: "var(--space-4)" }}>
-                        <select 
-                          value={event.status}
-                          onChange={(e) => handleUpdateStatus(event.id, e.target.value)}
-                          style={{ padding: "4px 8px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: "var(--text-primary)", fontSize: "0.75rem" }}
-                        >
-                          <option value="planned">Planned</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="in-progress">In Progress</option>
-                          <option value="completed">Completed</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: "var(--space-4)" }}>
-                        {event.googleDriveAlbumLink ? (
-                          <a href={event.googleDriveAlbumLink} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--accent)" }}>
-                            <LinkIcon size={14} /> Drive Link
-                          </a>
-                        ) : <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>No Link</span>}
-                      </td>
-                      <td style={{ padding: "var(--space-4)", textAlign: "center" }}>
-                        <button onClick={() => handleDelete(event.id)} style={{ background: "transparent", border: "none", color: "var(--error)", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }} title="Delete Event">
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                <AnimatePresence mode="popLayout">
+                  <tbody>
+                    {events.map((event, idx) => (
+                      <motion.tr 
+                        key={event.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: Math.min(idx * 0.05, 0.5) }}
+                        style={{ borderBottom: "1px solid var(--border)", transition: "background 0.2s ease" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                      >
+                        <td style={{ padding: "16px 24px", fontWeight: 700, color: "var(--text-primary)" }}>{event.name}</td>
+                        <td style={{ padding: "16px 24px", color: "var(--text-secondary)" }}>{event.clientName}</td>
+                        <td style={{ padding: "16px 24px", color: "var(--text-muted)" }}>{new Date(event.date).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td style={{ padding: "16px 24px" }}>
+                          <select 
+                            value={event.status}
+                            onChange={(e) => handleUpdateStatus(event.id, e.target.value)}
+                            style={{ padding: "6px 12px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer" }}
+                          >
+                            <option value="planned">Planned</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td style={{ padding: "16px 24px" }}>
+                          {event.googleDriveAlbumLink ? (
+                            <a href={event.googleDriveAlbumLink} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--accent)", textDecoration: "none", fontWeight: 600, fontSize: "0.8rem" }}>
+                              <LinkIcon size={14} /> Drive Access
+                            </a>
+                          ) : <span style={{ color: "var(--text-muted)", fontSize: "0.75rem", fontStyle: "italic" }}>Pending Upload</span>}
+                        </td>
+                        <td style={{ padding: "16px 24px", textAlign: "center" }}>
+                          <button 
+                            onClick={() => handleDelete(event.id)} 
+                            style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s ease" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--error)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; }}
+                            title="Delete Event"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </AnimatePresence>
               </table>
             </div>
           )}
-        </div>
+        </motion.div>
 
       </div>
-    </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+      `}</style>
+    </motion.div>
   );
 }

@@ -1,64 +1,35 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { Plus, Search, Filter, FileText } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Search, Filter, FileText, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getInvoices, deleteInvoice } from "@/actions/invoice";
+import { useLiveCollection } from "@/hooks/useLiveCollection";
+import { where, orderBy } from "firebase/firestore";
 import { Invoice } from "@/types/invoice";
-import DashboardSkeleton from "./DashboardSkeleton";
+import { deleteInvoice } from "@/actions/invoice";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import InvoiceCard from "./InvoiceCard";
 import QuickViewModal from "./QuickViewModal";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 
 export default function InvoiceDashboard() {
   const { user } = useAuth();
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (user?.uid) {
-      loadInvoices();
-    }
-  }, [user]);
-
-  async function loadInvoices() {
-    setLoading(true);
-    const res = await getInvoices(user!.uid);
-    if (res.success && res.invoices) {
-      setInvoices(res.invoices);
-    } else {
-      toast.error("Failed to load invoices");
-    }
-    setLoading(false);
-  }
+  // Real-time synchronization
+  // Note: Using userId filter for security parity with the creation logic
+  const { data: invoices, loading } = useLiveCollection<Invoice>("invoices", 
+    user?.uid ? [where("userId", "==", user.uid), orderBy("createdAt", "desc")] : []
+  );
 
   const handleDownloadPDF = async (inv: Invoice) => {
     setIsGenerating(true);
     try {
-      // Small delay to ensure modal content is rendered if we're using a ref from it
-      // For this implementation, we'll create a temporary hidden container to render at full scale
-      const container = document.createElement("div");
-      container.style.position = "absolute";
-      container.style.left = "-9999px";
-      container.style.top = "-9999px";
-      container.style.width = "800px"; // A4 base width
-      document.body.appendChild(container);
-      
-      // We would need a way to render InvoiceDocument here into 'container'
-      // Since we're in a functional component, we'll just show a toast that this 
-      // should be handled in a more integrated way, OR we use the modal's internal ref.
-      
       toast.info("Generating cinematic PDF...");
-      // For now, redirecting to Step 5 is safer for full-fidelity, 
-      // but in a real app we'd have a server-side or hidden-client-side renderer.
       router.push(`/admin/invoices/edit/${inv.id}?step=5`);
     } catch (err) {
       toast.error("PDF generation failed");
@@ -66,12 +37,24 @@ export default function InvoiceDashboard() {
     setIsGenerating(false);
   };
 
+  const handleDelete = async (id: string) => {
+     if (!confirm("Permanently purge this statement from the archive?")) return;
+     const res = await deleteInvoice(id);
+     if (res.success) toast.success("Invoice purged");
+     else toast.error("Action failed");
+  };
+
   const filtered = invoices.filter(inv => 
     inv.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
     inv.customerName.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) return <DashboardSkeleton />;
+  if (loading) return (
+    <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
+        <Loader2 size={40} className="animate-spin" color="var(--accent)" />
+        <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Statement Vault...</p>
+    </div>
+  );
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease", paddingBottom: "100px" }}>
@@ -116,14 +99,11 @@ export default function InvoiceDashboard() {
               background: "rgba(255,255,255,0.03)", 
               border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: "12px",
-              padding: "12px 12px 12px 48px",
+              padding: "16px 16px 16px 48px",
               color: "white",
               fontSize: "0.9rem",
-              outline: "none",
-              transition: "border-color 0.2s"
+              outline: "none"
             }} 
-            onFocus={(e) => e.target.style.borderColor = "var(--accent)"}
-            onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
           />
         </div>
         <button style={{ 
@@ -186,6 +166,13 @@ export default function InvoiceDashboard() {
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+          animation: spin 1s linear infinite;
         }
       `}</style>
     </div>

@@ -1,209 +1,130 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Camera, Plus, Loader2, Trash2 } from "lucide-react";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
-import type { Equipment } from "@/types";
+import React, { useState, useMemo } from "react";
+import { Plus, Search, Loader2, HardDrive } from "lucide-react";
+import { useLiveCollection } from "@/hooks/useLiveCollection";
+import { orderBy } from "firebase/firestore";
+import { Equipment } from "@/types";
+import { createEquipment, updateEquipment } from "@/actions/admin"; // Add deleteEquipment if needed
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import EquipmentCard from "@/components/invoice/EquipmentCard";
 
-export default function EquipmentManagerPage() {
-  const [equipment, setEquipment] = useState<Equipment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function EquipmentManagementPage() {
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [isCreating, setIsCreating] = useState(false);
 
-  // Form State
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState("camera");
-  const [condition, setCondition] = useState("available");
-  const [quantity, setQuantity] = useState<number | "">(1);
+  // Real-time synchronization
+  const { data: inventory, loading } = useLiveCollection<Equipment>("equipment", [
+    orderBy("createdAt", "desc")
+  ]);
 
-  useEffect(() => {
-    fetchEquipment();
-  }, []);
+  const filteredInventory = useMemo(() => {
+    return inventory.filter(i => {
+        const matchesSearch = i.name.toLowerCase().includes(search.toLowerCase()) || 
+                             i.serialNumber?.toLowerCase().includes(search.toLowerCase());
+        const matchesCat = categoryFilter === "all" || i.category === categoryFilter;
+        return matchesSearch && matchesCat;
+    });
+  }, [inventory, search, categoryFilter]);
 
-  const fetchEquipment = async () => {
-    try {
-      const q = query(collection(db, "equipment"), orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as Equipment[];
-      setEquipment(data);
-    } catch (err) {
-      toast.error("Failed to fetch equipment details.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddEquipment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !quantity) return toast.error("Please fill required fields.");
-
-    setIsSubmitting(true);
-    try {
-      const newEquip: Omit<Equipment, "id"> = {
-        name,
-        category: category as any,
-        condition: condition as any,
-        quantity: Number(quantity) || 1,
+  const handleCreateDummy = async () => {
+    setIsCreating(true);
+    const res = await createEquipment({
+        name: "New Cinema Rig",
+        category: "camera",
+        quantity: 1,
+        condition: "available",
+        serialNumber: "SN-" + Math.floor(Math.random() * 100000),
         images: [],
-        createdAt: Date.now()
-      };
-
-      const docRef = await addDoc(collection(db, "equipment"), newEquip);
-      setEquipment(prev => [{ id: docRef.id, ...newEquip }, ...prev]);
-      
-      toast.success("Equipment logged successfully!");
-      setName("");
-      setQuantity(1);
-      
-    } catch (error) {
-      toast.error("Failed to add equipment");
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
+    setIsCreating(false);
+    if (!res.success) toast.error("Deployment failed");
+    else toast.success("New asset added to vault");
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Remove this equipment from inventory?")) return;
-    try {
-      await deleteDoc(doc(db, "equipment", id));
-      setEquipment(p => p.filter(e => e.id !== id));
-      toast.success("Equipment deleted");
-    } catch (error) {
-       toast.error("Failed to delete equipment");
-    }
-  };
-
-  const updateCondition = async (id: string, newCondition: string) => {
-    try {
-      await updateDoc(doc(db, "equipment", id), { condition: newCondition });
-      setEquipment(p => p.map(e => e.id === id ? { ...e, condition: newCondition as any } : e));
-      toast.success("Condition updated");
-    } catch (error) {
-       toast.error("Failed to update condition");
-    }
-  };
+  if (loading) return (
+      <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
+          <Loader2 size={40} className="animate-spin" color="var(--accent)" />
+          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Inventory...</p>
+      </div>
+  );
 
   return (
-    <div>
-      <div style={{ marginBottom: "var(--space-8)" }}>
-        <h1 style={{ fontSize: "1.6rem", marginBottom: 4 }}>Equipment Management</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Log your studio gear, cameras, and lenses to track inventory.</p>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: "var(--space-6)" }} className="manager-layout">
+    <div style={{ animation: "fadeIn 0.5s ease", paddingBottom: "100px" }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem" }}>
+        <div>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>Inventory</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Monitor and manage the high-fidelity technical assets of the studio</p>
+        </div>
         
-        {/* Add Form */}
-        <div className="card" style={{ alignSelf: "start", position: "sticky", top: "calc(var(--nav-height) + 20px)" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "var(--space-5)", display: "flex", alignItems: "center", gap: 8 }}>
-            <Plus size={18} color="var(--accent)" />
-            Add Gear
-          </h3>
-          
-          <form onSubmit={handleAddEquipment} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Item Name / Model</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} placeholder="e.g. Sony a7S III" />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Category</label>
-                <select value={category} onChange={e => setCategory(e.target.value)} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }}>
-                  <option value="camera">Camera</option>
-                  <option value="lens">Lens</option>
-                  <option value="light">Lighting</option>
-                  <option value="drone">Drone</option>
-                  <option value="audio">Audio/Mic</option>
-                  <option value="accessory">Accessory</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Quantity</label>
-                <input type="number" min={1} value={quantity} onChange={e => setQuantity(Number(e.target.value))} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} />
-              </div>
-            </div>
-
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Current Condition</label>
-              <select value={condition} onChange={e => setCondition(e.target.value)} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }}>
-                <option value="available">Available / Working</option>
-                <option value="in-repair">In Repair</option>
-                <option value="sold">Sold / Lost</option>
-              </select>
-            </div>
-
-            <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "var(--space-2)" }} disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 size={16} className="animate-spin-slow" /> Adding...</> : "Add to Inventory"}
-            </button>
-          </form>
-        </div>
-
-        {/* Equipment List */}
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ padding: "var(--space-5) var(--space-6)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-             <h3 style={{ fontSize: "1rem", margin: 0 }}>Inventory ({equipment.length})</h3>
-          </div>
-
-          {isLoading ? (
-            <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-10)" }}>
-              <Loader2 size={32} className="animate-spin-slow" color="var(--text-muted)" />
-            </div>
-          ) : equipment.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)" }}>
-              <Camera size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
-              <p>No equipment logged yet.</p>
-            </div>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--bg-elevated)" }}>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Item Name</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Category</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "center", color: "var(--text-muted)", fontWeight: 600 }}>Qty</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Condition</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "right", color: "var(--text-muted)", fontWeight: 600 }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {equipment.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "var(--space-4)", fontWeight: 600 }}>
-                        {item.name}
-                      </td>
-                      <td style={{ padding: "var(--space-4)", textTransform: "capitalize", color: "var(--text-secondary)" }}>{item.category}</td>
-                      <td style={{ padding: "var(--space-4)", textAlign: "center", color: "var(--text-secondary)" }}>{item.quantity}</td>
-                      <td style={{ padding: "var(--space-4)" }}>
-                        <select 
-                          value={item.condition}
-                          onChange={(e) => updateCondition(item.id, e.target.value)}
-                          style={{ padding: "4px 8px", background: item.condition === "available" ? "rgba(16, 185, 129, 0.1)" : item.condition === "in-repair" ? "rgba(239, 172, 68, 0.1)" : "rgba(239, 68, 68, 0.1)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: item.condition === "available" ? "rgb(16, 185, 129)" : item.condition === "in-repair" ? "rgb(239, 172, 68)" : "var(--error)", fontSize: "0.75rem", fontWeight: 600 }}
-                        >
-                          <option value="available">Available</option>
-                          <option value="in-repair">In Repair</option>
-                          <option value="sold">Sold/Lost</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: "var(--space-4)", textAlign: "right" }}>
-                        <button onClick={() => handleDelete(item.id)} style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: "4px" }} title="Delete Gear">
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
+        <button 
+           onClick={handleCreateDummy}
+           disabled={isCreating}
+           className="btn btn-primary" 
+           style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 28px" }}
+        >
+          {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />} Add Equipment
+        </button>
       </div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .manager-layout { grid-template-columns: 1fr !important; }
+      {/* Toolbar */}
+      <div style={{ 
+        display: "flex", gap: "1.25rem", marginBottom: "3rem",
+        padding: "1rem", background: "rgba(255,255,255,0.015)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)"
+      }}>
+        <div style={{ flex: 1, position: "relative" }}>
+          <Search size={16} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)" }} />
+          <input 
+            placeholder="Search equipment, labels, or serial keys..."
+            value={search} onChange={e => setSearch(e.target.value)}
+            style={{ width: "100%", background: "transparent", border: "none", padding: "12px 12px 12px 44px", color: "white", outline: "none" }}
+          />
+        </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+            {["all", "camera", "lens", "light", "audio"].map(cat => (
+                <button 
+                    key={cat} onClick={() => setCategoryFilter(cat)}
+                    style={{ 
+                        background: categoryFilter === cat ? "rgba(255,255,255,0.1)" : "transparent",
+                        border: "none", color: categoryFilter === cat ? "white" : "var(--text-muted)",
+                        padding: "6px 16px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700,
+                        textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer"
+                    }}
+                >
+                    {cat}
+                </button>
+            ))}
+        </div>
+      </div>
+
+      {/* Grid */}
+      {filteredInventory.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
+          <HardDrive size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
+          <p>No active assets discovered in this segment.</p>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "2rem" }}>
+          <AnimatePresence>
+            {filteredInventory.map((item) => (
+                <EquipmentCard 
+                    key={item.id} 
+                    item={item} 
+                    onEdit={() => toast.info("Opening Asset Editor...")}
+                    onDelete={() => toast.warning("Delete action pending logic...")}
+                />
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

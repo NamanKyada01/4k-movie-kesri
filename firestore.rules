@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- HELPER FUNCTIONS ---
+    
+    // Is the user logged in?
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Is this the owner of the document? (Used for personal data like Invoices)
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Is this an admin? 
+    // Checks the 'admin-users' collection for 'admin' or 'super-admin' role
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/admin-users/$(request.auth.uid)) && (
+               get(/databases/$(database)/documents/admin-users/$(request.auth.uid)).data.role == 'admin' ||
+               get(/databases/$(database)/documents/admin-users/$(request.auth.uid)).data.role == 'super-admin'
+             );
+    }
+
+    // --- DRAWER MODULES & COLLECTIONS ---
+
+    // 1. Invoices Vault
+    match /invoices/{id} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // In a "Single Studio" logic, we restrict access to owners for security
+      allow read, update, delete: if isOwner(resource.data.userId);
+    }
+
+    // 2. Event Management
+    match /events/{id} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isAdmin(); 
+    }
+
+    // 3. Gallery Manager
+    match /gallery/{id} { 
+      allow read: if true; // Publicly visible
+      allow write: if isAdmin(); 
+    }
+
+    // 4. Staff & Personnel
+    match /staff/{id} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isAdmin(); 
+    }
+
+    // 5. Equipment Inventory
+    match /equipment/{id} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isAdmin(); 
+    }
+
+    // 6. YouTube Cinema Vault
+    match /youtubeVideos/{id} { 
+      allow read: if true; // Publicly visible
+      allow write: if isAdmin(); 
+    }
+
+    // 7. Blog Manager
+    match /blogPosts/{id} { 
+      allow read: if true; // Publicly visible
+      allow write: if isAdmin(); 
+    }
+
+    // 8. Inquiries / Leads (Contact Form)
+    match /contacts/{id} {
+      allow create: if true; // Open capture
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin();
+    }
+
+    // 9. Testimonials
+    match /testimonials/{id} { 
+      allow read: if true; 
+      allow write: if isAdmin(); 
+    }
+
+    // 10. Site Settings & Content Editor
+    match /settings/{id} { 
+      allow read: if true; 
+      allow write: if isAdmin(); 
+    }
+    match /siteSettings/{id} { 
+      allow read: if true; 
+      allow write: if isAdmin(); 
+    }
+
+    // 11. Business / Studio Profiles
+    match /businessProfiles/{id} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isOwner(resource.data.userId);
+    }
+
+    // 12. Admin Users Security
+    match /admin-users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin(); // Only admins can create other admins
+    }
+
+    // --- DEFAULT DENY ---
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

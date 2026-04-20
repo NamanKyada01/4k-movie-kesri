@@ -1,39 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Video, Plus, Loader2, Trash2 } from "lucide-react";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
-import type { YouTubeVideo } from "@/types";
+import React, { useState, useMemo } from "react";
+import { Video, Plus, Loader2, Trash2, Search, Film } from "lucide-react";
+import { useLiveCollection } from "@/hooks/useLiveCollection";
+import { orderBy } from "firebase/firestore";
+import { YouTubeVideo } from "@/types";
+import { createYouTubeVideo, deleteYouTubeVideo } from "@/actions/admin";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import TiltedCard from "@/components/ui/TiltedCard";
 
 export default function YouTubeManagerPage() {
-  const [videos, setVideos] = useState<YouTubeVideo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [search, setSearch] = useState("");
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("wedding");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchVideos();
-  }, []);
+  // Real-time synchronization
+  const { data: videos, loading } = useLiveCollection<YouTubeVideo>("youtubeVideos", [
+    orderBy("order", "asc")
+  ]);
 
-  const fetchVideos = async () => {
-    try {
-      const q = query(collection(db, "youtubeVideos"), orderBy("order", "asc"));
-      const snap = await getDocs(q);
-      const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as YouTubeVideo[];
-      setVideos(data);
-    } catch (err) {
-      toast.error("Failed to fetch videos.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const filteredVideos = useMemo(() => {
+    return videos.filter(v => 
+        v.title.toLowerCase().includes(search.toLowerCase()) || 
+        v.category.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [videos, search]);
 
   const extractVideoId = (url: string) => {
     const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -50,7 +45,7 @@ export default function YouTubeManagerPage() {
 
     setIsSubmitting(true);
     try {
-      const newVideo: Omit<YouTubeVideo, "id"> = {
+      const res = await createYouTubeVideo({
         youtubeId: videoId,
         title,
         url,
@@ -58,208 +53,198 @@ export default function YouTubeManagerPage() {
         category: category as any,
         featured: true,
         order: videos.length + 1,
-        createdAt: Date.now()
-      };
+      });
 
-      const docRef = await addDoc(collection(db, "youtubeVideos"), newVideo);
-      setVideos(prev => [...prev, { id: docRef.id, ...newVideo }]);
-      
-      toast.success("Video added successfully!");
-      setUrl("");
-      setTitle("");
-      
+      if (res.success) {
+          toast.success("Cinematic production published!");
+          setUrl("");
+          setTitle("");
+      } else {
+          throw new Error(res.error);
+      }
     } catch (error: any) {
-      toast.error("Failed to add video");
-      console.error(error);
+      toast.error("Deployment failed: " + error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Remove this video from your platform?")) return;
-    try {
-      await deleteDoc(doc(db, "youtubeVideos", id));
-      setVideos(p => p.filter(v => v.id !== id));
-      toast.success("Video removed successfully");
-    } catch (error) {
-      toast.error("Failed to delete video");
-    }
+    if (!confirm("Permanently remove this production from the cinematic vault?")) return;
+    const res = await deleteYouTubeVideo(id);
+    if (res.success) toast.success("Production archived");
+    else toast.error("Purge failed");
   };
 
+  if (loading) return (
+      <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
+          <Loader2 size={40} className="animate-spin" color="var(--accent)" />
+          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Reels...</p>
+      </div>
+  );
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div style={{ marginBottom: "var(--space-8)" }}>
-        <h1 style={{ fontSize: "1.8rem", marginBottom: 4, fontWeight: 800 }}>YouTube Manager</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Embed and arrange cinematic videos from YouTube.</p>
+    <div style={{ animation: "fadeIn 0.5s ease", paddingBottom: "100px" }}>
+      {/* Header */}
+      <div style={{ marginBottom: "3rem" }}>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>The Cinema</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Curate and sequence your high-fidelity cinematic productions</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: "var(--space-6)" }} className="manager-layout">
-        
-        {/* Add Form */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <SpotlightCard 
-            className="card" 
-            style={{ alignSelf: "start", position: "sticky", top: "calc(var(--topbar-height) + 20px)", padding: "var(--space-6)" }}
-            spotlightColor="rgba(232, 85, 10, 0.05)"
-          >
-            <h3 style={{ fontSize: "1.1rem", marginBottom: "var(--space-6)", display: "flex", alignItems: "center", gap: 8, fontWeight: 700 }}>
-              <Plus size={18} color="var(--accent)" />
-              Add New Video
-            </h3>
-            
-            <form onSubmit={handleAddVideo} style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.72rem", marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>YouTube URL</label>
-                <input 
-                  type="url"
-                  value={url}
-                  onChange={e => setUrl(e.target.value)}
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  required
-                  style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem" }}
-                />
-              </div>
-              
-              <div>
-                <label style={{ display: "block", fontSize: "0.72rem", marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Title / Couples Name</label>
-                <input 
-                  type="text"
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  placeholder="e.g. Rahul & Priya Wedding Film"
-                  required
-                  style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem" }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.72rem", marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Category</label>
-                <select 
-                  value={category}
-                  onChange={e => setCategory(e.target.value)}
-                  style={{ width: "100%", padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", fontSize: "0.85rem", cursor: "pointer" }}
-                >
-                   <option value="wedding">Wedding Film</option>
-                   <option value="pre-wedding">Pre-Wedding</option>
-                   <option value="corporate">Corporate Coverage</option>
-                </select>
-              </div>
-
-              <button 
-                type="submit" 
-                className="btn btn-primary" 
-                style={{ width: "100%", marginTop: "var(--space-2)", height: 48, fontWeight: 700 }} 
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
-                    <Loader2 size={18} className="animate-spin" /> Processing...
-                  </div>
-                ) : "Publish Video"}
-              </button>
-            </form>
-          </SpotlightCard>
-        </motion.div>
-
-        {/* Videos Grid */}
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="card"
-          style={{ minHeight: 600, padding: "var(--space-6)" }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-8)" }}>
-             <h3 style={{ fontSize: "1.1rem", fontWeight: 700 }}>Current Videos ({videos.length})</h3>
-          </div>
-
-          {isLoading ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 400, gap: 16 }}>
-              <Loader2 size={40} className="animate-spin" color="var(--accent)" style={{ opacity: 0.8 }} />
-              <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Synchronizing video feed...</p>
-            </div>
-          ) : videos.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "80px 20px", color: "var(--text-muted)", background: "rgba(255,255,255,0.01)", borderRadius: "var(--radius-xl)", border: "1px dashed var(--border)" }}>
-              <Video size={48} style={{ margin: "0 auto 16px", opacity: 0.2 }} />
-              <p style={{ fontSize: "1rem" }}>Your cinematic vault is currently empty.</p>
-              <p style={{ fontSize: "0.8rem", marginTop: 8 }}>Embed YouTube links to showcase your wedding films.</p>
-            </div>
-          ) : (
-            <motion.div 
-              layout
-              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "var(--space-6)" }}
+      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "3rem" }}>
+        {/* Sidebar: New Entry */}
+        <div style={{ position: "sticky", top: "2rem", alignSelf: "start" }}>
+            <SpotlightCard 
+                className="card" 
+                style={{ padding: "30px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+                spotlightColor="rgba(232, 85, 10, 0.05)"
             >
-              <AnimatePresence mode="popLayout">
-                {videos.map((video, idx) => (
-                  <motion.div 
-                    key={video.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: Math.min(idx * 0.05, 1) }}
-                  >
-                    <SpotlightCard 
-                      className="card" 
-                      style={{ padding: 0, overflow: "hidden", border: "1px solid var(--border)" }}
-                      spotlightColor="rgba(255, 255, 255, 0.05)"
-                    >
-                      <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden" }}>
-                        <img 
-                          src={video.thumbnail!} 
-                          alt={video.title}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease" }}
-                          onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1.05)"; }}
-                          onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1)"; }}
-                        />
-                        <div style={{ position: "absolute", top: 12, right: 12 }}>
-                           <span className="badge badge-accent" style={{ textTransform: "capitalize", fontSize: "0.65rem", padding: "4px 10px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>{video.category}</span>
-                        </div>
-                      </div>
-                      <div style={{ padding: "var(--space-4)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.01)" }}>
-                        <div style={{ fontWeight: 600, fontSize: "0.88rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-primary)" }}>
-                          {video.title}
-                        </div>
-                        <button 
-                          onClick={() => handleDelete(video.id)}
-                          style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: 4, transition: "all 0.2s ease" }}
-                          onMouseEnter={(e) => { e.currentTarget.style.color = "var(--error)"; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-muted)"; }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </SpotlightCard>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </motion.div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
+                    <Plus size={20} color="var(--accent)" />
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>Deploy Reel</h3>
+                </div>
 
+                <form onSubmit={handleAddVideo} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <div>
+                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>YouTube URL</label>
+                        <input 
+                            type="url" value={url} onChange={e => setUrl(e.target.value)}
+                            placeholder="https://youtube.com/..."
+                            style={{ 
+                                width: "100%", padding: "14px", 
+                                background: "rgba(255,255,255,0.03)", 
+                                borderRadius: "10px", border: "1px solid rgba(255,255,255,0.1)",
+                                fontSize: "0.85rem", color: "white"
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Production Title</label>
+                        <input 
+                            type="text" value={title} onChange={e => setTitle(e.target.value)}
+                            placeholder="e.g. Rahul & Priya"
+                            style={{ 
+                                width: "100%", padding: "14px", 
+                                background: "rgba(255,255,255,0.03)", 
+                                borderRadius: "10px", border: "1px solid rgba(255,255,255,0.1)",
+                                fontSize: "0.85rem", color: "white"
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Category Sector</label>
+                        <select 
+                            value={category}
+                            onChange={e => setCategory(e.target.value)}
+                            style={{ width: "100%", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "12px", color: "white" }}
+                        >
+                            <option value="wedding">Wedding Film</option>
+                            <option value="pre-wedding">Pre-Wedding</option>
+                            <option value="corporate">Corporate</option>
+                        </select>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        disabled={isSubmitting || !url}
+                        className="btn btn-primary"
+                        style={{ padding: "16px", borderRadius: "12px", fontWeight: 800 }}
+                    >
+                        {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : "Publish to Cinema"}
+                    </button>
+                </form>
+            </SpotlightCard>
+        </div>
+
+        {/* Main: Video Grid */}
+        <div>
+            <div style={{ 
+                display: "flex", gap: "1.25rem", marginBottom: "2.5rem",
+                padding: "1rem", background: "rgba(255,255,255,0.015)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)"
+            }}>
+                <div style={{ flex: 1, position: "relative" }}>
+                    <Search size={16} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)" }} />
+                    <input 
+                        placeholder="Search cinema archives..."
+                        value={search} onChange={e => setSearch(e.target.value)}
+                        style={{ width: "100%", background: "transparent", border: "none", padding: "12px 12px 12px 44px", color: "white", outline: "none" }}
+                    />
+                </div>
+            </div>
+
+            {filteredVideos.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
+                    <Film size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
+                    <p>No cinematic reels discovered in this segment.</p>
+                </div>
+            ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "2rem" }}>
+                    <AnimatePresence>
+                        {filteredVideos.map((video, idx) => (
+                            <motion.div
+                                key={video.id}
+                                layout
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ delay: Math.min(idx * 0.05, 0.5) }}
+                            >
+                                <TiltedCard>
+                                    <div style={{
+                                        width: "100%",
+                                        borderRadius: "20px",
+                                        overflow: "hidden",
+                                        background: "rgba(255,255,255,0.02)",
+                                        border: "1px solid rgba(255,255,255,0.05)"
+                                    }}>
+                                        <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden" }}>
+                                            <img 
+                                                src={video.thumbnail!} 
+                                                alt={video.title}
+                                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                            />
+                                            <div style={{ position: "absolute", bottom: 12, right: 12 }}>
+                                                <div style={{ background: "var(--accent)", color: "black", padding: "4px 10px", borderRadius: "6px", fontSize: "0.6rem", fontWeight: 800 }}>
+                                                    {video.category.toUpperCase()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style={{ padding: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "180px" }}>
+                                                {video.title}
+                                            </div>
+                                            <button 
+                                                onClick={() => handleDelete(video.id)}
+                                                style={{ background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.1)", color: "#ff4444", padding: "8px", borderRadius: "8px", cursor: "pointer" }}
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </TiltedCard>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+            )}
+        </div>
       </div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .manager-layout { grid-template-columns: 1fr !important; }
-        }
-        .animate-spin {
-          animation: spin 1s linear infinite;
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
       `}</style>
-    </motion.div>
+    </div>
   );
 }

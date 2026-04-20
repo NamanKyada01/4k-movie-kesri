@@ -1,134 +1,117 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { MessageSquare, Loader2, Trash2, Mail, Phone, CalendarDays } from "lucide-react";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
-import type { ContactInquiry } from "@/types";
+import React, { useState, useMemo } from "react";
+import { Search, Loader2, MessageSquare } from "lucide-react";
+import { useLiveCollection } from "@/hooks/useLiveCollection";
+import { orderBy } from "firebase/firestore";
+import { ContactInquiry } from "@/types";
+import { deleteInquiry, updateInquiry } from "@/actions/admin";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import InquiryCard from "@/components/invoice/InquiryCard";
 
 export default function InquiriesPage() {
-  const [inquiries, setInquiries] = useState<ContactInquiry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
-  useEffect(() => {
-    fetchInquiries();
-  }, []);
+  // Real-time synchronization
+  const { data: leads, loading } = useLiveCollection<ContactInquiry>("contacts", [
+    orderBy("createdAt", "desc")
+  ]);
 
-  const fetchInquiries = async () => {
-    try {
-      const q = query(collection(db, "contacts"), orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as ContactInquiry[];
-      setInquiries(data);
-    } catch (err) {
-      toast.error("Failed to fetch inquiries.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const filteredLeads = useMemo(() => {
+    return leads.filter(i => {
+        const matchesSearch = i.name.toLowerCase().includes(search.toLowerCase()) || 
+                             i.email.toLowerCase().includes(search.toLowerCase()) ||
+                             i.message.toLowerCase().includes(search.toLowerCase());
+        const matchesStatus = statusFilter === "all" || i.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+  }, [leads, search, statusFilter]);
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
-    try {
-      await updateDoc(doc(db, "contacts", id), { status: newStatus });
-      setInquiries(p => p.map(i => i.id === id ? { ...i, status: newStatus as any } : i));
-      toast.success("Status updated");
-    } catch (error) {
-       toast.error("Failed to update status");
-    }
+  const handleUpdateStatus = async (id: string, status: string) => {
+    const res = await updateInquiry(id, { status });
+    if (res.success) toast.success("Lead status updated");
+    else toast.error("Action failed");
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this inquiry?")) return;
-    try {
-      await deleteDoc(doc(db, "contacts", id));
-      setInquiries(p => p.filter(i => i.id !== id));
-      toast.success("Inquiry deleted");
-    } catch (error) {
-      toast.error("Failed to delete inquiry");
-    }
+    if (!confirm("Permanently delete this production lead?")) return;
+    const res = await deleteInquiry(id);
+    if (res.success) toast.success("Lead purged from vault");
+    else toast.error("Action failed");
   };
 
+  if (loading) return (
+      <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
+          <Loader2 size={40} className="animate-spin" color="var(--accent)" />
+          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Leads...</p>
+      </div>
+  );
+
   return (
-    <div>
-      <div style={{ marginBottom: "var(--space-8)" }}>
-        <h1 style={{ fontSize: "1.6rem", marginBottom: 4 }}>Inquiries</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Manage leads coming directly from the contact page.</p>
+    <div style={{ animation: "fadeIn 0.5s ease", paddingBottom: "100px" }}>
+      {/* Header */}
+      <div style={{ marginBottom: "3rem" }}>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>The Feed</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Manage incoming production inquiries and potential studio leads</p>
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "var(--space-5) var(--space-6)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-           <h3 style={{ fontSize: "1rem", margin: 0 }}>All Leads ({inquiries.length})</h3>
+      {/* Toolbar */}
+      <div style={{ 
+        display: "flex", gap: "1.25rem", marginBottom: "3rem",
+        padding: "1rem", background: "rgba(255,255,255,0.015)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)"
+      }}>
+        <div style={{ flex: 1, position: "relative" }}>
+          <Search size={16} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)" }} />
+          <input 
+            placeholder="Search leads, metadata, or messages..."
+            value={search} onChange={e => setSearch(e.target.value)}
+            style={{ width: "100%", background: "transparent", border: "none", padding: "12px 12px 12px 44px", color: "white", outline: "none" }}
+          />
         </div>
-
-        {isLoading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-10)" }}>
-            <Loader2 size={32} className="animate-spin-slow" color="var(--text-muted)" />
-          </div>
-        ) : inquiries.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)" }}>
-            <MessageSquare size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
-            <p>No inquiries yet. When someone submits the contact form, it will appear here.</p>
-          </div>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 1 }}>
-            {inquiries.map((inquiry) => (
-              <div key={inquiry.id} style={{ background: "var(--bg-primary)", padding: "var(--space-6)", borderBottom: "1px solid var(--border)", display: "grid", gridTemplateColumns: "250px 1fr 200px", gap: "var(--space-6)", alignItems: "start" }} className="inquiry-row">
-                
-                {/* Contact Info */}
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: "1rem", marginBottom: 4 }}>{inquiry.name}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: 4 }}>
-                    <Mail size={12} color="var(--text-muted)" />
-                    <a href={`mailto:${inquiry.email}`} style={{ color: "var(--accent)" }}>{inquiry.email}</a>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: 4 }}>
-                    <Phone size={12} color="var(--text-muted)" />
-                    {inquiry.phone}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                    <CalendarDays size={12} color="var(--text-muted)" />
-                    {new Date(inquiry.createdAt).toLocaleString()}
-                  </div>
-                </div>
-
-                {/* Message */}
-                <div>
-                  <div style={{ display: "inline-block", fontSize: "0.65rem", padding: "2px 8px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-full)", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "var(--space-3)" }}>
-                    {inquiry.serviceType}
-                  </div>
-                  <div style={{ fontSize: "0.9rem", color: "var(--text-primary)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--bg-elevated)", padding: "var(--space-4)", borderRadius: "var(--radius-md)", border: "1px solid var(--border)" }}>
-                    {inquiry.message}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
-                  <select 
-                    value={inquiry.status}
-                    onChange={(e) => handleUpdateStatus(inquiry.id, e.target.value)}
-                    style={{ width: "100%", padding: "6px 10px", background: inquiry.status === "new" ? "rgba(232, 85, 10, 0.1)" : "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: inquiry.status === "new" ? "var(--accent)" : "var(--text-primary)", fontSize: "0.8rem", fontWeight: inquiry.status === "new" ? 600 : 400 }}
-                  >
-                    <option value="new">🆕 New / Unread</option>
-                    <option value="read">👀 Read</option>
-                    <option value="responded">✅ Responded</option>
-                  </select>
-
-                  <button onClick={() => handleDelete(inquiry.id)} style={{ width: "100%", padding: "6px 10px", background: "transparent", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: "var(--error)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: "0.8rem" }}>
-                    <Trash2 size={14} /> Delete Lead
-                  </button>
-                </div>
-
-              </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+            {["all", "new", "read", "responded"].map(status => (
+                <button 
+                    key={status} onClick={() => setStatusFilter(status)}
+                    style={{ 
+                        background: statusFilter === status ? "rgba(255,255,255,0.1)" : "transparent",
+                        border: "none", color: statusFilter === status ? "white" : "var(--text-muted)",
+                        padding: "6px 16px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700,
+                        textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer"
+                    }}
+                >
+                    {status}
+                </button>
             ))}
-          </div>
-        )}
+        </div>
       </div>
 
-      <style>{`
-        @media (max-width: 900px) {
-          .inquiry-row { grid-template-columns: 1fr !important; }
+      {/* Grid */}
+      {filteredLeads.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
+          <MessageSquare size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
+          <p>No inquiries discovered in this archive segment.</p>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))", gap: "2.5rem" }}>
+          <AnimatePresence>
+            {filteredLeads.map((inquiry) => (
+                <InquiryCard 
+                    key={inquiry.id} 
+                    inquiry={inquiry} 
+                    onUpdateStatus={(s) => handleUpdateStatus(inquiry.id, s)}
+                    onDelete={() => handleDelete(inquiry.id)}
+                />
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

@@ -5,6 +5,7 @@ export interface InvoiceItem {
   rate: number;
   amount: number;
   duration: number; // For cinematic services (days/hours)
+  [key: string]: any; // Handle dynamic custom column values
 }
 
 export interface BusinessProfile {
@@ -34,9 +35,12 @@ export interface InvoiceColumn {
   visible: boolean;
   isPermanent: boolean;
   isMovable: boolean;
+  isCustom?: boolean;
 }
 
 export type InvoiceColumns = InvoiceColumn[];
+
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
 
 export interface Invoice {
   id: string;
@@ -56,6 +60,6 @@ export interface Invoice {
   date: number;
   dueDate: number;
   notes: string;
-  status: 'draft' | 'sent' | 'paid' | 'overdue';
+  status: InvoiceStatus;
   createdAt: number;
 }

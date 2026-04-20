@@ -22,6 +22,7 @@ const navItems = [
   { label: "Content Editor",      href: "/admin/content-editor",      icon: Edit3 },
 
   { label: "Site Settings",       href: "/admin/site-settings",       icon: Settings },
+  { label: "Invoices",            href: "/admin/invoices",            icon: FileText },
   { label: "Inquiries",           href: "/admin/inquiries",           icon: MessageSquare },
   { label: "Testimonials",        href: "/admin/testimonials",        icon: Star },
   { label: "Admin Users",         href: "/admin/admin-users",         icon: UserCog },

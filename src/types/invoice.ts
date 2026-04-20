@@ -1,11 +1,31 @@
+export interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+  duration: number; // For cinematic services (days/hours)
+}
+
+export interface BusinessProfile {
+  id: string;
+  brandName: string;
+  brandAddress: string;
+  brandPhone: string;
+  brandEmail: string;
+  logoUrl?: string;
+  showLogo: boolean;
+  gstNumber?: string;
+  panNumber?: string;
+  createdAt: number;
+}
+
 export interface GlobalTheme {
   id: string;
   name: string;
-  primaryColor?: string; // Optional - user selects during invoice creation
-  layoutType: "modern";
-  previewUrl?: string; // URL to an image showing the theme
+  layoutType: 'classic' | 'modern' | 'minimalist' | 'editorial';
+  primaryColor: string;
   createdAt: number;
-  updatedAt?: number;
 }
 
 export interface InvoiceColumn {
@@ -18,52 +38,24 @@ export interface InvoiceColumn {
 
 export type InvoiceColumns = InvoiceColumn[];
 
-export interface BusinessProfile {
-  id: string; // Unique ID for the profile
-  userId: string;
-  brandName: string;
-  brandAddress?: string;
-  brandEmail?: string;
-  brandPhone?: string;
-  logoUrl?: string;
-  showLogo?: boolean; // Controls whether logo appears on invoice
-  selectedThemeId: string; // ID of the GlobalTheme
-  updatedAt: number;
-}
-
-export interface InvoiceItem {
-  id: string;
-  description: string;
-  quantity: number;
-  rate: number;
-  duration: number; // in days, default 1
-  amount: number;
-  customFields?: Record<string, string | number>;
-}
-
 export interface Invoice {
   id: string;
-  userId: string;
   invoiceNumber: string;
-
-  // Snapshots of data at the time of creation
-  businessDetails: Omit<BusinessProfile, "userId" | "updatedAt">;
+  businessDetails: BusinessProfile;
   themeDetails: GlobalTheme;
-  columns?: InvoiceColumns;
-
+  columns: InvoiceColumns;
   customerName: string;
-  customerAddress?: string;
-  customerPhone?: string;
-  customerEmail?: string;
-
+  customerAddress: string;
+  customerPhone: string;
+  customerEmail: string;
   items: InvoiceItem[];
   subtotal: number;
-  taxRate?: number;
-  taxAmount?: number;
+  taxRate: number;
+  taxAmount: number;
   total: number;
-
   date: number;
-  dueDate?: number;
-  notes?: string;
+  dueDate: number;
+  notes: string;
+  status: 'draft' | 'sent' | 'paid' | 'overdue';
   createdAt: number;
 }

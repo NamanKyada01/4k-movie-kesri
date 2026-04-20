@@ -20,7 +20,7 @@ const navItems = [
   { label: "Staff Management",    href: "/admin/staff",               icon: Users },
   { label: "Blog Manager",        href: "/admin/blog-manager",        icon: FileText },
   { label: "Content Editor",      href: "/admin/content-editor",      icon: Edit3 },
-  { label: "Invoices",            href: "/admin/invoices",            icon: FileText },
+
   { label: "Site Settings",       href: "/admin/site-settings",       icon: Settings },
   { label: "Inquiries",           href: "/admin/inquiries",           icon: MessageSquare },
   { label: "Testimonials",        href: "/admin/testimonials",        icon: Star },

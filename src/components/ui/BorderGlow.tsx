@@ -1,63 +1,75 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
+import React from "react";
 
-interface BorderGlowProps extends React.HTMLAttributes<HTMLDivElement> {
+interface BorderGlowProps {
   children: React.ReactNode;
-  className?: string;
-  containerClassName?: string;
-  borderRadius?: string;
-  glowColor?: string;
-  glowSize?: number;
+  color?: string;
+  duration?: string;
+  padding?: string;
+  active?: boolean;
 }
 
-export const BorderGlow = ({
-  children,
-  className = "",
-  containerClassName = "",
-  borderRadius = "12px",
-  glowColor = "rgba(232, 85, 10, 0.4)", // Amber/Orange glow by default
-  glowSize = 120,
-  ...props
-}: BorderGlowProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    setPosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  }, []);
-
-  const handleMouseEnter = () => setOpacity(1);
-  const handleMouseLeave = () => setOpacity(0);
-
+export default function BorderGlow({ 
+  children, 
+  color = "var(--accent)", 
+  duration = "6s",
+  padding = "1.5px",
+  active = true
+}: BorderGlowProps) {
   return (
-    <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className={`relative inline-block overflow-hidden ${containerClassName}`}
-      style={{ borderRadius }}
-      {...props}
-    >
-      <div
-        className="pointer-events-none absolute -inset-px transition-opacity duration-300 z-0"
-        style={{
-          opacity,
-          background: `radial-gradient(${glowSize}px circle at ${position.x}px ${position.y}px, ${glowColor}, transparent 50%)`,
-          borderRadius,
-        }}
-      />
-      <div className={`relative z-10 ${className}`}>{children}</div>
+    <div style={{
+      position: "relative",
+      padding: padding,
+      borderRadius: "inherit",
+      overflow: "visible",
+      display: "flex"
+    }}>
+      {/* Animated Background */}
+      {active && (
+        <div style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: `conic-gradient(from 0deg, transparent, ${color}, transparent 50%, ${color}, transparent)`,
+          borderRadius: "inherit",
+          animation: `rotateGlow ${duration} linear infinite`,
+          zIndex: 0,
+          opacity: 0.6
+        }} />
+      )}
+      
+      {/* Glow Blur Layer */}
+      {active && (
+        <div style={{
+          position: "absolute",
+          top: "-2px", left: "-2px", right: "-2px", bottom: "-2px",
+          background: `conic-gradient(from 0deg, transparent, ${color}, transparent 50%, ${color}, transparent)`,
+          borderRadius: "inherit",
+          animation: `rotateGlow ${duration} linear infinite`,
+          zIndex: 0,
+          filter: "blur(12px)",
+          opacity: 0.3
+        }} />
+      )}
+
+      {/* Content Wrapper */}
+      <div style={{
+        position: "relative",
+        zIndex: 1,
+        width: "100%",
+        borderRadius: "inherit",
+        background: "rgba(10,10,11,1)", // Matches site dark bg
+        display: "flex"
+      }}>
+        {children}
+      </div>
+
+      <style jsx global>{`
+        @keyframes rotateGlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
-};
-
-export default BorderGlow;
+}

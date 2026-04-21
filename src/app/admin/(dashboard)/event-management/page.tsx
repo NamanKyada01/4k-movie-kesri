@@ -10,6 +10,15 @@ import { useAlerts } from "@/lib/alerts";
 import { motion, AnimatePresence } from "framer-motion";
 import EventCard from "@/components/invoice/EventCard";
 import EventQuickViewModal from "@/components/invoice/EventQuickViewModal";
+import CustomDropdown from "@/components/ui/CustomDropdown";
+
+const statusOptions = [
+  { value: "all", label: "All Records" },
+  { value: "planned", label: "Planned" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "in-progress", label: "In Progress" },
+  { value: "completed", label: "Completed" },
+];
 
 export default function EventManagementPage() {
   const [search, setSearch] = useState("");
@@ -34,7 +43,8 @@ export default function EventManagementPage() {
   }, [events, search, activeFilter]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure? This event record will be permanently deleted from the vault.")) return;
+    const confirmed = await alerts.confirm("This event record will be permanently deleted from the vault.", "Confirm Deletion");
+    if (!confirmed) return;
     const res = await deleteEvent(id);
     if (res.success) alerts.cinematic("Event purged from registry", "Registry Purged");
     else alerts.error("Purge failed: " + res.error, "Purge Failed");
@@ -117,26 +127,12 @@ export default function EventManagementPage() {
           />
         </div>
         
-        <select 
+        <CustomDropdown
             value={activeFilter}
-            onChange={(e) => setActiveFilter(e.target.value)}
-            style={{ 
-              background: "rgba(255,255,255,0.03)", 
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: "12px",
-              padding: "0 20px",
-              color: "white",
-              fontSize: "0.9rem",
-              cursor: "pointer",
-              outline: "none"
-            }}
-        >
-            <option value="all">All Records</option>
-            <option value="planned">Planned</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-        </select>
+            options={statusOptions}
+            onChange={(val) => setActiveFilter(val)}
+            width="200px"
+        />
       </div>
 
       {/* Grid */}
@@ -154,7 +150,7 @@ export default function EventManagementPage() {
       ) : (
         <div style={{ 
             display: "grid", 
-            gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", 
+            gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))", 
             gap: "2rem" 
         }}>
           {filteredEvents.map((ev) => (

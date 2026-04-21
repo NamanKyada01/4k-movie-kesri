@@ -5,6 +5,12 @@ import { UserCog, Plus, Loader2, Trash2, ShieldAlert } from "lucide-react";
 import { getAllAdminUsers, addAdminUser, deleteAdminUser } from "@/actions/auth";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import CustomDropdown from "@/components/ui/CustomDropdown";
+
+const roleOptions = [
+    { value: 'admin', label: 'Admin (Can edit Content)' },
+    { value: 'viewer', label: 'Viewer (Read-only)' }
+];
 
 export default function AdminUsersPage() {
   const { adminData } = useAuth();
@@ -117,10 +123,11 @@ export default function AdminUsersPage() {
 
             <div>
               <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Role</label>
-              <select value={role} onChange={e => setRole(e.target.value as any)} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)", textTransform: "capitalize" }}>
-                <option value="admin">Admin (Can edit Content)</option>
-                <option value="viewer">Viewer (Read-only)</option>
-              </select>
+              <CustomDropdown 
+                options={roleOptions}
+                value={role}
+                onChange={(val) => setRole(val as any)}
+              />
             </div>
 
             <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "var(--space-2)" }} disabled={isSubmitting}>

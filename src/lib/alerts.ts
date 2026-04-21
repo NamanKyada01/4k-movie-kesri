@@ -34,6 +34,11 @@ export function useAlerts() {
     cinematic: (message: string, title: string = "Production Update") => {
       return alert.cinematic(title, message);
     },
+
+    // Confirmation dialogs
+    confirm: (message: string, title: string = "Are you sure?") => {
+      return alert.confirm(title, message);
+    },
     
     // Quick success for common actions
     saved: () => alert.success("Saved", "Changes saved successfully"),

@@ -27,39 +27,6 @@ const navItems = [
   { label: "Admin Users",         href: "/admin/admin-users",         icon: UserCog },
 ];
 
-function ThemeToggleAdmin() {
-  const { theme, setTheme } = useTheme();
-  
-  // Force dark theme for admin panel
-  useEffect(() => {
-    if (theme !== "dark") {
-      setTheme("dark");
-    }
-  }, [theme, setTheme]);
-
-  return (
-    <div
-      style={{ 
-        background: "var(--bg-elevated)", 
-        border: "1px solid var(--border)", 
-        padding: "0.65rem var(--space-3)", 
-        borderRadius: "var(--radius-lg)", 
-        display: "flex", 
-        alignItems: "center", 
-        gap: 8, 
-        fontSize: "0.8rem", 
-        width: "100%",
-        color: "var(--text-muted)",
-        cursor: "not-allowed"
-      }}
-      title="Admin panel only supports cinematic dark theme"
-    >
-      <Moon size={16} color="var(--accent)" />
-      <span style={{ color: "var(--accent)", fontWeight: 600 }}>Cinematic Dark</span>
-      <span style={{ marginLeft: "auto", fontSize: "0.7rem", opacity: 0.5 }}>Fixed</span>
-    </div>
-  );
-}
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const { user, adminData, loading, logout } = useAuth();
@@ -418,7 +385,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             gap: "var(--space-2)"
           }}
         >
-          <ThemeToggleAdmin />
           <button
             onClick={handleLogout}
             style={{ 

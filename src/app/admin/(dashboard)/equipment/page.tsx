@@ -8,17 +8,33 @@ import { Equipment } from "@/types";
 import { createEquipment, updateEquipment } from "@/actions/admin"; // Add deleteEquipment if needed
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAlert } from "@/contexts/AlertContext";
 import EquipmentCard from "@/components/invoice/EquipmentCard";
 
 export default function EquipmentManagementPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [isCreating, setIsCreating] = useState(false);
+  const { confirm } = useAlert();
 
   // Real-time synchronization
   const { data: inventory, loading } = useLiveCollection<Equipment>("equipment", [
     orderBy("createdAt", "desc")
   ]);
+
+  const handleDelete = async (id: string, name: string) => {
+    const isConfirmed = await confirm(
+        "Purge Asset from Vault?",
+        `Are you sure you want to permanently remove ${name}? This action cannot be reversed.`,
+        { primaryActionLabel: "Purge Asset", glowColor: "239 68 68" }
+    );
+
+    if (isConfirmed) {
+        toast.info("Deletion logic would trigger here...");
+        // const res = await deleteEquipment(id);
+        // if (res.success) toast.success("Asset decommissioned");
+    }
+  };
 
   const filteredInventory = useMemo(() => {
     return inventory.filter(i => {
@@ -107,14 +123,14 @@ export default function EquipmentManagementPage() {
           <p>No active assets discovered in this segment.</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "2rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))", gap: "2rem" }}>
           <AnimatePresence>
             {filteredInventory.map((item) => (
                 <EquipmentCard 
                     key={item.id} 
                     item={item} 
                     onEdit={() => toast.info("Opening Asset Editor...")}
-                    onDelete={() => toast.warning("Delete action pending logic...")}
+                    onDelete={() => handleDelete(item.id, item.name)}
                 />
             ))}
           </AnimatePresence>

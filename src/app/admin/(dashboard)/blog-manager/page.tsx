@@ -7,6 +7,24 @@ import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc 
 import type { BlogPost } from "@/types";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import CustomDropdown from "@/components/ui/CustomDropdown";
+
+const blogCategoryOptions = [
+    { value: 'news', label: 'Company News' },
+    { value: 'tips', label: 'Photography Tips' },
+    { value: 'weddings', label: 'Wedding Guides' },
+    { value: 'equipment', label: 'Gear / Equipment' }
+];
+
+const blogStatusOptions = [
+    { value: 'draft', label: 'Save as Draft' },
+    { value: 'published', label: 'Publish Immediately' }
+];
+
+const tableStatusOptions = [
+    { value: 'draft', label: 'Draft' },
+    { value: 'published', label: 'Published' }
+];
 
 export default function BlogManagerPage() {
   const { adminData, user } = useAuth();
@@ -151,19 +169,19 @@ export default function BlogManagerPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Category</label>
-                <select value={category} onChange={e => setCategory(e.target.value)} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }}>
-                  <option value="news">Company News</option>
-                  <option value="tips">Photography Tips</option>
-                  <option value="weddings">Wedding Guides</option>
-                  <option value="equipment">Gear / Equipment</option>
-                </select>
+                <CustomDropdown 
+                    options={blogCategoryOptions}
+                    value={category}
+                    onChange={setCategory}
+                />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Initial Status</label>
-                <select value={status} onChange={e => setStatus(e.target.value)} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }}>
-                  <option value="draft">Save as Draft</option>
-                  <option value="published">Publish Immediately</option>
-                </select>
+                <CustomDropdown 
+                    options={blogStatusOptions}
+                    value={status}
+                    onChange={setStatus}
+                />
               </div>
             </div>
 
@@ -220,14 +238,12 @@ export default function BlogManagerPage() {
                       <td style={{ padding: "var(--space-4)", textTransform: "capitalize", color: "var(--text-secondary)" }}>{post.category}</td>
                       <td style={{ padding: "var(--space-4)", color: "var(--text-secondary)" }}>{post.views || 0}</td>
                       <td style={{ padding: "var(--space-4)" }}>
-                        <select 
+                        <CustomDropdown 
+                          options={tableStatusOptions}
                           value={post.status}
-                          onChange={(e) => handleUpdateStatus(post.id, e.target.value)}
-                          style={{ padding: "4px 8px", background: post.status === "published" ? "rgba(16, 185, 129, 0.1)" : "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: post.status === "published" ? "rgb(16, 185, 129)" : "var(--text-secondary)", fontSize: "0.75rem", fontWeight: post.status === "published" ? 600 : 400 }}
-                        >
-                          <option value="draft">Draft</option>
-                          <option value="published">Published</option>
-                        </select>
+                          onChange={(val) => handleUpdateStatus(post.id, val)}
+                          className="table-dropdown"
+                        />
                       </td>
                       <td style={{ padding: "var(--space-4)", textAlign: "right" }}>
                         <button onClick={() => handleDelete(post.id)} style={{ background: "transparent", border: "none", color: "var(--error)", cursor: "pointer", padding: "4px" }} title="Delete Post">

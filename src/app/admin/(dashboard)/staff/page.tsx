@@ -8,12 +8,14 @@ import { Staff } from "@/types";
 import { createStaff, deleteStaff, updateStaff } from "@/actions/admin";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAlert } from "@/contexts/AlertContext";
 import StaffCard from "@/components/invoice/StaffCard";
 
 export default function StaffManagementPage() {
   const [search, setSearch] = useState("");
   const [positionFilter, setPositionFilter] = useState("all");
   const [isCreating, setIsCreating] = useState(false);
+  const { confirm } = useAlert();
 
   // Real-time synchronization
   const { data: team, loading } = useLiveCollection<Staff>("staff", [
@@ -29,11 +31,18 @@ export default function StaffManagementPage() {
     });
   }, [team, search, positionFilter]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Remove this staff member from the active roster?")) return;
-    const res = await deleteStaff(id);
-    if (res.success) toast.success("Identity purged");
-    else toast.error("Action failed");
+  const handleDelete = async (id: string, name: string) => {
+    const isConfirmed = await confirm(
+        "Purge Identity?",
+        `Are you sure you want to remove ${name} from the active roster? This action is irreversible.`,
+        { primaryActionLabel: "Purge Identity", glowColor: "239 68 68" }
+    );
+
+    if (isConfirmed) {
+        const res = await deleteStaff(id);
+        if (res.success) toast.success("Identity purged");
+        else toast.error("Action failed");
+    }
   };
 
   const handleCreateDummy = async () => {
@@ -116,14 +125,14 @@ export default function StaffManagementPage() {
           <p>No active identities in this segment.</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "2rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))", gap: "2rem" }}>
           <AnimatePresence>
             {filteredTeam.map((staff) => (
                 <StaffCard 
                     key={staff.id} 
                     staff={staff} 
                     onEdit={() => toast.info("Opening Identity Editor...")}
-                    onDelete={() => handleDelete(staff.id)}
+                    onDelete={() => handleDelete(staff.id, staff.name)}
                 />
             ))}
           </AnimatePresence>

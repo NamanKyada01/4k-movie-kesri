@@ -6,6 +6,13 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
 import type { Testimonial } from "@/types";
 import { toast } from "sonner";
+import CustomDropdown from "@/components/ui/CustomDropdown";
+
+const ratingOptions = [
+    { value: '5', label: '⭐️⭐️⭐️⭐️⭐️ (5)' },
+    { value: '4', label: '⭐️⭐️⭐️⭐️ (4)' },
+    { value: '3', label: '⭐️⭐️⭐️ (3)' }
+];
 
 export default function TestimonialsManager() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -118,11 +125,11 @@ export default function TestimonialsManager() {
 
             <div>
               <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Rating</label>
-              <select value={rating} onChange={e => setRating(Number(e.target.value))} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }}>
-                 <option value={5}>⭐️⭐️⭐️⭐️⭐️ (5)</option>
-                 <option value={4}>⭐️⭐️⭐️⭐️ (4)</option>
-                 <option value={3}>⭐️⭐️⭐️ (3)</option>
-              </select>
+              <CustomDropdown 
+                options={ratingOptions}
+                value={String(rating)}
+                onChange={val => setRating(Number(val))}
+              />
             </div>
 
             <div>

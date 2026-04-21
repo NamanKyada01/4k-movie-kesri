@@ -10,6 +10,14 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import GalleryCard from "@/components/invoice/GalleryCard";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import CustomDropdown from "@/components/ui/CustomDropdown";
+
+const galleryCategoryOptions = [
+    { value: 'wedding', label: 'Wedding' },
+    { value: 'engagement', label: 'Engagement' },
+    { value: 'portrait', label: 'Portrait' },
+    { value: 'corporate', label: 'Corporate' }
+];
 
 export default function GalleryManagerPage() {
   const [search, setSearch] = useState("");
@@ -128,16 +136,11 @@ export default function GalleryManagerPage() {
 
                     <div>
                         <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Category Sector</label>
-                        <select 
+                        <CustomDropdown 
+                            options={galleryCategoryOptions}
                             value={uploadCategory}
-                            onChange={e => setUploadCategory(e.target.value)}
-                            style={{ width: "100%", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "12px", color: "white" }}
-                        >
-                            <option value="wedding">Wedding</option>
-                            <option value="engagement">Engagement</option>
-                            <option value="portrait">Portrait</option>
-                            <option value="corporate">Corporate</option>
-                        </select>
+                            onChange={setUploadCategory}
+                        />
                     </div>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>

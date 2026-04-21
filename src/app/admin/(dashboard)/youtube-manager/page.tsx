@@ -10,6 +10,13 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import TiltedCard from "@/components/ui/TiltedCard";
+import CustomDropdown from "@/components/ui/CustomDropdown";
+
+const categoryOptions = [
+    { value: 'wedding', label: 'Wedding Film' },
+    { value: 'pre-wedding', label: 'Pre-Wedding' },
+    { value: 'corporate', label: 'Corporate' }
+];
 
 export default function YouTubeManagerPage() {
   const [search, setSearch] = useState("");
@@ -135,15 +142,11 @@ export default function YouTubeManagerPage() {
 
                     <div>
                         <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Category Sector</label>
-                        <select 
+                        <CustomDropdown 
+                            options={categoryOptions}
                             value={category}
-                            onChange={e => setCategory(e.target.value)}
-                            style={{ width: "100%", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px", padding: "12px", color: "white" }}
-                        >
-                            <option value="wedding">Wedding Film</option>
-                            <option value="pre-wedding">Pre-Wedding</option>
-                            <option value="corporate">Corporate</option>
-                        </select>
+                            onChange={setCategory}
+                        />
                     </div>
 
                     <button 

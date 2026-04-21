@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { createContext, useContext, useReducer, useCallback } from "react";
+import { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 import CustomAlert, { AlertType, CustomAlertProps } from "@/components/ui/CustomAlert";
 
@@ -14,6 +14,12 @@ type AlertAction =
   | { type: "REMOVE_ALERT"; id: string }
   | { type: "CLEAR_ALERTS" };
 
+interface ConfirmOptions {
+  primaryActionLabel?: string;
+  secondaryActionLabel?: string;
+  glowColor?: string;
+}
+
 interface AlertContextType {
   alerts: Alert[];
   addAlert: (alert: Omit<Alert, "id">) => string;
@@ -24,6 +30,7 @@ interface AlertContextType {
   warning: (title: string, message: string, options?: Partial<Omit<Alert, "id" | "type" | "title" | "message">>) => string;
   info: (title: string, message: string, options?: Partial<Omit<Alert, "id" | "type" | "title" | "message">>) => string;
   cinematic: (title: string, message: string, options?: Partial<Omit<Alert, "id" | "type" | "title" | "message">>) => string;
+  confirm: (title: string, message: string, options?: ConfirmOptions) => Promise<boolean>;
 }
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
@@ -73,6 +80,21 @@ export function AlertProvider({ children }: { children: ReactNode }) {
     [addAlert]
   );
 
+  const confirm = useCallback((title: string, message: string, options?: ConfirmOptions): Promise<boolean> => {
+    return new Promise((resolve) => {
+      addAlert({
+        type: "confirm",
+        title,
+        message,
+        primaryActionLabel: options?.primaryActionLabel || "Confirm",
+        secondaryActionLabel: options?.secondaryActionLabel || "Cancel",
+        glowColor: options?.glowColor,
+        onConfirm: () => resolve(true),
+        onCancel: () => resolve(false),
+      });
+    });
+  }, [addAlert]);
+
   const value: AlertContextType = {
     alerts,
     addAlert,
@@ -83,6 +105,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
     warning: createAlertFunction("warning"),
     info: createAlertFunction("info"),
     cinematic: createAlertFunction("cinematic"),
+    confirm,
   };
 
   return (

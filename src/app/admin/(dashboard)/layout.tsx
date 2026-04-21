@@ -11,19 +11,18 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { label: "Dashboard",           href: "/admin/dashboard",           icon: LayoutDashboard },
+  { label: "Registry",            href: "/admin/event-management",    icon: CalendarIcon },
+  { label: "Inventory",           href: "/admin/equipment",           icon: Wrench },
+  { label: "Personnel",           href: "/admin/staff",               icon: Users },
   { label: "Gallery Manager",     href: "/admin/gallery-manager",     icon: Image },
   { label: "YouTube Manager",     href: "/admin/youtube-manager",     icon: PlayCircle },
-  { label: "Event Management",    href: "/admin/event-management",    icon: CalendarIcon },
   { label: "Orbital Command",     href: "/admin/calendar",            icon: LayoutDashboard },
-  { label: "Equipment",           href: "/admin/equipment",           icon: Wrench },
-  { label: "Staff Management",    href: "/admin/staff",               icon: Users },
   { label: "Blog Manager",        href: "/admin/blog-manager",        icon: FileText },
   { label: "Content Editor",      href: "/admin/content-editor",      icon: Edit3 },
-
-  { label: "Site Settings",       href: "/admin/site-settings",       icon: Settings },
   { label: "Invoices",            href: "/admin/invoices",            icon: FileText },
-  { label: "Inquiries",           href: "/admin/inquiries",           icon: MessageSquare },
   { label: "Testimonials",        href: "/admin/testimonials",        icon: Star },
+  { label: "Inquiries",           href: "/admin/inquiries",           icon: MessageSquare },
+  { label: "Site Settings",       href: "/admin/site-settings",       icon: Settings },
   { label: "Admin Users",         href: "/admin/admin-users",         icon: UserCog },
 ];
 

@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import EventCard from "@/components/invoice/EventCard";
 import EventQuickViewModal from "@/components/invoice/EventQuickViewModal";
 import CustomDropdown from "@/components/ui/CustomDropdown";
+import CreationModal from "@/components/ui/CreationModal";
 
 const statusOptions = [
   { value: "all", label: "All Records" },
@@ -24,7 +25,7 @@ export default function EventManagementPage() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const alerts = useAlerts();
 
   // Real-time synchronization
@@ -50,21 +51,6 @@ export default function EventManagementPage() {
     else alerts.error("Purge failed: " + res.error, "Purge Failed");
   };
 
-  const handleCreateDummy = async () => {
-    // This would typically open a form modal, but for the overhaul demonstration
-    // we'll show the cinematic UI first.
-    setIsCreating(true);
-    const res = await createEvent({
-        name: "New Cinematic Production",
-        clientName: "Client Identity",
-        date: Date.now() + 86400000 * 7,
-        type: "wedding",
-        status: "planned",
-        location: "Surat, Gujarat"
-    });
-    setIsCreating(false);
-    if (!res.success) alerts.error("Deployment failed", "Deployment Failed");
-  };
 
   if (loading) return (
       <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
@@ -78,24 +64,34 @@ export default function EventManagementPage() {
       {/* Header section */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem" }}>
         <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+            <CalendarDays size={20} color="var(--accent)" />
+            <span style={{ color: "var(--accent)", fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px" }}>Productions</span>
+          </div>
           <h1 style={{ 
             fontFamily: "'Playfair Display', serif", 
-            fontSize: "2.75rem", 
+            fontSize: "3.5rem", 
+            lineHeight: 1,
             color: "white", 
-            marginBottom: "0.5rem" 
+            margin: 0
           }}>Registry</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Curate and manage your studio's upcoming production schedule</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em", marginTop: "12px" }}>Curate and manage your studio's upcoming production schedule</p>
         </div>
         
         <button 
-           onClick={handleCreateDummy}
-           disabled={isCreating}
+           onClick={() => setIsModalOpen(true)}
            className="btn btn-primary" 
-           style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 28px" }}
+           style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px 32px", fontSize: "0.95rem", fontWeight: 700, borderRadius: "14px" }}
         >
-          {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />} New Event
+          <Plus size={20} /> Deploy Production
         </button>
       </div>
+
+      <CreationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        type="event" 
+      />
 
       {/* Toolbar */}
       <div style={{ 

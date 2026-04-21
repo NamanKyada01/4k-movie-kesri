@@ -10,11 +10,12 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/contexts/AlertContext";
 import StaffCard from "@/components/invoice/StaffCard";
+import CreationModal from "@/components/ui/CreationModal";
 
 export default function StaffManagementPage() {
   const [search, setSearch] = useState("");
   const [positionFilter, setPositionFilter] = useState("all");
-  const [isCreating, setIsCreating] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { confirm } = useAlert();
 
   // Real-time synchronization
@@ -45,22 +46,6 @@ export default function StaffManagementPage() {
     }
   };
 
-  const handleCreateDummy = async () => {
-    setIsCreating(true);
-    const res = await createStaff({
-        name: "New Team Member",
-        position: "photographer",
-        email: "staff@4kmoviekesri.com",
-        phone: "+91 00000 00000",
-        skills: ["Photography", "Lighting"],
-        isActive: true,
-        assignedEquipmentIds: [],
-        availability: { mon: true, tue: true, wed: true, thu: true, fri: true, sat: true, sun: true }
-    });
-    setIsCreating(false);
-    if (!res.success) toast.error("Deployment failed");
-    else toast.success("New identity registered");
-  };
 
   if (loading) return (
       <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
@@ -74,19 +59,28 @@ export default function StaffManagementPage() {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem" }}>
         <div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>Personnel</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Manage the high-fidelity technical team behind the production</p>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+            <Users size={20} color="var(--accent)" />
+            <span style={{ color: "var(--accent)", fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px" }}>Active Roster</span>
+          </div>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3.5rem", lineHeight: 1, color: "white", margin: 0 }}>Personnel</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em", marginTop: "12px" }}>Manage the high-fidelity technical team behind the production</p>
         </div>
         
         <button 
-           onClick={handleCreateDummy}
-           disabled={isCreating}
+           onClick={() => setIsModalOpen(true)}
            className="btn btn-primary" 
-           style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 28px" }}
+           style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px 32px", fontSize: "0.95rem", fontWeight: 700, borderRadius: "14px" }}
         >
-          {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />} Integrate Staff
+          <Plus size={20} /> Integrate Staff
         </button>
       </div>
+
+      <CreationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        type="staff" 
+      />
 
       {/* Toolbar */}
       <div style={{ 

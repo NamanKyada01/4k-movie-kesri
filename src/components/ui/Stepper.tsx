@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Children, useRef, useLayoutEffect, HTMLAttributes, ReactNode, createContext, useContext } from 'react';
+import React, { useState, Children, useRef, useLayoutEffect, HTMLAttributes, ReactNode, createContext, useContext, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 interface StepperContextType {
@@ -11,52 +11,35 @@ interface StepperContextType {
   prevStep: () => void;
   isLastStep: boolean;
   isCompleted: boolean;
+  setTotalSteps: (total: number) => void;
+  direction: number;
 }
 
 const StepperContext = createContext<StepperContextType | undefined>(undefined);
 
 export const useStepper = () => {
   const context = useContext(StepperContext);
-  if (!context) throw new Error("useStepper must be used within a Stepper component");
+  if (!context) throw new Error("useStepper must be used within a StepperProvider or Stepper component");
   return context;
 };
 
-interface StepperProps extends HTMLAttributes<HTMLDivElement> {
+interface StepperProviderProps {
   children: ReactNode;
   initialStep?: number;
   onStepChange?: (step: number) => void;
   onFinalStepCompleted?: () => void;
-  stepCircleContainerClassName?: string;
-  stepContainerClassName?: string;
-  contentClassName?: string;
-  footerClassName?: string;
-  disableStepIndicators?: boolean;
-  renderStepIndicator?: (props: {
-    step: number;
-    currentStep: number;
-    onStepClick: (clicked: number) => void;
-  }) => ReactNode;
 }
 
-const PRIMARY_COLOR = "#E8550A"; // Saffron
-
-export default function Stepper({
+export function StepperProvider({
   children,
   initialStep = 1,
   onStepChange = () => {},
   onFinalStepCompleted = () => {},
-  stepCircleContainerClassName = '',
-  stepContainerClassName = '',
-  contentClassName = '',
-  footerClassName = '',
-  disableStepIndicators = false,
-  renderStepIndicator,
-  ...rest
-}: StepperProps) {
+}: StepperProviderProps) {
   const [currentStep, setCurrentStep] = useState(initialStep);
+  const [totalSteps, setTotalSteps] = useState(0);
   const [direction, setDirection] = useState(0);
-  const steps = Children.toArray(children);
-  const totalSteps = steps.length;
+
   const isLastStep = currentStep === totalSteps;
   const isCompleted = currentStep > totalSteps;
 
@@ -94,51 +77,95 @@ export default function Stepper({
     prevStep,
     isLastStep,
     isCompleted,
+    setTotalSteps,
+    direction
   };
 
   return (
     <StepperContext.Provider value={contextValue}>
-      <div className={`flex flex-col ${stepContainerClassName}`} {...rest}>
-        <div className={`flex items-center justify-center mb-10 ${stepCircleContainerClassName}`}>
-          {steps.map((_, index) => {
-            const stepNumber = index + 1;
-            const isStepCompleted = currentStep > stepNumber;
-            const isStepActive = currentStep === stepNumber;
-
-            return (
-              <React.Fragment key={stepNumber}>
-                {renderStepIndicator ? (
-                  renderStepIndicator({
-                    step: stepNumber,
-                    currentStep,
-                    onStepClick: goToStep,
-                  })
-                ) : (
-                  <StepIndicator
-                    step={stepNumber}
-                    isCompleted={isStepCompleted}
-                    isActive={isStepActive}
-                    onClick={() => !disableStepIndicators && goToStep(stepNumber)}
-                  />
-                )}
-                {stepNumber < totalSteps && (
-                  <StepConnector isCompleted={isStepCompleted} />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-
-        <StepContentWrapper
-          isCompleted={isCompleted}
-          currentStep={currentStep}
-          direction={direction}
-          className={contentClassName}
-        >
-          {steps[currentStep - 1]}
-        </StepContentWrapper>
-      </div>
+      {children}
     </StepperContext.Provider>
+  );
+}
+
+const PRIMARY_COLOR = "#E8550A"; // Saffron
+
+export function StepperIndicators({ disableStepIndicators = false, renderStepIndicator, stepCircleContainerClassName = '' }: any) {
+  const { currentStep, totalSteps, goToStep } = useStepper();
+  const steps = Array.from({ length: totalSteps });
+
+  return (
+    <div className={`flex items-center justify-center mb-10 ${stepCircleContainerClassName}`}>
+      {steps.map((_, index) => {
+        const stepNumber = index + 1;
+        const isStepCompleted = currentStep > stepNumber;
+        const isStepActive = currentStep === stepNumber;
+
+        return (
+          <React.Fragment key={stepNumber}>
+            {renderStepIndicator ? (
+              renderStepIndicator({
+                step: stepNumber,
+                currentStep,
+                onStepClick: goToStep,
+              })
+            ) : (
+              <StepIndicator
+                step={stepNumber}
+                isCompleted={isStepCompleted}
+                isActive={isStepActive}
+                onClick={() => !disableStepIndicators && goToStep(stepNumber)}
+              />
+            )}
+            {stepNumber < totalSteps && (
+              <StepConnector isCompleted={isStepCompleted} />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+export function StepperContent({ children, contentClassName = '' }: any) {
+  const { currentStep, isCompleted, direction, setTotalSteps } = useStepper();
+  const steps = Children.toArray(children);
+  
+  useEffect(() => {
+    setTotalSteps(steps.length);
+  }, [steps.length, setTotalSteps]);
+
+  return (
+    <StepContentWrapper
+      isCompleted={isCompleted}
+      currentStep={currentStep}
+      direction={direction}
+      className={contentClassName}
+    >
+      {steps[currentStep - 1]}
+    </StepContentWrapper>
+  );
+}
+
+// Default export for backward compatibility
+export default function Stepper({
+  children,
+  initialStep,
+  onStepChange,
+  onFinalStepCompleted,
+  ...props
+}: any) {
+  return (
+    <StepperProvider 
+      initialStep={initialStep} 
+      onStepChange={onStepChange} 
+      onFinalStepCompleted={onFinalStepCompleted}
+    >
+      <StepperIndicators {...props} />
+      <StepperContent {...props}>
+        {children}
+      </StepperContent>
+    </StepperProvider>
   );
 }
 

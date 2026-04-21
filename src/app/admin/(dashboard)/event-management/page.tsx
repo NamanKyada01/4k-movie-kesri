@@ -26,7 +26,18 @@ export default function EventManagementPage() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Event | null>(null);
   const alerts = useAlerts();
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditItem(null);
+  };
+
+  const handleEdit = (event: Event) => {
+    setEditItem(event);
+    setIsModalOpen(true);
+  };
 
   // Real-time synchronization
   const { data: events, loading } = useLiveCollection<Event>("events", [
@@ -74,7 +85,7 @@ export default function EventManagementPage() {
             lineHeight: 1,
             color: "white", 
             margin: 0
-          }}>Registry</h1>
+          }}>Events</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em", marginTop: "12px" }}>Curate and manage your studio's upcoming production schedule</p>
         </div>
         
@@ -83,14 +94,15 @@ export default function EventManagementPage() {
            className="btn btn-primary" 
            style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px 32px", fontSize: "0.95rem", fontWeight: 700, borderRadius: "14px" }}
         >
-          <Plus size={20} /> Deploy Production
+          <Plus size={20} /> Create Event
         </button>
       </div>
 
       <CreationModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={handleCloseModal} 
         type="event" 
+        editData={editItem}
       />
 
       {/* Toolbar */}
@@ -138,7 +150,10 @@ export default function EventManagementPage() {
           padding: "8rem 0", 
           background: "rgba(255,255,255,0.01)", 
           borderRadius: "32px",
-          border: "1px dashed rgba(255,255,255,0.05)" 
+          border: "1px dashed rgba(255,255,255,0.05)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
         }}>
           <CalendarDays size={48} style={{ color: "rgba(255,255,255,0.1)", marginBottom: "1.5rem" }} />
           <p style={{ color: "var(--text-muted)", fontSize: "1.1rem" }}>No events found in this archive segment.</p>
@@ -153,7 +168,7 @@ export default function EventManagementPage() {
             <EventCard 
               key={ev.id} 
               event={ev} 
-              onEdit={() => alerts.info("Opening Editor flow...", "Editor")}
+              onEdit={() => handleEdit(ev)}
               onQuickView={() => setSelectedEvent(ev)}
               onDelete={() => handleDelete(ev.id)}
             />

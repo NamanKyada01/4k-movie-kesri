@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { label: "Dashboard",           href: "/admin/dashboard",           icon: LayoutDashboard },
-  { label: "Registry",            href: "/admin/event-management",    icon: CalendarIcon },
+  { label: "Events",              href: "/admin/event-management",    icon: CalendarIcon },
   { label: "Inventory",           href: "/admin/equipment",           icon: Wrench },
   { label: "Personnel",           href: "/admin/staff",               icon: Users },
   { label: "Gallery Manager",     href: "/admin/gallery-manager",     icon: Image },

@@ -1,6 +1,5 @@
-"use client";
-
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -25,15 +24,31 @@ export default function CustomDropdown({
   width = "220px",
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0, width: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
-  
+  const triggerRef = useRef<HTMLDivElement>(null);
+
   const selectedOption = options.find((opt) => opt.value === value);
+
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        setPopoverPos({
+            top: rect.bottom + window.scrollY + 5,
+            left: rect.left + window.scrollX,
+            width: rect.width
+        });
+    }
+  }, [isOpen]);
 
   // Close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        const portalContent = document.getElementById("dropdown-portal-root");
+        if (portalContent && !portalContent.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -51,6 +66,7 @@ export default function CustomDropdown({
     >
       {/* Trigger Button */}
       <div
+        ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
         style={{
           display: "flex",
@@ -88,79 +104,81 @@ export default function CustomDropdown({
       </div>
 
       {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 5, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            style={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              right: 0,
-              background: "rgba(20, 20, 22, 0.95)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "14px",
-              marginTop: "8px",
-              overflow: "hidden",
-              zIndex: 1000,
-              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-            }}
-          >
-            <div style={{ padding: "6px" }}>
-              {options.map((option) => (
-                <div
-                  key={option.value}
-                  onClick={() => {
-                    onChange(option.value);
-                    setIsOpen(false);
-                  }}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "8px",
-                    fontSize: "0.85rem",
-                    color: value === option.value ? "white" : "rgba(255,255,255,0.7)",
-                    background: value === option.value 
-                      ? "rgba(232, 85, 10, 0.15)" 
-                      : "transparent",
-                    cursor: "pointer",
-                    transition: "all 0.15s ease",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between"
-                  }}
-                  onMouseEnter={(e) => {
-                    if (value !== option.value) {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                      e.currentTarget.style.color = "white";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (value !== option.value) {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "rgba(255,255,255,0.7)";
-                    }
-                  }}
-                >
-                  {option.label}
-                  {value === option.value && (
-                    <div style={{ 
-                      width: "6px", 
-                      height: "6px", 
-                      borderRadius: "50%", 
-                      background: "var(--accent)" 
-                    }} />
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              id="dropdown-portal-root"
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              style={{
+                position: "absolute",
+                top: popoverPos.top,
+                left: popoverPos.left,
+                width: popoverPos.width,
+                background: "rgba(20, 20, 22, 0.98)",
+                backdropFilter: "blur(25px)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                borderRadius: "14px",
+                overflow: "hidden",
+                zIndex: 10000,
+                boxShadow: "0 15px 40px rgba(0,0,0,0.6)",
+              }}
+            >
+              <div style={{ padding: "6px" }}>
+                {options.map((option) => (
+                  <div
+                    key={option.value}
+                    onClick={() => {
+                      onChange(option.value);
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      fontSize: "0.85rem",
+                      color: value === option.value ? "white" : "rgba(255,255,255,0.7)",
+                      background: value === option.value 
+                        ? "rgba(232, 85, 10, 0.15)" 
+                        : "transparent",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}
+                    onMouseEnter={(e) => {
+                      if (value !== option.value) {
+                        e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                        e.currentTarget.style.color = "white";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (value !== option.value) {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+                      }
+                    }}
+                  >
+                    {option.label}
+                    {value === option.value && (
+                      <div style={{ 
+                        width: "6px", 
+                        height: "6px", 
+                        borderRadius: "50%", 
+                        background: "var(--accent)" 
+                      }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

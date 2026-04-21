@@ -16,7 +16,18 @@ export default function StaffManagementPage() {
   const [search, setSearch] = useState("");
   const [positionFilter, setPositionFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Staff | null>(null);
   const { confirm } = useAlert();
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditItem(null);
+  };
+
+  const handleEdit = (staff: Staff) => {
+    setEditItem(staff);
+    setIsModalOpen(true);
+  };
 
   // Real-time synchronization
   const { data: team, loading } = useLiveCollection<Staff>("staff", [
@@ -78,8 +89,9 @@ export default function StaffManagementPage() {
 
       <CreationModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={handleCloseModal} 
         type="staff" 
+        editData={editItem}
       />
 
       {/* Toolbar */}
@@ -114,9 +126,16 @@ export default function StaffManagementPage() {
 
       {/* Grid */}
       {filteredTeam.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
-          <Users size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
-          <p>No active identities in this segment.</p>
+        <div style={{ 
+            textAlign: "center", 
+            padding: "100px 0", 
+            color: "var(--text-muted)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+        }}>
+          <Users size={48} opacity={0.1} style={{ marginBottom: "20px" }} />
+          <p>Personnel archive is currently empty.</p>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))", gap: "2rem" }}>
@@ -125,7 +144,7 @@ export default function StaffManagementPage() {
                 <StaffCard 
                     key={staff.id} 
                     staff={staff} 
-                    onEdit={() => toast.info("Opening Identity Editor...")}
+                    onEdit={() => handleEdit(staff)}
                     onDelete={() => handleDelete(staff.id, staff.name)}
                 />
             ))}

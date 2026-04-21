@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { AlertProvider } from "@/contexts/AlertContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: {
@@ -52,6 +53,21 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
+          <Toaster 
+            position="top-right" 
+            theme="dark" 
+            expand={false} 
+            richColors 
+            closeButton
+            toastOptions={{
+              style: {
+                background: "rgba(18, 15, 23, 0.95)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                backdropFilter: "blur(12px)",
+                color: "white"
+              }
+            }}
+          />
           <AlertProvider>
             <AuthProvider>
               <SmoothScroll>

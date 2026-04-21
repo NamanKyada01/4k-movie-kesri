@@ -5,18 +5,31 @@ import { Plus, Search, Loader2, HardDrive } from "lucide-react";
 import { useLiveCollection } from "@/hooks/useLiveCollection";
 import { orderBy } from "firebase/firestore";
 import { Equipment } from "@/types";
-import { createEquipment, updateEquipment } from "@/actions/admin"; // Add deleteEquipment if needed
+import { createEquipment, updateEquipment, deleteEquipment } from "@/actions/admin";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/contexts/AlertContext";
 import EquipmentCard from "@/components/invoice/EquipmentCard";
 import CreationModal from "@/components/ui/CreationModal";
+import EquipmentQuickViewModal from "@/components/invoice/EquipmentQuickViewModal";
 
 export default function EquipmentManagementPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Equipment | null>(null);
+  const [quickViewItem, setQuickViewItem] = useState<Equipment | null>(null);
   const { confirm } = useAlert();
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditItem(null);
+  };
+
+  const handleEdit = (item: Equipment) => {
+    setEditItem(item);
+    setIsModalOpen(true);
+  };
 
   // Real-time synchronization
   const { data: inventory, loading } = useLiveCollection<Equipment>("equipment", [
@@ -25,15 +38,19 @@ export default function EquipmentManagementPage() {
 
   const handleDelete = async (id: string, name: string) => {
     const isConfirmed = await confirm(
-        "Purge Asset from Vault?",
+        "Delete Equipment?",
         `Are you sure you want to permanently remove ${name}? This action cannot be reversed.`,
-        { primaryActionLabel: "Purge Asset", glowColor: "239 68 68" }
+        { primaryActionLabel: "Delete", glowColor: "239 68 68" }
     );
 
     if (isConfirmed) {
-        toast.info("Deletion logic would trigger here...");
-        // const res = await deleteEquipment(id);
-        // if (res.success) toast.success("Asset decommissioned");
+        toast.loading("Deleting equipment...", { id: `del-${id}` });
+        const res = await deleteEquipment(id);
+        if (res.success) {
+            toast.success("Equipment deleted successfully", { id: `del-${id}` });
+        } else {
+            toast.error("Failed to delete equipment", { id: `del-${id}` });
+        }
     }
   };
 
@@ -72,14 +89,15 @@ export default function EquipmentManagementPage() {
            className="btn btn-primary" 
            style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px 32px", fontSize: "0.95rem", fontWeight: 700, borderRadius: "14px" }}
         >
-          <Plus size={20} /> Catalog Asset
+          <Plus size={20} /> Add Equipment
         </button>
       </div>
 
       <CreationModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={handleCloseModal} 
         type="equipment" 
+        editData={editItem}
       />
 
       {/* Toolbar */}
@@ -114,8 +132,15 @@ export default function EquipmentManagementPage() {
 
       {/* Grid */}
       {filteredInventory.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
-          <HardDrive size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
+        <div style={{ 
+            textAlign: "center", 
+            padding: "100px 0", 
+            color: "var(--text-muted)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+        }}>
+          <HardDrive size={48} opacity={0.1} style={{ marginBottom: "20px" }} />
           <p>No active assets discovered in this segment.</p>
         </div>
       ) : (
@@ -125,12 +150,20 @@ export default function EquipmentManagementPage() {
                 <EquipmentCard 
                     key={item.id} 
                     item={item} 
-                    onEdit={() => toast.info("Opening Asset Editor...")}
+                    onEdit={() => handleEdit(item)}
                     onDelete={() => handleDelete(item.id, item.name)}
+                    onQuickView={() => setQuickViewItem(item)}
                 />
             ))}
           </AnimatePresence>
         </div>
+      )}
+
+      {quickViewItem && (
+          <EquipmentQuickViewModal 
+             item={quickViewItem} 
+             onClose={() => setQuickViewItem(null)} 
+          />
       )}
 
       <style jsx global>{`

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAlert } from "@/contexts/AlertContext";
+import { toast } from "sonner";
 
 // Re-export the alert hook for convenience
 export { useAlert };
@@ -12,43 +13,43 @@ export function useAlerts() {
   return {
     // Success alerts
     success: (message: string, title: string = "Success") => {
-      return alert.success(title, message);
+      return toast.success(`${title}: ${message}`);
     },
     
     // Error alerts
     error: (message: string, title: string = "Error") => {
-      return alert.error(title, message);
+      return toast.error(`${title}: ${message}`);
     },
     
     // Warning alerts
     warning: (message: string, title: string = "Warning") => {
-      return alert.warning(title, message);
+      return toast.warning(`${title}: ${message}`);
     },
     
     // Info alerts
     info: (message: string, title: string = "Information") => {
-      return alert.info(title, message);
+      return toast.info(`${title}: ${message}`);
     },
     
-    // Cinematic alerts (for admin/creative actions)
-    cinematic: (message: string, title: string = "Production Update") => {
-      return alert.cinematic(title, message);
+    // Cinematic alerts (now using normal toast as per user request)
+    cinematic: (message: string, title: string = "Update") => {
+      return toast.success(`${title}: ${message}`);
     },
 
-    // Confirmation dialogs
+    // Confirmation dialogs (Stay as modal because they need a return value)
     confirm: (message: string, title: string = "Are you sure?") => {
       return alert.confirm(title, message);
     },
     
     // Quick success for common actions
-    saved: () => alert.success("Saved", "Changes saved successfully"),
-    deleted: () => alert.success("Deleted", "Item deleted successfully"),
-    created: () => alert.success("Created", "Item created successfully"),
-    updated: () => alert.success("Updated", "Item updated successfully"),
+    saved: () => toast.success("Saved: Changes saved successfully"),
+    deleted: () => toast.success("Deleted: Item deleted successfully"),
+    created: () => toast.success("Created: Item created successfully"),
+    updated: () => toast.success("Updated: Item updated successfully"),
     
     // Quick errors
-    saveError: (error?: string) => alert.error(error || "Failed to save changes", "Save Failed"),
-    deleteError: (error?: string) => alert.error(error || "Failed to delete item", "Delete Failed"),
-    loadError: (error?: string) => alert.error(error || "Failed to load data", "Load Failed"),
+    saveError: (error?: string) => toast.error(`Save Failed: ${error || "Failed to save changes"}`),
+    deleteError: (error?: string) => toast.error(`Delete Failed: ${error || "Failed to delete item"}`),
+    loadError: (error?: string) => toast.error(`Load Failed: ${error || "Failed to load data"}`),
   };
 }

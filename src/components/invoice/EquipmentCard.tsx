@@ -9,9 +9,10 @@ interface EquipmentCardProps {
   item: Equipment;
   onEdit: () => void;
   onDelete: () => void;
+  onQuickView: () => void;
 }
 
-export default function EquipmentCard({ item, onEdit, onDelete }: EquipmentCardProps) {
+export default function EquipmentCard({ item, onEdit, onDelete, onQuickView }: EquipmentCardProps) {
   const isAvailable = item.condition === 'available';
 
   return (
@@ -26,8 +27,9 @@ export default function EquipmentCard({ item, onEdit, onDelete }: EquipmentCardP
         flexDirection: "column",
         gap: "20px",
         transition: "all 0.3s ease",
-        cursor: "default"
+        cursor: "pointer"
       }}
+      onClick={onQuickView}
       onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.025)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
     >
@@ -41,12 +43,16 @@ export default function EquipmentCard({ item, onEdit, onDelete }: EquipmentCardP
             display: "flex", alignItems: "center", justifyContent: "center",
             color: "var(--accent)"
         }}>
-          <Camera size={24} />
+          {item.imageUrl ? (
+              <img src={item.imageUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }} />
+          ) : (
+              <Camera size={24} />
+          )}
         </div>
         
         <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={onEdit} style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Edit2 size={14} /></button>
-            <button onClick={onDelete} style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.1)", color: "#ff4444", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Trash2 size={14} /></button>
+            <button onClick={(e) => { e.stopPropagation(); onEdit(); }} style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Edit2 size={14} /></button>
+            <button onClick={(e) => { e.stopPropagation(); onDelete(); }} style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,0,0,0.1)", color: "#ff4444", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Trash2 size={14} /></button>
         </div>
       </div>
 

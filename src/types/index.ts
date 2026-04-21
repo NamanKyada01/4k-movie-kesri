@@ -46,6 +46,7 @@ export interface Event {
   time: string; // "18:00"
   reachTime: string; // staff arrival time "16:00"
   location: string;
+  locationLink?: string;
   locationLat?: number;
   locationLng?: number;
   duration: string;
@@ -125,6 +126,7 @@ export interface Equipment {
   lastMaintenance?: number;
   assignedStaffId?: string;
   images: string[];
+  imageUrl?: string;
   cost?: number;
   notes?: string;
   createdAt: number;

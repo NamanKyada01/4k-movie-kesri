@@ -44,7 +44,7 @@ export default function EventQuickViewModal({ event, onClose }: QuickViewProps) 
                     {event.name}
                 </h2>
                 <div style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 700, marginTop: "4px" }}>
-                    {event.type} Registry
+                    {(event.type || 'Event').replace('-', ' ')}
                 </div>
             </div>
         </div>
@@ -65,9 +65,15 @@ export default function EventQuickViewModal({ event, onClose }: QuickViewProps) 
                             </div>
                         )}
                         {event.location && (
-                             <div style={{ display: "flex", alignItems: "center", gap: "12px", color: "white" }}>
-                                <MapPin size={16} color="var(--accent)" /> {event.location}
-                             </div>
+                             <a 
+                                href={event.locationLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`} 
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ display: "flex", alignItems: "center", gap: "12px", color: "white", textDecoration: "none", cursor: "pointer" }}
+                             >
+                                <MapPin size={16} color="var(--accent)" /> 
+                                <span style={{ borderBottom: "1px dashed rgba(255,255,255,0.3)", paddingBottom: "2px" }}>{event.location}</span>
+                             </a>
                         )}
                     </div>
                 </section>
@@ -103,7 +109,7 @@ export default function EventQuickViewModal({ event, onClose }: QuickViewProps) 
                  </section>
 
                  <section>
-                    <h4 style={{ fontSize: "0.7rem", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "16px", letterSpacing: "0.1em" }}>Digital Delivery</h4>
+                    <h4 style={{ fontSize: "0.7rem", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "16px", letterSpacing: "0.1em" }}>Google Drive Album</h4>
                     {event.googleDriveAlbumLink ? (
                          <a 
                             href={event.googleDriveAlbumLink} 
@@ -121,7 +127,7 @@ export default function EventQuickViewModal({ event, onClose }: QuickViewProps) 
                          </a>
                     ) : (
                         <div style={{ padding: "12px", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: "10px", color: "rgba(255,255,255,0.3)", textAlign: "center", fontSize: "0.8rem" }}>
-                            No Delivery Link Attached
+                            No Album Link Attached
                         </div>
                     )}
                  </section>

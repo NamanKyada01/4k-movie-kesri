@@ -6,7 +6,7 @@ import { useLiveCollection } from "@/hooks/useLiveCollection";
 import { orderBy, where } from "firebase/firestore";
 import { Event } from "@/types";
 import { createEvent, deleteEvent, updateEvent } from "@/actions/admin";
-import { toast } from "sonner";
+import { useAlerts } from "@/lib/alerts";
 import { motion, AnimatePresence } from "framer-motion";
 import EventCard from "@/components/invoice/EventCard";
 import EventQuickViewModal from "@/components/invoice/EventQuickViewModal";
@@ -16,6 +16,7 @@ export default function EventManagementPage() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const alerts = useAlerts();
 
   // Real-time synchronization
   const { data: events, loading } = useLiveCollection<Event>("events", [
@@ -35,8 +36,8 @@ export default function EventManagementPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure? This event record will be permanently deleted from the vault.")) return;
     const res = await deleteEvent(id);
-    if (res.success) toast.success("Event purged from registry");
-    else toast.error("Purge failed: " + res.error);
+    if (res.success) alerts.cinematic("Event purged from registry", "Registry Purged");
+    else alerts.error("Purge failed: " + res.error, "Purge Failed");
   };
 
   const handleCreateDummy = async () => {
@@ -52,7 +53,7 @@ export default function EventManagementPage() {
         location: "Surat, Gujarat"
     });
     setIsCreating(false);
-    if (!res.success) toast.error("Deployment failed");
+    if (!res.success) alerts.error("Deployment failed", "Deployment Failed");
   };
 
   if (loading) return (
@@ -160,7 +161,7 @@ export default function EventManagementPage() {
             <EventCard 
               key={ev.id} 
               event={ev} 
-              onEdit={() => toast.info("Opening Editor flow...")}
+              onEdit={() => alerts.info("Opening Editor flow...", "Editor")}
               onQuickView={() => setSelectedEvent(ev)}
               onDelete={() => handleDelete(ev.id)}
             />

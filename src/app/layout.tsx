@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
-import { Toaster } from "sonner";
+import { AlertProvider } from "@/contexts/AlertContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 
@@ -52,23 +52,13 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          <AuthProvider>
-            <SmoothScroll>
-              {children}
-            </SmoothScroll>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: "var(--bg-card)",
-                  color: "var(--text-primary)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-lg)",
-                  fontFamily: "var(--font-body)",
-                },
-              }}
-            />
-          </AuthProvider>
+          <AlertProvider>
+            <AuthProvider>
+              <SmoothScroll>
+                {children}
+              </SmoothScroll>
+            </AuthProvider>
+          </AlertProvider>
         </ThemeProvider>
       </body>
     </html>

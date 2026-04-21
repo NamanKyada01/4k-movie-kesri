@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Camera, LayoutDashboard, Image, PlayCircle, Calendar as CalendarIcon, Wrench, Users, FileText, Edit3, Settings, MessageSquare, Star, UserCog, LogOut, Sun, Moon, ChevronRight, Bell, Plus } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useState, useEffect as useEffectReact } from "react";
-import { ReactNode } from "react";
 import Particles from "@/components/ui/Particles";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { label: "Dashboard",           href: "/admin/dashboard",           icon: LayoutDashboard },
@@ -30,20 +29,35 @@ const navItems = [
 
 function ThemeToggleAdmin() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffectReact(() => setMounted(true), []);
-  if (!mounted) return null;
-  const isDark = theme === "dark";
+  
+  // Force dark theme for admin panel
+  useEffect(() => {
+    if (theme !== "dark") {
+      setTheme("dark");
+    }
+  }, [theme, setTheme]);
+
   return (
-    <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 8, borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: 8, fontSize: "0.8rem", width: "100%", transition: "color var(--transition-fast)" }}
-      onMouseEnter={(e) => { (e.currentTarget).style.color = "var(--text-primary)"; }}
-      onMouseLeave={(e) => { (e.currentTarget).style.color = "var(--text-muted)"; }}
+    <div
+      style={{ 
+        background: "var(--bg-elevated)", 
+        border: "1px solid var(--border)", 
+        padding: "0.65rem var(--space-3)", 
+        borderRadius: "var(--radius-lg)", 
+        display: "flex", 
+        alignItems: "center", 
+        gap: 8, 
+        fontSize: "0.8rem", 
+        width: "100%",
+        color: "var(--text-muted)",
+        cursor: "not-allowed"
+      }}
+      title="Admin panel only supports cinematic dark theme"
     >
-      {isDark ? <Sun size={16} /> : <Moon size={16} />}
-      {isDark ? "Light Mode" : "Dark Mode"}
-    </button>
+      <Moon size={16} color="var(--accent)" />
+      <span style={{ color: "var(--accent)", fontWeight: 600 }}>Cinematic Dark</span>
+      <span style={{ marginLeft: "auto", fontSize: "0.7rem", opacity: 0.5 }}>Fixed</span>
+    </div>
   );
 }
 
@@ -97,14 +111,24 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </div>
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
       {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div 
-          onClick={() => setSidebarOpen(false)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, backdropFilter: "blur(4px)" }}
-          className="admin-sidebar-overlay"
-        />
-      )}
-      <aside
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 100, backdropFilter: "blur(8px)" }}
+            className="admin-sidebar-overlay"
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+      
+      <motion.aside
+        initial={{ x: "-100%" }}
+        animate={{ x: sidebarOpen ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
         style={{
           width: "var(--sidebar-width)",
           position: "fixed",
@@ -118,123 +142,334 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           zIndex: 101,
           overflowY: "auto",
           overflowX: "hidden",
-          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
-          transition: "transform 0.3s ease",
           backdropFilter: "blur(20px)",
+          boxShadow: "var(--shadow-lg)",
         }}
         className="admin-sidebar"
+        role="navigation"
+        aria-label="Admin navigation"
       >
         {/* Brand */}
-        <div style={{ padding: "var(--space-5) var(--space-5) var(--space-4)", borderBottom: "1px solid var(--border)" }}>
-          <Link href="/admin/dashboard" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <div style={{ width: 34, height: 34, borderRadius: "50%", border: "2px solid var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <Camera size={15} color="var(--accent)" />
-            </div>
+        <div style={{ 
+          padding: "var(--space-5) var(--space-5) var(--space-4)", 
+          borderBottom: "1px solid var(--border)",
+          background: "var(--bg-primary)"
+        }}>
+          <Link 
+            href="/admin/dashboard" 
+            style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 10, 
+              textDecoration: "none",
+              transition: "transform var(--transition-fast)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateX(4px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateX(0)";
+            }}
+          >
+            <motion.div 
+              whileHover={{ rotate: 15 }}
+              style={{ 
+                width: 40, 
+                height: 40, 
+                borderRadius: "50%", 
+                border: "2px solid var(--accent)", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                flexShrink: 0,
+                background: "var(--accent-muted)"
+              }}
+            >
+              <Camera size={18} color="var(--accent)" />
+            </motion.div>
             <div>
-              <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: "0.8rem", color: "var(--text-primary)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+              <div style={{ 
+                fontFamily: "var(--font-heading)", 
+                fontWeight: 800, 
+                fontSize: "0.85rem", 
+                color: "var(--text-primary)", 
+                letterSpacing: "-0.01em", 
+                lineHeight: 1.1 
+              }}>
                 4K MOVIE KESRI
               </div>
-              <div style={{ fontSize: "0.575rem", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Admin Panel
+              <div style={{ 
+                fontSize: "0.6rem", 
+                color: "var(--accent)", 
+                letterSpacing: "0.12em", 
+                textTransform: "uppercase",
+                fontWeight: 600,
+                marginTop: 2
+              }}>
+                Command Center
               </div>
             </div>
           </Link>
         </div>
 
         {/* Admin Profile */}
-        <div style={{ padding: "var(--space-4) var(--space-5)", borderBottom: "1px solid var(--border)" }}>
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          style={{ 
+            padding: "var(--space-4) var(--space-5)", 
+            borderBottom: "1px solid var(--border)",
+            background: "var(--bg-card)"
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--accent-muted)", border: "2px solid var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "var(--font-heading)", fontWeight: 700, color: "var(--accent)", fontSize: "0.85rem" }}>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              style={{ 
+                width: 42, 
+                height: 42, 
+                borderRadius: "50%", 
+                background: "var(--accent-muted)", 
+                border: "2px solid var(--accent)", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                flexShrink: 0, 
+                fontFamily: "var(--font-heading)", 
+                fontWeight: 700, 
+                color: "var(--accent)", 
+                fontSize: "0.9rem",
+                cursor: "pointer"
+              }}
+              onClick={() => router.push("/admin/admin-users")}
+              aria-label="View admin profile"
+            >
               {(adminData?.name?.[0] || user.email?.[0] || "A").toUpperCase()}
-            </div>
-            <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            </motion.div>
+            <div style={{ overflow: "hidden", flex: 1 }}>
+              <div style={{ 
+                fontSize: "0.85rem", 
+                fontWeight: 600, 
+                color: "var(--text-primary)", 
+                whiteSpace: "nowrap", 
+                overflow: "hidden", 
+                textOverflow: "ellipsis" 
+              }}>
                 {adminData?.name || "Admin"}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                <span className="badge badge-accent" style={{ fontSize: "0.58rem", padding: "2px 6px" }}>
+                <span className="badge badge-accent" style={{ 
+                  fontSize: "0.6rem", 
+                  padding: "2px 8px",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em"
+                }}>
                   {adminData?.role || "admin"}
+                </span>
+                <span style={{ 
+                  fontSize: "0.6rem", 
+                  color: "var(--text-muted)",
+                  fontWeight: 500
+                }}>
+                  ID: {user.uid?.slice(0, 6)}...
                 </span>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div style={{ padding: "var(--space-3) var(--space-5)" }}>
+        {/* Quick Action */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.15 }}
+          style={{ padding: "var(--space-4) var(--space-5)" }}
+        >
           <Link
             href="/admin/event-management?action=new"
             className="btn btn-primary btn-sm"
-            style={{ width: "100%", justifyContent: "center" }}
+            style={{ 
+              width: "100%", 
+              justifyContent: "center",
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              boxShadow: "0 4px 12px var(--accent-glow)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 6px 16px var(--accent-glow)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 12px var(--accent-glow)";
+            }}
           >
-            <Plus size={14} /> New Event
+            <Plus size={16} /> New Production
           </Link>
-        </div>
+        </motion.div>
 
         {/* Nav items */}
-        <nav style={{ flex: 1, padding: "var(--space-1) var(--space-3) var(--space-4)" }}>
-          {navItems.map(({ label, href, icon: Icon }) => {
+        <nav style={{ 
+          flex: 1, 
+          padding: "var(--space-3) var(--space-3) var(--space-4)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--space-1)"
+        }}>
+          {navItems.map(({ label, href, icon: Icon }, index) => {
             const isActive = pathname === href || pathname.startsWith(href + "/");
             return (
-              <Link
+              <motion.div
                 key={href}
-                href={href}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "var(--space-3)",
-                  padding: "0.55rem var(--space-3)",
-                  borderRadius: "var(--radius-lg)",
-                  marginBottom: 2,
-                  fontSize: "0.82rem",
-                  fontWeight: isActive ? 600 : 400,
-                  color: isActive ? "var(--accent)" : "var(--text-muted)",
-                  background: isActive ? "var(--accent-muted)" : "transparent",
-                  transition: "all var(--transition-fast)",
-                  textDecoration: "none",
-                  position: "relative",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    const el = e.currentTarget;
-                    el.style.color = "var(--text-primary)";
-                    el.style.background = "var(--bg-elevated)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    const el = e.currentTarget;
-                    el.style.color = "var(--text-muted)";
-                    el.style.background = "transparent";
-                  }
-                }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 * index }}
               >
-                <Icon size={15} />
-                {label}
-                {isActive && (
-                  <ChevronRight size={13} style={{ marginLeft: "auto", opacity: 0.6 }} />
-                )}
-              </Link>
+                <Link
+                  href={href}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "var(--space-3)",
+                    padding: "0.65rem var(--space-4)",
+                    borderRadius: "var(--radius-lg)",
+                    fontSize: "0.85rem",
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? "var(--accent)" : "var(--text-muted)",
+                    background: isActive ? "var(--accent-muted)" : "transparent",
+                    transition: "all var(--transition-fast)",
+                    textDecoration: "none",
+                    position: "relative",
+                    border: isActive ? "1px solid var(--border-accent)" : "1px solid transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      const el = e.currentTarget;
+                      el.style.color = "var(--text-primary)";
+                      el.style.background = "var(--bg-elevated)";
+                      el.style.borderColor = "var(--border)";
+                      el.style.transform = "translateX(4px)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      const el = e.currentTarget;
+                      el.style.color = "var(--text-muted)";
+                      el.style.background = "transparent";
+                      el.style.borderColor = "transparent";
+                      el.style.transform = "translateX(0)";
+                    }
+                  }}
+                  onFocus={(e) => {
+                    if (!isActive) {
+                      const el = e.currentTarget;
+                      el.style.color = "var(--text-primary)";
+                      el.style.background = "var(--bg-elevated)";
+                      el.style.borderColor = "var(--border)";
+                      el.style.transform = "translateX(4px)";
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (!isActive) {
+                      const el = e.currentTarget;
+                      el.style.color = "var(--text-muted)";
+                      el.style.background = "transparent";
+                      el.style.borderColor = "transparent";
+                      el.style.transform = "translateX(0)";
+                    }
+                  }}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <Icon size={16} style={{ flexShrink: 0 }} />
+                  <span style={{ flex: 1 }}>{label}</span>
+                  {isActive && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring" }}
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "var(--accent)",
+                        boxShadow: "0 0 8px var(--accent)",
+                        flexShrink: 0
+                      }}
+                    />
+                  )}
+                </Link>
+              </motion.div>
             );
           })}
         </nav>
 
         {/* Bottom actions */}
-        <div style={{ padding: "var(--space-3) var(--space-4)", borderTop: "1px solid var(--border)" }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          style={{ 
+            padding: "var(--space-4) var(--space-4)", 
+            borderTop: "1px solid var(--border)",
+            background: "var(--bg-card)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-2)"
+          }}
+        >
           <ThemeToggleAdmin />
           <button
             onClick={handleLogout}
-            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "8px var(--space-2)", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: 8, fontSize: "0.8rem", width: "100%", transition: "color var(--transition-fast)" }}
+            style={{ 
+              background: "var(--bg-elevated)", 
+              border: "1px solid var(--border)", 
+              cursor: "pointer", 
+              color: "var(--text-muted)", 
+              padding: "0.65rem var(--space-3)", 
+              borderRadius: "var(--radius-lg)", 
+              display: "flex", 
+              alignItems: "center", 
+              gap: 8, 
+              fontSize: "0.85rem", 
+              width: "100%", 
+              transition: "all var(--transition-fast)",
+              fontWeight: 500
+            }}
             onMouseEnter={(e) => {
-              (e.currentTarget).style.color = "var(--error)";
+              const el = e.currentTarget;
+              el.style.color = "var(--error)";
+              el.style.borderColor = "var(--error)";
+              el.style.background = "var(--error-bg)";
+              el.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget).style.color = "var(--text-muted)";
+              const el = e.currentTarget;
+              el.style.color = "var(--text-muted)";
+              el.style.borderColor = "var(--border)";
+              el.style.background = "var(--bg-elevated)";
+              el.style.transform = "translateY(0)";
             }}
+            onFocus={(e) => {
+              const el = e.currentTarget;
+              el.style.color = "var(--error)";
+              el.style.borderColor = "var(--error)";
+              el.style.background = "var(--error-bg)";
+              el.style.transform = "translateY(-1px)";
+            }}
+            onBlur={(e) => {
+              const el = e.currentTarget;
+              el.style.color = "var(--text-muted)";
+              el.style.borderColor = "var(--border)";
+              el.style.background = "var(--bg-elevated)";
+              el.style.transform = "translateY(0)";
+            }}
+            aria-label="Sign out of admin panel"
           >
-            <LogOut size={15} /> Sign Out
+            <LogOut size={16} /> Sign Out
           </button>
-        </div>
-      </aside>
+        </motion.div>
+      </motion.aside>
 
       {/* ── Main Content ─────────────────────────────────────────────────── */}
       <div 
@@ -269,13 +504,30 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           }}
         >
           {/* Mobile Menu Toggle */}
-          <button 
+          <motion.button 
              onClick={() => setSidebarOpen(true)}
-             style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-primary)", padding: 8, display: "none" }}
+             style={{ 
+               background: "var(--bg-elevated)", 
+               border: "1px solid var(--border)", 
+               cursor: "pointer", 
+               color: "var(--text-primary)", 
+               padding: "var(--space-2)",
+               borderRadius: "var(--radius-md)",
+               display: "none",
+               width: 44,
+               height: 44,
+               alignItems: "center",
+               justifyContent: "center"
+             }}
              className="admin-mobile-toggle"
+             whileHover={{ scale: 1.05 }}
+             whileTap={{ scale: 0.95 }}
+             aria-label="Open admin menu"
+             aria-expanded={sidebarOpen}
+             aria-controls="admin-sidebar"
           >
              <Edit3 size={20} />
-          </button>
+          </motion.button>
 
           {/* Page breadcrumb — rendered by each page as <h1> */}
           <div id="admin-topbar-title" />

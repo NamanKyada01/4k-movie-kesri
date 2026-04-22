@@ -12,6 +12,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import EquipmentCard from "@/components/invoice/EquipmentCard";
 import CreationModal from "@/components/ui/CreationModal";
 import EquipmentQuickViewModal from "@/components/invoice/EquipmentQuickViewModal";
+import ImageLightbox from "@/components/ui/ImageLightbox";
 
 export default function EquipmentManagementPage() {
   const [search, setSearch] = useState("");
@@ -19,6 +20,7 @@ export default function EquipmentManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<Equipment | null>(null);
   const [quickViewItem, setQuickViewItem] = useState<Equipment | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const { confirm } = useAlert();
 
   const handleCloseModal = () => {
@@ -153,6 +155,7 @@ export default function EquipmentManagementPage() {
                     onEdit={() => handleEdit(item)}
                     onDelete={() => handleDelete(item.id, item.name)}
                     onQuickView={() => setQuickViewItem(item)}
+                    onImageClick={(url) => setLightboxUrl(url)}
                 />
             ))}
           </AnimatePresence>
@@ -163,8 +166,15 @@ export default function EquipmentManagementPage() {
           <EquipmentQuickViewModal 
              item={quickViewItem} 
              onClose={() => setQuickViewItem(null)} 
+             onImageClick={(url) => setLightboxUrl(url)}
           />
       )}
+
+      <ImageLightbox 
+        isOpen={!!lightboxUrl}
+        src={lightboxUrl || ""}
+        onClose={() => setLightboxUrl(null)}
+      />
 
       <style jsx global>{`
         @keyframes fadeIn {

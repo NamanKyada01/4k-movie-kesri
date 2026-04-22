@@ -10,9 +10,10 @@ interface EquipmentCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onQuickView: () => void;
+  onImageClick: (url: string) => void;
 }
 
-export default function EquipmentCard({ item, onEdit, onDelete, onQuickView }: EquipmentCardProps) {
+export default function EquipmentCard({ item, onEdit, onDelete, onQuickView, onImageClick }: EquipmentCardProps) {
   const isAvailable = item.condition === 'available';
 
   return (
@@ -35,14 +36,23 @@ export default function EquipmentCard({ item, onEdit, onDelete, onQuickView }: E
     >
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div style={{ 
+        <div 
+          onClick={(e) => { 
+            if (item.imageUrl) {
+              e.stopPropagation();
+              onImageClick(item.imageUrl);
+            }
+          }}
+          style={{ 
             width: "50px", height: "50px", 
             borderRadius: "12px", 
             background: "rgba(255,255,255,0.03)", 
             border: "1px solid rgba(255,255,255,0.05)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--accent)"
-        }}>
+            color: "var(--accent)",
+            cursor: item.imageUrl ? "zoom-in" : "default"
+          }}
+        >
           {item.imageUrl ? (
               <img src={item.imageUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }} />
           ) : (

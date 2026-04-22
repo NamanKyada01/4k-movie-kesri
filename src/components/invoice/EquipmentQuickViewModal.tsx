@@ -7,9 +7,10 @@ import { HardDrive, AlertCircle, ShieldCheck, Box, Tag } from "lucide-react";
 interface EquipmentQuickViewProps {
   item: Equipment;
   onClose: () => void;
+  onImageClick: (url: string) => void;
 }
 
-export default function EquipmentQuickViewModal({ item, onClose }: EquipmentQuickViewProps) {
+export default function EquipmentQuickViewModal({ item, onClose, onImageClick }: EquipmentQuickViewProps) {
   const isAvailable = item.condition === 'available';
 
   return (
@@ -36,15 +37,19 @@ export default function EquipmentQuickViewModal({ item, onClose }: EquipmentQuic
         boxShadow: "0 40px 100px rgba(0,0,0,0.8)"
       }}>
         {/* Banner */}
-        <div style={{ 
-            height: "180px", 
-            background: item.imageUrl ? `url(${item.imageUrl}) center/cover no-repeat` : "linear-gradient(135deg, #1a1a1b, #000)", 
-            borderBottom: "1px solid rgba(255,255,255,0.05)", 
-            display: "flex", 
-            alignItems: "flex-end", 
-            padding: "30px",
-            position: "relative"
-        }}>
+        <div 
+            onClick={() => item.imageUrl && onImageClick(item.imageUrl)}
+            style={{ 
+                height: "180px", 
+                background: item.imageUrl ? `url(${item.imageUrl}) center/cover no-repeat` : "linear-gradient(135deg, #1a1a1b, #000)", 
+                borderBottom: "1px solid rgba(255,255,255,0.05)", 
+                display: "flex", 
+                alignItems: "flex-end", 
+                padding: "30px",
+                position: "relative",
+                cursor: item.imageUrl ? "zoom-in" : "default"
+            }}
+        >
             {item.imageUrl && (
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%)" }} />
             )}
@@ -53,7 +58,7 @@ export default function EquipmentQuickViewModal({ item, onClose }: EquipmentQuic
                     {item.name}
                 </h2>
                 <div style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 700, marginTop: "4px" }}>
-                    {item.category.replace('-', ' ')}
+                    {(item.category || '').replace(/-/g, ' ')}
                 </div>
             </div>
         </div>
@@ -65,7 +70,7 @@ export default function EquipmentQuickViewModal({ item, onClose }: EquipmentQuic
                 <div style={{ padding: "20px", background: "rgba(255,255,255,0.02)", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
                     <div style={{ fontSize: "1.25rem", fontWeight: 900, color: isAvailable ? "#4ade80" : "#fbbf24", textTransform: "capitalize", display: "flex", alignItems: "center", gap: "10px" }}>
                          {isAvailable ? <ShieldCheck /> : <AlertCircle />}
-                         {item.condition.replace('-', ' ')}
+                          {(item.condition || 'unknown').replace(/-/g, ' ')}
                     </div>
                 </div>
              </section>

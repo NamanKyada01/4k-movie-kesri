@@ -1,7 +1,9 @@
 "use client";
 
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 import type { YouTubeVideo } from "@/types";
 
 interface YouTubeSectionProps {
@@ -162,6 +164,31 @@ function VideoCard({ video, index }: { video: YouTubeVideo; index: number }) {
 }
 
 export function YouTubeSection({ videos }: YouTubeSectionProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: true, 
+    align: "start",
+    dragFree: true,
+    active: videos.length > 3
+  });
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setActiveIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi, setActiveIndex]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
   return (
     <section className="section" style={{ background: "transparent" }}>
       <div className="container">
@@ -187,16 +214,60 @@ export function YouTubeSection({ videos }: YouTubeSectionProps) {
         {videos.length === 0 ? (
           <EmptyVideoGrid />
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "var(--space-5)",
-            }}
-          >
-            {videos.slice(0, 4).map((video, i) => (
-              <VideoCard key={video.id} video={video} index={i} />
-            ))}
+          <div>
+            <div 
+              ref={videos.length > 3 ? emblaRef : null} 
+              style={{ overflow: videos.length > 3 ? "hidden" : "visible", cursor: videos.length > 3 ? "grab" : "auto" }}
+            >
+              <div
+                style={{
+                  display: videos.length > 3 ? "flex" : "grid",
+                  gridTemplateColumns: videos.length <= 3 ? "repeat(auto-fit, minmax(300px, 1fr))" : "none",
+                  gap: videos.length <= 3 ? "var(--space-5)" : "0",
+                  paddingBottom: videos.length > 3 ? "10px" : "0",
+                }}
+              >
+                {(videos.length > 3 && videos.length < 8 ? [...videos, ...videos, ...videos] : videos).map((video, i) => (
+                  <div 
+                    key={`${video.id}-${i}`} 
+                    style={{ 
+                      flex: videos.length > 3 ? "0 0 clamp(300px, 80vw, 400px)" : "initial",
+                      minWidth: 0,
+                      marginRight: videos.length > 3 ? "var(--space-5)" : "0"
+                    }}
+                  >
+                    <VideoCard video={video} index={i % videos.length} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Dot Indicators */}
+            {videos.length > 3 && (
+              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+                 {videos.map((_, i) => {
+                    const logicalActive = activeIndex % videos.length;
+                    return (
+                      <div
+                        key={i}
+                        onClick={() => {
+                           if (!emblaApi) return;
+                           const distance = i - logicalActive;
+                           emblaApi.scrollTo(activeIndex + distance);
+                        }}
+                        style={{
+                          width: logicalActive === i ? "24px" : "8px",
+                          height: "8px",
+                          borderRadius: "4px",
+                          background: logicalActive === i ? "var(--accent)" : "rgba(255,255,255,0.2)",
+                          transition: "all 0.3s ease",
+                          cursor: "pointer"
+                        }}
+                      />
+                    );
+                 })}
+              </div>
+            )}
           </div>
         )}
       </div>

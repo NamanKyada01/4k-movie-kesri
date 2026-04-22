@@ -11,12 +11,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/contexts/AlertContext";
 import StaffCard from "@/components/invoice/StaffCard";
 import CreationModal from "@/components/ui/CreationModal";
+import ImageLightbox from "@/components/ui/ImageLightbox";
 
 export default function StaffManagementPage() {
   const [search, setSearch] = useState("");
   const [positionFilter, setPositionFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<Staff | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const { confirm } = useAlert();
 
   const handleCloseModal = () => {
@@ -36,8 +38,10 @@ export default function StaffManagementPage() {
 
   const filteredTeam = useMemo(() => {
     return team.filter(s => {
-        const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                             s.email.toLowerCase().includes(search.toLowerCase());
+        const name = s.name || "";
+        const email = s.email || "";
+        const matchesSearch = name.toLowerCase().includes(search.toLowerCase()) || 
+                             email.toLowerCase().includes(search.toLowerCase());
         const matchesPos = positionFilter === "all" || s.position === positionFilter;
         return matchesSearch && matchesPos;
     });
@@ -45,14 +49,14 @@ export default function StaffManagementPage() {
 
   const handleDelete = async (id: string, name: string) => {
     const isConfirmed = await confirm(
-        "Purge Identity?",
-        `Are you sure you want to remove ${name} from the active roster? This action is irreversible.`,
-        { primaryActionLabel: "Purge Identity", glowColor: "239 68 68" }
+        "Delete Staff Member?",
+        `Are you sure you want to remove ${name} from the team? This action is irreversible.`,
+        { primaryActionLabel: "Delete Member", glowColor: "239 68 68" }
     );
 
     if (isConfirmed) {
         const res = await deleteStaff(id);
-        if (res.success) toast.success("Identity purged");
+        if (res.success) toast.success("Staff profile deleted");
         else toast.error("Action failed");
     }
   };
@@ -61,7 +65,7 @@ export default function StaffManagementPage() {
   if (loading) return (
       <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
           <Loader2 size={40} className="animate-spin" color="var(--accent)" />
-          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Roster...</p>
+          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Loading Staff...</p>
       </div>
   );
 
@@ -72,9 +76,9 @@ export default function StaffManagementPage() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
             <Users size={20} color="var(--accent)" />
-            <span style={{ color: "var(--accent)", fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px" }}>Active Roster</span>
+            <span style={{ color: "var(--accent)", fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "2px" }}>Team Directory</span>
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3.5rem", lineHeight: 1, color: "white", margin: 0 }}>Personnel</h1>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "3.5rem", lineHeight: 1, color: "white", margin: 0 }}>Staff</h1>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em", marginTop: "12px" }}>Manage the high-fidelity technical team behind the production</p>
         </div>
         
@@ -83,7 +87,7 @@ export default function StaffManagementPage() {
            className="btn btn-primary" 
            style={{ display: "flex", alignItems: "center", gap: 10, padding: "16px 32px", fontSize: "0.95rem", fontWeight: 700, borderRadius: "14px" }}
         >
-          <Plus size={20} /> Integrate Staff
+          <Plus size={20} /> Add Staff
         </button>
       </div>
 
@@ -135,7 +139,7 @@ export default function StaffManagementPage() {
             alignItems: "center"
         }}>
           <Users size={48} opacity={0.1} style={{ marginBottom: "20px" }} />
-          <p>Personnel archive is currently empty.</p>
+          <p>The staff directory is currently empty.</p>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))", gap: "2rem" }}>
@@ -146,11 +150,19 @@ export default function StaffManagementPage() {
                     staff={staff} 
                     onEdit={() => handleEdit(staff)}
                     onDelete={() => handleDelete(staff.id, staff.name)}
+                    onImageClick={(url) => setLightboxUrl(url)}
                 />
             ))}
           </AnimatePresence>
         </div>
       )}
+
+      <ImageLightbox 
+        isOpen={!!lightboxUrl}
+        src={lightboxUrl || ""}
+        onClose={() => setLightboxUrl(null)}
+        alt="Staff Profile Preview"
+      />
 
       <style jsx global>{`
         @keyframes fadeIn {

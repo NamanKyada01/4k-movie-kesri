@@ -7,6 +7,7 @@ import { Step, StepperProvider, StepperIndicators, StepperContent, useStepper } 
 import BorderGlow from "./BorderGlow";
 import CustomDropdown from "./CustomDropdown";
 import CustomDatePicker from "./CustomDatePicker";
+import ImageUpload from "./ImageUpload";
 import { createEvent, createEquipment, createStaff, updateEvent, updateEquipment, updateStaff } from "@/actions/admin";
 import { toast } from "sonner";
 
@@ -33,10 +34,10 @@ const typeConfig = {
     steps: ["Profile", "Condition", "Review"]
   },
   staff: {
-    createTitle: "Integrate Personnel",
-    editTitle: "Update Identity",
-    subtitle: "Onboard or manage high-fidelity talent on the active roster",
-    steps: ["Identity", "specialization", "Review"]
+    createTitle: "Add Staff Member",
+    editTitle: "Update Staff Profile",
+    subtitle: "Onboard or manage the creative talent on the active roster",
+    steps: ["Profile", "Role", "Review"]
   }
 };
 
@@ -67,7 +68,19 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
         }
         setFormData(data);
       } else {
-        setFormData({});
+        // Initialize with default values so validation matches UI view
+        const defaults: any = {};
+        if (type === "event") {
+            defaults.type = "wedding";
+            defaults.status = "planned";
+        } else if (type === "equipment") {
+            defaults.category = "camera";
+            defaults.condition = "available";
+            defaults.quantity = "1";
+        } else if (type === "staff") {
+            defaults.position = "photographer";
+        }
+        setFormData(defaults);
       }
       setValidationErrors({});
     }
@@ -114,8 +127,8 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
     }
     
     if (type === "staff" && step === 0) {
-      if (!formData.name) errors.name = "Staff Identity is required";
-      if (!formData.email) errors.email = "Electronic Mail is required";
+      if (!formData.name) errors.name = "Staff Name is required";
+      if (!formData.email) errors.email = "Email address is required";
       if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Invalid Email format";
     }
 
@@ -379,7 +392,11 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
             onChange={(v: any) => onChange("condition", v)}
           />
         </LabelWrapper>
-        <Input label="Photo URL (Optional)" value={formData.imageUrl} onChange={(v: string) => onChange("imageUrl", v)} placeholder="https://example.com/photo.jpg" />
+        <ImageUpload 
+          value={formData.imageUrl} 
+          onChange={(v: string) => onChange("imageUrl", v)} 
+          folder="equipment" 
+        />
       </div>
     );
   }
@@ -387,9 +404,17 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
   if (type === "staff") {
     if (step === 0) return (
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        <Input label="Staff Identity *" value={formData.name} onChange={(v: string) => onChange("name", v)} placeholder="Legal Name" error={hasError("identity")} />
-        <Input label="Electronic Mail *" value={formData.email} onChange={(v: string) => onChange("email", v)} type="email" placeholder="email@company.com" error={hasError("mail")} />
-        <Input label="Phone Matrix" value={formData.phone} onChange={(v: string) => onChange("phone", v)} placeholder="+91 XXXX XXXX" />
+        <Input label="Staff Name *" value={formData.name} onChange={(v: string) => onChange("name", v)} placeholder="Full Name" error={hasError("name")} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <Input label="Email Address *" value={formData.email} onChange={(v: string) => onChange("email", v)} type="email" placeholder="email@company.com" error={hasError("email")} />
+            <Input label="Phone Number" value={formData.phone} onChange={(v: string) => onChange("phone", v)} placeholder="+91 XXXX XXXX" />
+        </div>
+        <ImageUpload 
+          value={formData.profilePhoto} 
+          onChange={(v: string) => onChange("profilePhoto", v)} 
+          folder="staff" 
+          label="Profile Photo"
+        />
       </div>
     );
     if (step === 1) return (
@@ -412,24 +437,37 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
 
   // Final Step: Review
   return (
-    <div style={{ background: "rgba(255,255,255,0.02)", padding: "24px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)" }}>
-      <div style={{ textAlign: "center", marginBottom: "24px" }}>
-        <CheckCircle2 size={40} color="var(--accent)" style={{ marginBottom: "12px" }} />
-        <h4 style={{ color: "white", margin: 0 }}>Review Metadata</h4>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>Ensure all technical details are correct before completion.</p>
+    <div style={{ background: "rgba(255,255,255,0.02)", padding: "32px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
+      {/* Decorative Background Glow */}
+      <div style={{ position: "absolute", top: -50, left: "50%", transform: "translateX(-50%)", width: 200, height: 100, background: "var(--accent)", filter: "blur(80px)", opacity: 0.15, borderRadius: "50%" }} />
+
+      <div style={{ textAlign: "center", marginBottom: "32px", position: "relative" }}>
+        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+          <CheckCircle2 size={48} color="var(--accent)" style={{ marginBottom: "16px", margin: "0 auto", filter: "drop-shadow(0 0 12px var(--accent-glow))" }} />
+        </motion.div>
+        <h4 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", color: "white", margin: "0 0 8px 0", letterSpacing: "1px" }}>Review Metadata</h4>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", maxWidth: "80%", margin: "0 auto" }}>Ensure all technical elements are aligned before final deployment.</p>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+
+      {(formData.imageUrl || formData.profilePhoto) && (
+        <div style={{ marginBottom: "24px", display: "flex", justifyContent: "center" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={formData.imageUrl || formData.profilePhoto} alt="Asset Preview" style={{ width: "100%", maxWidth: "200px", height: "120px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }} />
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", background: "rgba(0,0,0,0.2)", padding: "20px", borderRadius: "12px" }}>
         {Object.entries(formData)
-            .filter(([k]) => !['id', 'createdAt', 'updatedAt', 'customType', 'customCategory'].includes(k))
+            .filter(([k]) => !['id', 'createdAt', 'updatedAt', 'customType', 'customCategory', 'imageUrl', 'profilePhoto'].includes(k))
             .map(([key, val]: any) => {
             const getLabel = (k: string) => {
                 const map: Record<string, string> = {
-                    name: "Title", clientName: "Client Name", clientPhone: "Phone", 
+                    name: "Title / Identity", clientName: "Client Name", clientPhone: "Phone", 
                     date: "Date", type: "Sector", location: "Location", 
                     locationLink: "Map Link", googleDriveAlbumLink: "Album Link",
                     status: "Status", category: "Category", condition: "Condition",
                     quantity: "Quantity", serialNumber: "Serial No", email: "Email",
-                    position: "Role", skills: "Skills", phone: "Phone", imageUrl: "Photo Link"
+                    position: "Role", skills: "Skills", phone: "Phone", profilePhoto: "Profile Photo"
                 };
                 return map[k] || k;
             };
@@ -437,9 +475,9 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
             if (key === 'type' && val === 'custom') displayVal = formData.customType;
             if (key === 'category' && val === 'custom') displayVal = formData.customCategory;
             return (
-                <div key={key}>
-                    <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", textTransform: "uppercase" }}>{getLabel(key)}</div>
-                    <div style={{ fontSize: "0.85rem", color: "white", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>{String(displayVal || "—")}</div>
+                <div key={key} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "1px" }}>{getLabel(key)}</div>
+                    <div style={{ fontSize: "0.9rem", color: "white", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{String(displayVal || "—")}</div>
                 </div>
             );
         })}

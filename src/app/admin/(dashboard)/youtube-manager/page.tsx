@@ -15,7 +15,8 @@ import CustomDropdown from "@/components/ui/CustomDropdown";
 const categoryOptions = [
     { value: 'wedding', label: 'Wedding Film' },
     { value: 'pre-wedding', label: 'Pre-Wedding' },
-    { value: 'corporate', label: 'Corporate' }
+    { value: 'corporate', label: 'Corporate' },
+    { value: 'custom', label: 'Other / Custom' }
 ];
 
 export default function YouTubeManagerPage() {
@@ -23,6 +24,7 @@ export default function YouTubeManagerPage() {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("wedding");
+  const [customCategory, setCustomCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Real-time synchronization
@@ -57,15 +59,16 @@ export default function YouTubeManagerPage() {
         title,
         url,
         thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        category: category as any,
+        category: (category === "custom" ? customCategory || "other" : category) as any,
         featured: true,
         order: videos.length + 1,
       });
 
       if (res.success) {
-          toast.success("Cinematic production published!");
+          toast.success("Video added successfully!");
           setUrl("");
           setTitle("");
+          setCustomCategory("");
       } else {
           throw new Error(res.error);
       }
@@ -77,16 +80,16 @@ export default function YouTubeManagerPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Permanently remove this production from the cinematic vault?")) return;
+    if (!confirm("Permanently remove this video from the system?")) return;
     const res = await deleteYouTubeVideo(id);
-    if (res.success) toast.success("Production archived");
-    else toast.error("Purge failed");
+    if (res.success) toast.success("Video deleted");
+    else toast.error("Delete failed");
   };
 
   if (loading) return (
       <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
           <Loader2 size={40} className="animate-spin" color="var(--accent)" />
-          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Reels...</p>
+          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Loading Videos...</p>
       </div>
   );
 
@@ -94,8 +97,8 @@ export default function YouTubeManagerPage() {
     <div style={{ animation: "fadeIn 0.5s ease", paddingBottom: "100px" }}>
       {/* Header */}
       <div style={{ marginBottom: "3rem" }}>
-        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>The Cinema</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Curate and sequence your high-fidelity cinematic productions</p>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>Video Manager</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Manage and sequence your YouTube highlights</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "3rem" }}>
@@ -108,7 +111,7 @@ export default function YouTubeManagerPage() {
             >
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
                     <Plus size={20} color="var(--accent)" />
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>Deploy Reel</h3>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>Add Video</h3>
                 </div>
 
                 <form onSubmit={handleAddVideo} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -127,7 +130,7 @@ export default function YouTubeManagerPage() {
                     </div>
 
                     <div>
-                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Production Title</label>
+                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Video Title</label>
                         <input 
                             type="text" value={title} onChange={e => setTitle(e.target.value)}
                             placeholder="e.g. Rahul & Priya"
@@ -141,7 +144,7 @@ export default function YouTubeManagerPage() {
                     </div>
 
                     <div>
-                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Category Sector</label>
+                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Category</label>
                         <CustomDropdown 
                             options={categoryOptions}
                             value={category}
@@ -149,13 +152,29 @@ export default function YouTubeManagerPage() {
                         />
                     </div>
 
+                    {category === "custom" && (
+                      <div>
+                          <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Custom Category Name</label>
+                          <input 
+                              type="text" value={customCategory} onChange={e => setCustomCategory(e.target.value)}
+                              placeholder="e.g. Testimonials, Shorts..."
+                              style={{ 
+                                  width: "100%", padding: "14px", 
+                                  background: "rgba(255,255,255,0.03)", 
+                                  borderRadius: "10px", border: "1px solid rgba(255,255,255,0.1)",
+                                  fontSize: "0.85rem", color: "white"
+                              }}
+                          />
+                      </div>
+                    )}
+
                     <button 
                         type="submit" 
                         disabled={isSubmitting || !url}
                         className="btn btn-primary"
                         style={{ padding: "16px", borderRadius: "12px", fontWeight: 800 }}
                     >
-                        {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : "Publish to Cinema"}
+                        {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : "Add to Videos"}
                     </button>
                 </form>
             </SpotlightCard>
@@ -170,7 +189,7 @@ export default function YouTubeManagerPage() {
                 <div style={{ flex: 1, position: "relative" }}>
                     <Search size={16} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)" }} />
                     <input 
-                        placeholder="Search cinema archives..."
+                        placeholder="Search videos..."
                         value={search} onChange={e => setSearch(e.target.value)}
                         style={{ width: "100%", background: "transparent", border: "none", padding: "12px 12px 12px 44px", color: "white", outline: "none" }}
                     />
@@ -180,7 +199,7 @@ export default function YouTubeManagerPage() {
             {filteredVideos.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
                     <Film size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
-                    <p>No cinematic reels discovered in this segment.</p>
+                    <p>No videos found.</p>
                 </div>
             ) : (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "2rem" }}>

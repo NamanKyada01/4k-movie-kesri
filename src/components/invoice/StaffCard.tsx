@@ -9,9 +9,10 @@ interface StaffCardProps {
   staff: Staff;
   onEdit: () => void;
   onDelete: () => void;
+  onImageClick: (url: string) => void;
 }
 
-export default function StaffCard({ staff, onEdit, onDelete }: StaffCardProps) {
+export default function StaffCard({ staff, onEdit, onDelete, onImageClick }: StaffCardProps) {
   return (
     <div 
       style={{
@@ -31,12 +32,16 @@ export default function StaffCard({ staff, onEdit, onDelete }: StaffCardProps) {
     >
       {/* Top: Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div style={{ 
+        <div 
+          onClick={() => staff.profilePhoto && onImageClick(staff.profilePhoto)}
+          style={{ 
             width: "60px", height: "60px", 
             borderRadius: "50%", 
             background: "var(--accent)", 
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "black", boxShadow: "0 0 20px rgba(232, 85, 10, 0.2)"
+            color: "black", boxShadow: "0 0 20px rgba(232, 85, 10, 0.2)",
+            cursor: staff.profilePhoto ? "zoom-in" : "default",
+            overflow: "hidden"
         }}>
           {staff.profilePhoto ? (
               <img src={staff.profilePhoto} alt={staff.name} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
@@ -78,7 +83,7 @@ export default function StaffCard({ staff, onEdit, onDelete }: StaffCardProps) {
             <Mail size={14} /> {staff.email}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
-            {staff.skills.slice(0, 3).map(skill => (
+            {(staff.skills || []).slice(0, 3).map(skill => (
                 <span key={skill} style={{ fontSize: "0.6rem", background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", padding: "4px 10px", borderRadius: "20px", fontWeight: 600, border: "1px solid rgba(255,255,255,0.05)" }}>
                     {skill}
                 </span>

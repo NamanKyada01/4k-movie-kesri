@@ -6,7 +6,8 @@ import { useLiveCollection } from "@/hooks/useLiveCollection";
 import { orderBy, where } from "firebase/firestore";
 import { Event } from "@/types";
 import { createEvent, deleteEvent, updateEvent } from "@/actions/admin";
-import { useAlerts } from "@/lib/alerts";
+import { useAlert } from "@/contexts/AlertContext";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import EventCard from "@/components/invoice/EventCard";
 import EventQuickViewModal from "@/components/invoice/EventQuickViewModal";
@@ -27,7 +28,7 @@ export default function EventManagementPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<Event | null>(null);
-  const alerts = useAlerts();
+  const { confirm } = useAlert();
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -54,12 +55,22 @@ export default function EventManagementPage() {
     });
   }, [events, search, activeFilter]);
 
-  const handleDelete = async (id: string) => {
-    const confirmed = await alerts.confirm("This event record will be permanently deleted from the vault.", "Confirm Deletion");
-    if (!confirmed) return;
-    const res = await deleteEvent(id);
-    if (res.success) alerts.cinematic("Event purged from registry", "Registry Purged");
-    else alerts.error("Purge failed: " + res.error, "Purge Failed");
+  const handleDelete = async (id: string, name: string) => {
+    const isConfirmed = await confirm(
+        "Delete Event?",
+        `Are you sure you want to permanently remove ${name}? This action cannot be reversed.`,
+        { primaryActionLabel: "Delete", glowColor: "239 68 68" }
+    );
+
+    if (isConfirmed) {
+        toast.loading("Purging event...", { id: `del-${id}` });
+        const res = await deleteEvent(id);
+        if (res.success) {
+             toast.success("Event purged from registry", { id: `del-${id}` });
+        } else {
+             toast.error("Purge failed: " + res.error, { id: `del-${id}` });
+        }
+    }
   };
 
 
@@ -170,7 +181,7 @@ export default function EventManagementPage() {
               event={ev} 
               onEdit={() => handleEdit(ev)}
               onQuickView={() => setSelectedEvent(ev)}
-              onDelete={() => handleDelete(ev.id)}
+              onDelete={() => handleDelete(ev.id, ev.name)}
             />
           ))}
         </div>

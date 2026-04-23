@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, Save, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon } from "lucide-react";
+import { X, Loader2, Save, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { Step, StepperProvider, StepperIndicators, StepperContent, useStepper } from "./Stepper";
 import BorderGlow from "./BorderGlow";
 import CustomDropdown from "./CustomDropdown";
@@ -360,11 +360,16 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
     const res = await generateAIContent(formData.title);
     if (res.success) {
       onChange("content", res.content);
+      // Auto-set cover image from Groq-generated Pollinations prompt
+      if (res.coverImage) {
+        onChange("coverImage", res.coverImage);
+      }
+      // Auto-set excerpt from article content
       if (res.content && !formData.excerpt) {
         const textOnly = res.content.replace(/<[^>]*>/g, "").slice(0, 150) + "...";
         onChange("excerpt", textOnly);
       }
-      toast.success("AI Generation Complete!");
+      toast.success("Article + cover image generated!");
     } else {
       toast.error(res.error || "AI failed to generate content");
     }
@@ -562,39 +567,41 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
               type="button"
               onClick={handleAIGenerate}
               disabled={isAILoading}
-              title="Generate AI Text"
+              title="Generate article + cover image with AI"
               style={{
-                height: "48px", padding: "0 15px", borderRadius: "10px",
-                background: "rgba(232, 85, 10, 0.1)",
-                border: "1px solid rgba(232, 85, 10, 0.3)", color: "var(--accent)", fontSize: "0.85rem", fontWeight: 700,
-                display: "flex", alignItems: "center", gap: "8px", cursor: isAILoading ? "wait" : "pointer"
+                height: "48px", padding: "0 16px", borderRadius: "10px",
+                background: isAILoading
+                  ? "rgba(232, 85, 10, 0.05)"
+                  : "linear-gradient(135deg, var(--accent) 0%, #ff8c00 100%)",
+                border: "1px solid rgba(232, 85, 10, 0.4)", color: "white", fontSize: "0.82rem", fontWeight: 700,
+                display: "flex", alignItems: "center", gap: "8px", cursor: isAILoading ? "wait" : "pointer",
+                whiteSpace: "nowrap",
+                transition: "all 0.2s",
               }}
             >
-              {isAILoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!formData.title) return toast.error("Please enter a title first");
-                const prompt = encodeURIComponent(`${formData.title} cinematic photography, professional wedding lighting, 8k luxury studio style`);
-                const url = `https://pollinations.ai/p/${prompt}?width=1280&height=720&seed=${Math.floor(Math.random() * 1000000)}&nologo=true`;
-                onChange("coverImage", url);
-                toast.success("Cinematic Cover Generated!");
-              }}
-              title="Generate AI Cover"
-              style={{
-                height: "48px", padding: "0 15px", borderRadius: "10px",
-                background: "linear-gradient(135deg, var(--accent) 0%, #ff8c00 100%)",
-                border: "none", color: "white", fontSize: "0.85rem", fontWeight: 700,
-                display: "flex", alignItems: "center", gap: "8px", cursor: "pointer"
-              }}
-            >
-              <ImageIcon size={16} />
+              {isAILoading
+                ? <><Loader2 size={15} className="animate-spin" /> Generating...</>
+                : <><Sparkles size={15} /> AI Write + Cover</>
+              }
             </button>
           </div>
         </div>
         <Input label="Slug (SEO URL) *" value={formData.slug} onChange={(v: string) => onChange("slug", v)} placeholder="the-art-of-lighting" error={hasError("slug")} />
         <TextArea label="Brief Excerpt (SEO Summary) *" value={formData.excerpt} onChange={(v: string) => onChange("excerpt", v)} placeholder="In this professional guide, we explore..." rows={2} />
+        {/* Cover image preview if already generated */}
+        {formData.coverImage && (
+          <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={formData.coverImage}
+              alt="AI Generated Cover"
+              style={{ width: "100%", height: "140px", objectFit: "cover", display: "block" }}
+            />
+            <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(232,85,10,0.9)", color: "white", fontSize: "0.6rem", fontWeight: 800, padding: "3px 8px", borderRadius: "20px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              AI Cover · Pollinations Flux
+            </div>
+          </div>
+        )}
       </div>
     );
     if (step === 1) return (

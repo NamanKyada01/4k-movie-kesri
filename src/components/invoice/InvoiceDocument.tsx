@@ -5,7 +5,7 @@ import { Invoice } from "@/types/invoice";
 
 interface InvoiceDocumentProps {
   invoice: Partial<Invoice>;
-  previewRef?: React.RefObject<HTMLDivElement>;
+  previewRef?: React.RefObject<HTMLDivElement | null>;
   scale?: number;
 }
 

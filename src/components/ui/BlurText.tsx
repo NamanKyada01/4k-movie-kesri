@@ -29,7 +29,7 @@ const BlurText: React.FC<BlurTextProps> = ({
     },
   };
 
-  const childVariants = {
+  const childVariants: any = {
     hidden: {
       opacity: 0,
       filter: "blur(10px)",

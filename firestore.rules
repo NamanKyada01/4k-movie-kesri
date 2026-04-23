@@ -72,8 +72,8 @@ service cloud.firestore {
     // 8. Inquiries / Leads (Contact Form)
     match /contacts/{id} {
       allow create: if true; // Open capture
-      allow read, delete: if isAdmin();
-      allow update: if isAdmin();
+      allow read: if isAuthenticated();
+      allow update, delete: if isAdmin();
     }
 
     // 9. Testimonials

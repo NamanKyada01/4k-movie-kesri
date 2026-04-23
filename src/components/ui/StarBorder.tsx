@@ -9,6 +9,7 @@ interface StarBorderProps {
   speed?: string;
   thickness?: number;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export const StarBorder = ({
@@ -18,12 +19,13 @@ export const StarBorder = ({
   speed = '6s',
   thickness = 2,
   children,
+  style,
   ...rest
 }: StarBorderProps) => {
   return (
     <Component 
       className={`relative inline-block overflow-hidden rounded-[var(--radius-xl)] ${className}`} 
-      style={{ padding: thickness }}
+      style={{ padding: thickness, ...style }}
       {...rest}
     >
       {/* Animated Gradient Layers */}

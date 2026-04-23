@@ -1,3 +1,4 @@
+"use client";
 import { motion } from "framer-motion";
 import { Camera, Clock } from "lucide-react";
 import { CinemaBackground } from "@/components/layout/CinemaBackground";

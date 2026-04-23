@@ -106,7 +106,7 @@ export default function CustomAlert({
   
   const config = alertConfig[type];
   const Icon = config.icon;
-  const customGlowColor = glowColor || config.glowColor;
+  const customGlowColor = glowColor || config.glowHSL;
 
   useEffect(() => {
     if (finalDuration > 0) {
@@ -336,7 +336,7 @@ export default function CustomAlert({
           >
             {borderGlow ? (
               <BorderGlow 
-                glowColor={config.glowHSL} 
+                glowColor={customGlowColor} 
                 backgroundColor={config.bgColor}
                 borderRadius={16}
                 colors={config.meshColors}

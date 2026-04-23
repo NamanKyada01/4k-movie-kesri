@@ -1,6 +1,7 @@
 import { Calendar, User, MapPin, Link as LinkIcon, Trash2, Edit2, Phone, ExternalLink, Camera } from "lucide-react";
 import TiltedCard from "../ui/TiltedCard";
 import InvoiceStatusBadge from "./InvoiceStatusBadge"; 
+import type { Event } from "@/types";
 
 interface EventCardProps {
   event: Event;

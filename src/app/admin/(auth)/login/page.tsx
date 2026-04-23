@@ -104,9 +104,7 @@ export default function AdminLoginPage() {
         <Particles
           particleCount={100}
           particleColors={["#ffffff", "#E8550A", "#C9A84C"]}
-          moveSpeed={0.5}
-          sizeRange={[1, 3]}
-          alphaRange={[0.1, 0.4]}
+          speed={0.05}
         />
       </div>
 

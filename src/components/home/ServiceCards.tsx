@@ -140,7 +140,6 @@ export function ServiceCards() {
                       marginTop: "auto",
                       paddingTop: "var(--space-4)",
                       borderTop: "1px solid var(--border)",
-                      fontSize: "0.8rem"
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLAnchorElement).style.gap = "12px";

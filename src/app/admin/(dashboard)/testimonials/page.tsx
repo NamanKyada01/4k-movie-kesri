@@ -97,99 +97,174 @@ export default function TestimonialsManager() {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: "var(--space-8)" }}>
-        <h1 style={{ fontSize: "1.6rem", marginBottom: 4 }}>Testimonials Manager</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Curate client love to display on your homepage.</p>
+    <div style={{ paddingBottom: "100px" }}>
+      <div style={{ marginBottom: "var(--space-10)" }}>
+        <h1 style={{ fontSize: "3rem", fontWeight: 800, letterSpacing: "-0.04em", marginBottom: 4, fontFamily: "Epilogue, sans-serif", textTransform: "uppercase" }}>Testimonials</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", maxWidth: "600px" }}>The voices of those whose stories we've had the honor to tell.</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: "var(--space-6)" }} className="manager-layout">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-10)" }} className="manager-layout">
         
         {/* Add Form */}
-        <div className="card" style={{ alignSelf: "start", position: "sticky", top: "calc(var(--nav-height) + 20px)" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "var(--space-5)", display: "flex", alignItems: "center", gap: 8 }}>
-            <Plus size={18} color="var(--accent)" />
-            Add Review
+        <div style={{ 
+          background: "rgba(25, 25, 25, 0.4)", 
+          backdropFilter: "blur(40px)", 
+          padding: "var(--space-8)", 
+          borderRadius: "var(--radius-xl)",
+          border: "1px solid rgba(255, 255, 255, 0.03)",
+          alignSelf: "start",
+          position: "sticky",
+          top: "calc(var(--nav-height) + 20px)"
+        }}>
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "var(--space-6)", color: "var(--accent)", fontFamily: "Epilogue, sans-serif", display: "flex", alignItems: "center", gap: 12 }}>
+            Capture Love
           </h3>
           
-          <form onSubmit={handleAddTestimonial} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <form onSubmit={handleAddTestimonial} style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Client Name</label>
-              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} />
-            </div>
-
-            <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Event Type</label>
-              <input type="text" value={eventType} onChange={e => setEventType(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} placeholder="e.g. Wedding, Corporate..." />
+              <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Client Identity</label>
+              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} required style={{ width: "100%", padding: "10px 0", background: "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.1)", color: "var(--text-primary)", fontSize: "1rem", outline: "none" }} placeholder="Full Name" />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Rating</label>
-              <CustomDropdown 
-                options={ratingOptions}
-                value={String(rating)}
-                onChange={val => setRating(Number(val))}
-              />
+              <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Production Event</label>
+              <input type="text" value={eventType} onChange={e => setEventType(e.target.value)} required style={{ width: "100%", padding: "10px 0", background: "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.1)", color: "var(--text-primary)", fontSize: "1rem", outline: "none" }} placeholder="e.g. Cinematic Wedding" />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Star Rating</label>
+                <CustomDropdown 
+                  options={ratingOptions}
+                  value={String(rating)}
+                  onChange={val => setRating(Number(val))}
+                />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, alignSelf: "end", paddingBottom: "10px" }}>
+                <input type="checkbox" id="featured" checked={featured} onChange={e => setFeatured(e.target.checked)} style={{ width: 18, height: 18, accentColor: "var(--accent)" }} />
+                <label htmlFor="featured" style={{ fontSize: "0.85rem", cursor: "pointer", color: "var(--text-secondary)" }}>Feature on Home?</label>
+              </div>
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Review Text</label>
-              <textarea value={text} onChange={e => setText(e.target.value)} required rows={4} style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)", resize: "vertical" }} />
+              <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>The Quote</label>
+              <textarea value={text} onChange={e => setText(e.target.value)} required rows={4} style={{ width: "100%", padding: "12px", background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "var(--radius-lg)", color: "var(--text-primary)", resize: "vertical", fontSize: "0.95rem", outline: "none" }} placeholder="Write the heartfelt words here..." />
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0" }}>
-              <input type="checkbox" id="featured" checked={featured} onChange={e => setFeatured(e.target.checked)} />
-              <label htmlFor="featured" style={{ fontSize: "0.85rem", cursor: "pointer" }}>Feature on Homepage?</label>
-            </div>
-
-            <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "var(--space-2)" }} disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 size={16} className="animate-spin-slow" /> Adding...</> : "Publish Review"}
+            <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "14px", fontWeight: 700, borderRadius: "100px", background: "linear-gradient(135deg, #E8550A, #C9A84C)", marginTop: "var(--space-2)" }} disabled={isSubmitting}>
+              {isSubmitting ? <><Loader2 size={18} className="animate-spin-slow" /> Publishing...</> : "Publish Narrative"}
             </button>
           </form>
         </div>
 
         {/* Reviews List */}
-        <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-6)" }}>
-             <h3 style={{ fontSize: "1rem" }}>All Testimonials ({testimonials.length})</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+             <h3 style={{ fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)" }}>Legacy of Love ({testimonials.length})</h3>
           </div>
 
           {isLoading ? (
             <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-10)" }}>
-              <Loader2 size={32} className="animate-spin-slow" color="var(--text-muted)" />
+              <Loader2 size={40} className="animate-spin-slow" color="var(--accent)" />
             </div>
           ) : testimonials.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)", background: "var(--bg-elevated)", borderRadius: "var(--radius-lg)" }}>
-              <Star size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
-              <p>No testimonials added yet.</p>
+            <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)", background: "rgba(25,25,25,0.4)", borderRadius: "var(--radius-xl)", border: "1px solid rgba(255,255,255,0.03)" }}>
+              <Star size={40} style={{ margin: "0 auto 16px", opacity: 0.1 }} />
+              <p>No narratives yet.</p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+            <div style={{ display: "grid", gap: "var(--space-6)" }}>
               {testimonials.map(t => (
-                <div key={t.id} style={{ padding: "var(--space-5)", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", position: "relative" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "var(--space-3)" }}>
+                <div key={t.id} style={{ 
+                  padding: "var(--space-8)", 
+                  background: "rgba(25, 25, 25, 0.4)", 
+                  backdropFilter: "blur(40px)",
+                  borderRadius: "var(--radius-xl)", 
+                  border: "1px solid rgba(255, 255, 255, 0.03)",
+                  position: "relative",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                  overflow: "hidden"
+                }} className="testimonial-card">
+                  
+                  {t.featured && (
+                    <div style={{ 
+                      position: "absolute", 
+                      top: 0, 
+                      right: 0, 
+                      width: "120px", 
+                      height: "120px", 
+                      background: "radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 70%)",
+                      pointerEvents: "none"
+                    }} />
+                  )}
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "var(--space-6)" }}>
                     <div>
-                      <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{t.clientName}</div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--accent)", marginTop: 2 }}>{t.eventType}</div>
+                      <div style={{ fontWeight: 800, color: "var(--text-primary)", fontSize: "1.2rem", fontFamily: "Epilogue, sans-serif" }}>{t.clientName}</div>
+                      <div style={{ fontSize: "0.75rem", color: "var(--accent)", marginTop: 4, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{t.eventType}</div>
                     </div>
-                    <div style={{ display: "flex", gap: 2 }}>
+                    <div style={{ display: "flex", gap: 3 }}>
                        {Array.from({ length: t.rating }).map((_, i) => (
-                         <Star key={i} size={14} fill="var(--gold)" color="var(--gold)" />
+                         <Star key={i} size={16} fill="var(--gold)" color="transparent" style={{ filter: "drop-shadow(0 0 5px rgba(201, 168, 76, 0.5))" }} />
                        ))}
                     </div>
                   </div>
                   
-                  <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", fontStyle: "italic", lineHeight: 1.6, marginBottom: "var(--space-4)" }}>
+                  <p style={{ 
+                    fontSize: "1.3rem", 
+                    color: "var(--text-primary)", 
+                    fontFamily: "Epilogue, sans-serif",
+                    fontWeight: 500,
+                    fontStyle: "italic", 
+                    lineHeight: 1.5, 
+                    marginBottom: "var(--space-8)",
+                    opacity: 0.9
+                  }}>
                     "{t.text}"
                   </p>
                   
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border)", paddingTop: "var(--space-3)", marginTop: "var(--space-2)" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem", cursor: "pointer", color: t.featured ? "var(--text-primary)" : "var(--text-muted)" }}>
-                      <input type="checkbox" checked={t.featured} onChange={() => toggleFeatured(t.id, t.featured)} />
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "var(--space-6)" }}>
+                    <div 
+                      onClick={() => toggleFeatured(t.id, t.featured)}
+                      style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: 8, 
+                        fontSize: "0.8rem", 
+                        cursor: "pointer", 
+                        color: t.featured ? "var(--gold)" : "var(--text-muted)",
+                        fontWeight: 600,
+                        textTransform: "uppercase"
+                      }}
+                    >
+                      <div style={{ 
+                        width: 12, 
+                        height: 12, 
+                        borderRadius: "50%", 
+                        background: t.featured ? "var(--gold)" : "transparent",
+                        border: `2px solid ${t.featured ? "var(--gold)" : "var(--text-muted)"}`,
+                        boxShadow: t.featured ? "0 0 10px var(--gold)" : "none"
+                      }} />
                       Featured on Home
-                    </label>
-                    <button onClick={() => handleDelete(t.id)} style={{ background: "transparent", border: "none", color: "var(--error)", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: "0.8rem" }}>
-                      <Trash2 size={14} /> Delete
+                    </div>
+                    <button 
+                      onClick={() => handleDelete(t.id)} 
+                      style={{ 
+                        background: "transparent", 
+                        border: "none", 
+                        color: "var(--error)", 
+                        cursor: "pointer", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: 6, 
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        opacity: 0.6,
+                        transition: "opacity 0.2s"
+                      }}
+                      className="delete-pill"
+                    >
+                      <Trash2 size={16} /> Delete
                     </button>
                   </div>
                 </div>
@@ -201,7 +276,13 @@ export default function TestimonialsManager() {
       </div>
 
       <style>{`
-        @media (max-width: 900px) {
+        .testimonial-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+          border-color: rgba(255,255,255,0.08) !important;
+        }
+        .delete-pill:hover { opacity: 1 !important; }
+        @media (max-width: 1100px) {
           .manager-layout { grid-template-columns: 1fr !important; }
         }
       `}</style>

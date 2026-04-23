@@ -26,7 +26,7 @@ export default function GalleryManagerPage() {
   const stats = useMemo(() => {
     return {
       total: photos.length,
-      featured: photos.filter(p => p.isFeatured).length,
+      featured: photos.filter(p => p.featured).length,
       wedding: photos.filter(p => p.category === "wedding").length,
       portrait: photos.filter(p => p.category === "portrait").length,
     };

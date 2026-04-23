@@ -70,9 +70,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <Particles
           particleCount={50}
           particleColors={["var(--accent)", "var(--text-muted)"]}
-          moveSpeed={0.2}
-          sizeRange={[0.5, 2]}
-          alphaRange={[0.05, 0.15]}
+          speed={0.02}
         />
       </div>
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}

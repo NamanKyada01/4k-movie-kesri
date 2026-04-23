@@ -88,41 +88,47 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: "var(--space-8)" }}>
-        <h1 style={{ fontSize: "1.6rem", marginBottom: 4 }}>System Access</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Manage who can log into the dashboard using OTP authentication.</p>
+    <div style={{ paddingBottom: "100px" }}>
+      <div style={{ marginBottom: "var(--space-10)" }}>
+        <h1 style={{ fontSize: "3rem", fontWeight: 800, letterSpacing: "-0.04em", marginBottom: 4, fontFamily: "Epilogue, sans-serif", textTransform: "uppercase" }}>Users</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", maxWidth: "600px" }}>Manage administrative access and studio permissions.</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: "var(--space-6)" }} className="manager-layout">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-10)" }} className="manager-layout">
         
         {/* Add Form */}
-        <div className="card" style={{ alignSelf: "start", position: "sticky", top: "calc(var(--nav-height) + 20px)" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "var(--space-5)", display: "flex", alignItems: "center", gap: 8 }}>
-            <Plus size={18} color="var(--accent)" />
-            Grant Access
-          </h3>
+        <div style={{ 
+          background: "rgba(25, 25, 25, 0.4)", 
+          backdropFilter: "blur(40px)", 
+          padding: "var(--space-8)", 
+          borderRadius: "var(--radius-xl)",
+          border: "1px solid rgba(255, 255, 255, 0.03)",
+          alignSelf: "start",
+          position: "sticky",
+          top: "calc(var(--nav-height) + 20px)"
+        }}>
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "var(--space-6)", color: "var(--accent)", fontFamily: "Epilogue, sans-serif", textTransform: "uppercase", letterSpacing: "0.05em" }}>Grant Access</h3>
 
           {adminData?.role !== "owner" && (
-            <div style={{ padding: "10px", background: "rgba(239, 172, 68, 0.1)", color: "rgb(239, 172, 68)", borderRadius: "var(--radius-sm)", fontSize: "0.75rem", display: "flex", gap: 8, marginBottom: "var(--space-4)" }}>
-               <ShieldAlert size={16} style={{ flexShrink: 0 }} /> 
-               You must be the Master Owner to grant dashboard access to new employees.
+            <div style={{ padding: "14px", background: "rgba(232, 85, 10, 0.1)", color: "var(--accent)", borderRadius: "var(--radius-lg)", fontSize: "0.8rem", display: "flex", gap: 10, marginBottom: "var(--space-6)", border: "1px solid rgba(232, 85, 10, 0.2)" }}>
+               <ShieldAlert size={18} style={{ flexShrink: 0 }} /> 
+               Master Owner privileges required to authorize new personnel.
             </div>
           )}
           
-          <form onSubmit={handleAddUser} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", opacity: adminData?.role === "owner" ? 1 : 0.5, pointerEvents: adminData?.role === "owner" ? "auto" : "none" }}>
+          <form onSubmit={handleAddUser} style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)", opacity: adminData?.role === "owner" ? 1 : 0.4, pointerEvents: adminData?.role === "owner" ? "auto" : "none" }}>
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Employee Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} placeholder="staff@example.com" />
+              <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Professional Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: "100%", padding: "10px 0", background: "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.1)", color: "var(--text-primary)", fontSize: "1rem", outline: "none" }} placeholder="personnel@4kmoviekesri.com" />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Full Name</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ width: "100%", padding: "10px 12px", background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", color: "var(--text-primary)" }} />
+              <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Full Legal Name</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} required style={{ width: "100%", padding: "10px 0", background: "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.1)", color: "var(--text-primary)", fontSize: "1rem", outline: "none" }} />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "0.75rem", marginBottom: 6, color: "var(--text-muted)" }}>Role</label>
+              <label style={{ display: "block", fontSize: "0.7rem", fontWeight: 600, marginBottom: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Authority Tier</label>
               <CustomDropdown 
                 options={roleOptions}
                 value={role}
@@ -130,60 +136,88 @@ export default function AdminUsersPage() {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "var(--space-2)" }} disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 size={16} className="animate-spin-slow" /> Granting...</> : "Grant Access"}
+            <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "14px", fontWeight: 700, borderRadius: "100px", background: "linear-gradient(135deg, #E8550A, #C9A84C)", marginTop: "var(--space-2)" }} disabled={isSubmitting}>
+              {isSubmitting ? <><Loader2 size={18} className="animate-spin-slow" /> Authorizing...</> : "Authorize Access"}
             </button>
           </form>
         </div>
 
         {/* Users List */}
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ padding: "var(--space-5) var(--space-6)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-             <h3 style={{ fontSize: "1rem", margin: 0 }}>Authorized Operators ({users.length})</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+             <h3 style={{ fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)" }}>Authorized Personnel ({users.length})</h3>
           </div>
 
           {isLoading ? (
             <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-10)" }}>
-              <Loader2 size={32} className="animate-spin-slow" color="var(--text-muted)" />
+              <Loader2 size={40} className="animate-spin-slow" color="var(--accent)" />
             </div>
           ) : users.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)" }}>
-               <UserCog size={32} style={{ margin: "0 auto 12px", opacity: 0.2 }} />
-               <p>No admins found.</p>
+            <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)", background: "rgba(25,25,25,0.4)", borderRadius: "var(--radius-xl)", border: "1px solid rgba(255,255,255,0.03)" }}>
+               <UserCog size={40} style={{ margin: "0 auto 16px", opacity: 0.1 }} />
+               <p>No personnel listed.</p>
             </div>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--bg-elevated)" }}>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>Employee</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "left", color: "var(--text-muted)", fontWeight: 600 }}>System Role</th>
-                    <th style={{ padding: "var(--space-3) var(--space-4)", textAlign: "right", color: "var(--text-muted)", fontWeight: 600 }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u) => (
-                    <tr key={u.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "var(--space-4)" }}>
-                        <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{u.name}</div>
-                        <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 2 }}>{u.email}</div>
-                      </td>
-                      <td style={{ padding: "var(--space-4)" }}>
-                         <span className={u.role === "owner" ? "badge badge-gold" : "badge badge-accent"} style={{ textTransform: "uppercase", fontSize: "0.6rem" }}>
-                           {u.role}
-                         </span>
-                      </td>
-                      <td style={{ padding: "var(--space-4)", textAlign: "right" }}>
-                        {u.role !== "owner" && (
-                          <button onClick={() => handleDelete(u.email, u.role)} style={{ background: "transparent", border: "none", color: "var(--error)", cursor: adminData?.role === "owner" ? "pointer" : "not-allowed", padding: "4px", opacity: adminData?.role === "owner" ? 1 : 0.3 }} title="Revoke Access">
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ display: "grid", gap: "var(--space-4)" }}>
+              {users.map((u) => (
+                <div key={u.id} style={{ 
+                  padding: "var(--space-6)", 
+                  background: "rgba(25, 25, 25, 0.4)", 
+                  backdropFilter: "blur(40px)",
+                  borderRadius: "var(--radius-xl)", 
+                  border: "1px solid rgba(255, 255, 255, 0.03)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", fontWeight: 700, color: "var(--accent)" }}>
+                      {u.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "1rem" }}>{u.name}</div>
+                      <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: 2 }}>{u.email}</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                    <span 
+                      style={{ 
+                        textTransform: "uppercase", 
+                        fontSize: "0.65rem", 
+                        fontWeight: 800, 
+                        letterSpacing: "0.1em",
+                        padding: "4px 12px",
+                        borderRadius: "100px",
+                        background: u.role === "owner" ? "rgba(201, 168, 76, 0.2)" : "rgba(255,255,255,0.05)",
+                        color: u.role === "owner" ? "var(--gold)" : "var(--text-muted)",
+                        border: u.role === "owner" ? "1px solid var(--gold)" : "1px solid transparent",
+                        boxShadow: u.role === "owner" ? "0 0 10px rgba(201, 168, 76, 0.3)" : "none"
+                      }}
+                    >
+                      {u.role}
+                    </span>
+
+                    {u.role !== "owner" && (
+                      <button 
+                        onClick={() => handleDelete(u.email, u.role)} 
+                        disabled={adminData?.role !== "owner"}
+                        style={{ 
+                          background: "transparent", 
+                          border: "none", 
+                          color: "var(--error)", 
+                          cursor: adminData?.role === "owner" ? "pointer" : "not-allowed", 
+                          opacity: adminData?.role === "owner" ? 0.6 : 0.1,
+                          transition: "opacity 0.2s"
+                        }}
+                        className="revoke-btn"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -191,7 +225,8 @@ export default function AdminUsersPage() {
       </div>
 
       <style>{`
-        @media (max-width: 900px) {
+        .revoke-btn:hover { opacity: 1 !important; }
+        @media (max-width: 1000px) {
           .manager-layout { grid-template-columns: 1fr !important; }
         }
       `}</style>

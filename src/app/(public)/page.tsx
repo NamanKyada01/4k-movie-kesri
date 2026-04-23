@@ -223,16 +223,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
           <div className="testimonials-carousel" style={{ display: "flex", gap: "var(--space-4)", overflowX: "auto", paddingBottom: "var(--space-6)", scrollSnapType: "x mandatory", scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {displayItems.map((t) => (
               <div key={t.id} style={{ minWidth: "280px", flex: "0 0 100%", scrollSnapAlign: "center", maxWidth: "340px" }} className="testimonial-card-item">
-                <TiltedCard
-                  containerHeight="360px"
-                  containerWidth="100%"
-                  imageHeight="100%"
-                  imageWidth="100%"
-                  rotateAmplitude={12}
-                  scaleOnHover={1.02}
-                  showTooltip={false}
-                  className="testimonial-tilted-card"
-                >
+                <TiltedCard>
                   <div 
                     className="card" 
                     style={{ 

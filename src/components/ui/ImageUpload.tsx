@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { UploadCloud, Loader2, X, Edit3, Image as ImageIcon } from "lucide-react";
+import { UploadCloud, Loader2, X, Edit3, Image as ImageIcon, Maximize2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import ImageEditorModal from "./ImageEditorModal";
 
@@ -15,6 +16,8 @@ interface ImageUploadProps {
 export default function ImageUpload({ value, onChange, folder = "general", label = "Image" }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
   const [tempSrc, setTempSrc] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,15 +82,29 @@ export default function ImageUpload({ value, onChange, folder = "general", label
       <label style={labelStyle}>{label}</label>
 
       {value ? (
-        <div style={previewContainerStyle}>
+        <div 
+          style={previewContainerStyle}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="Preview" style={previewImageStyle} />
-          <div style={previewOverlayStyle}>
+          <img 
+            src={`${value}?v=${Date.now()}`} // Bust cache to show cropped version immediately 
+            alt="Preview" 
+            style={{ ...previewImageStyle, cursor: "zoom-in" }} 
+            onClick={() => setShowLightbox(true)}
+          />
+          <div style={{ ...previewOverlayStyle, opacity: isHovered ? 1 : 0, pointerEvents: isHovered ? "auto" : "none" }}>
+            <div style={{ position: "absolute", top: 12, right: 12, display: "flex", gap: "8px" }}>
+                <button type="button" onClick={() => setShowLightbox(true)} style={iconBtnOverlayStyle}>
+                    <Maximize2 size={14} />
+                </button>
+                <button type="button" onClick={() => onChange("")} style={iconBtnOverlayStyleRed}>
+                    <X size={14} />
+                </button>
+            </div>
             <button type="button" onClick={() => fileInputRef.current?.click()} style={actionBtnStyle}>
-                <Edit3 size={14} /> Refine Asset
-            </button>
-            <button type="button" onClick={() => onChange("")} style={removeBtnStyle}>
-                <X size={14} />
+                <Edit3 size={14} /> Replace Photo
             </button>
           </div>
         </div>
@@ -114,9 +131,148 @@ export default function ImageUpload({ value, onChange, folder = "general", label
           onCancel={() => { setIsEditorOpen(false); setTempSrc(null); setPendingFile(null); }}
         />
       )}
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {showLightbox && value && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={lightboxOverlayStyle} 
+              onClick={() => setShowLightbox(false)}
+            >
+                <div style={lightboxContentStyle}>
+                    <button style={lightboxCloseBtnStyle} onClick={() => setShowLightbox(false)}>
+                        <X size={28} />
+                    </button>
+                    
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                        style={lightboxFrameStyle}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Loading Spinner for High-Res */}
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 0 }}>
+                            <Loader2 size={32} className="animate-spin" color="rgba(255,255,255,0.1)" />
+                        </div>
+
+                        <img 
+                            src={`${value}${value.includes('?') ? '&' : '?'}v=${Date.now()}`} 
+                            alt="View" 
+                            style={lightboxImgStyle} 
+                            onLoad={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.opacity = "1";
+                            }}
+                        />
+
+                        {/* Top Inner Glow */}
+                        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)", borderRadius: "12px" }} />
+                    </motion.div>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
+// Additional Styles
+const iconBtnOverlayStyle: React.CSSProperties = {
+    background: "rgba(0,0,0,0.6)",
+    backdropFilter: "blur(8px)",
+    border: "1px solid rgba(255,255,255,0.15)",
+    color: "white",
+    width: "36px",
+    height: "36px",
+    borderRadius: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "all 0.2s ease"
+};
+
+const iconBtnOverlayStyleRed: React.CSSProperties = {
+    ...iconBtnOverlayStyle,
+    background: "rgba(255,50,50,0.4)",
+    color: "white"
+};
+
+const lightboxOverlayStyle: React.CSSProperties = {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(5,5,7,0.94)",
+    backdropFilter: "blur(30px)",
+    zIndex: 2500,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "40px",
+    cursor: "zoom-out"
+};
+
+const lightboxContentStyle: React.CSSProperties = {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "none"
+};
+
+const lightboxFrameStyle: React.CSSProperties = {
+    position: "relative",
+    maxWidth: "92vw",
+    maxHeight: "85vh",
+    background: "rgba(255,255,255,0.02)",
+    padding: "6px", // Thickness of the frame
+    borderRadius: "18px",
+    border: "1px solid rgba(255,255,255,0.1)",
+    boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 30px 100px rgba(0,0,0,0.8), 0 0 40px var(--accent-glow)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "auto",
+    overflow: "hidden"
+};
+
+const lightboxImgStyle: React.CSSProperties = {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+    borderRadius: "12px",
+    display: "block",
+    opacity: 0,
+    transition: "opacity 0.4s ease",
+    position: "relative",
+    zIndex: 1
+};
+
+const lightboxCloseBtnStyle: React.CSSProperties = {
+    position: "fixed",
+    top: "30px",
+    right: "30px",
+    background: "rgba(255,255,255,0.1)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: "50%",
+    color: "white",
+    width: "54px",
+    height: "54px",
+    cursor: "pointer",
+    zIndex: 2501,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    pointerEvents: "auto",
+    transition: "all 0.3s ease",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+};
 
 // Styles
 const labelStyle: React.CSSProperties = {

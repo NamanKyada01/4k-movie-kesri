@@ -15,8 +15,9 @@ export const ParticleCanvas: React.FC = () => {
         let w: number;
         let h: number;
 
-        const particles: any[] = [];
-        const particleCount = 120;
+        // Sparks: small white dots that drift slowly and twinkle
+        const sparks: { x: number; y: number; vx: number; vy: number; r: number; a: number; da: number }[] = [];
+        const SPARK_COUNT = 80;
 
         const resize = () => {
             w = canvas.width = window.innerWidth;
@@ -25,53 +26,45 @@ export const ParticleCanvas: React.FC = () => {
 
         const init = () => {
             resize();
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
+            sparks.length = 0;
+            for (let i = 0; i < SPARK_COUNT; i++) {
+                sparks.push({
                     x: Math.random() * w,
                     y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.15,
-                    vy: (Math.random() - 0.5) * 0.15,
-                    r: Math.random() * 1.2 + 0.3,
-                    a: Math.random() * 0.5 + 0.1
+                    vx: (Math.random() - 0.5) * 0.12,
+                    vy: (Math.random() - 0.5) * 0.12,
+                    r: Math.random() * 1.0 + 0.3,
+                    a: Math.random() * 0.35 + 0.05,
+                    da: (Math.random() - 0.5) * 0.004, // twinkle speed
                 });
             }
         };
 
         const draw = () => {
             ctx.clearRect(0, 0, w, h);
-            
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
+
+            for (const p of sparks) {
+                // Move
                 p.x += p.vx;
                 p.y += p.vy;
 
+                // Wrap edges
                 if (p.x < 0) p.x = w;
                 if (p.x > w) p.x = 0;
                 if (p.y < 0) p.y = h;
                 if (p.y > h) p.y = 0;
 
+                // Twinkle
+                p.a += p.da;
+                if (p.a > 0.4 || p.a < 0.04) p.da *= -1;
+
+                // Draw white spark dot
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(232, 85, 10, ${p.a})`;
+                ctx.fillStyle = `rgba(255, 255, 255, ${p.a})`;
                 ctx.fill();
-
-                // Connections
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dx = p.x - p2.x;
-                    const dy = p.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 80) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(232, 85, 10, ${0.08 * (1 - dist / 80)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
             }
+
             animationFrameId = requestAnimationFrame(draw);
         };
 
@@ -94,7 +87,7 @@ export const ParticleCanvas: React.FC = () => {
                 left: 0,
                 zIndex: 0,
                 pointerEvents: 'none',
-                opacity: 0.6
+                opacity: 0.5,
             }}
         />
     );

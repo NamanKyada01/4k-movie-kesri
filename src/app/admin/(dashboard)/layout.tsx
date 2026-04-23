@@ -16,7 +16,7 @@ const navItems = [
   { label: "Personnel",           href: "/admin/staff",               icon: Users },
   { label: "Gallery Manager",     href: "/admin/gallery-manager",     icon: Image },
   { label: "YouTube Manager",     href: "/admin/youtube-manager",     icon: PlayCircle },
-  { label: "Orbital Command",     href: "/admin/calendar",            icon: LayoutDashboard },
+  { label: "Calendar",           href: "/admin/calendar",            icon: LayoutDashboard },
   { label: "Blog Manager",        href: "/admin/blog-manager",        icon: FileText },
   { label: "Content Editor",      href: "/admin/content-editor",      icon: Edit3 },
   { label: "Invoices",            href: "/admin/invoices",            icon: FileText },

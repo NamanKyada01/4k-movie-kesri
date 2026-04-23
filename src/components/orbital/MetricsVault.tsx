@@ -27,8 +27,8 @@ export const MetricsVault: React.FC<any> = ({ metrics, loading }) => {
   return (
     <aside className="metrics-vault scrollbar-hidden">
       <header className="panel-header">
-        <span className="micro-label">Fleet Operations</span>
-        <h2 className="panel-title">Metrics Vault</h2>
+        <span className="micro-label">Overview</span>
+        <h2 className="panel-title">Stats</h2>
       </header>
 
       <div className="mini-stats">
@@ -57,7 +57,7 @@ export const MetricsVault: React.FC<any> = ({ metrics, loading }) => {
         <StatCard 
           label="Confirmed Bookings" 
           value={`${metrics.confirmedCount}/24`} 
-          sub="Resource allocation active"
+          sub="Slots filled"
           progress={75}
         />
         <StatCard 
@@ -66,12 +66,12 @@ export const MetricsVault: React.FC<any> = ({ metrics, loading }) => {
           sub="Potential conversion"
           progress={60}
           color="blue"
-          delta="AMBER WARNING"
+          delta="Potential leads"
         />
         <StatCard 
-          label="Crew Utilization" 
+          label="Team Availability" 
           value="94%" 
-          sub="Primary active"
+          sub="Team members active"
           progress={94}
         />
       </div>

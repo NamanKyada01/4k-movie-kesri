@@ -2,16 +2,20 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, Save, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
+import { X, Loader2, Save, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Sparkles, Image as ImageIcon } from "lucide-react";
 import { Step, StepperProvider, StepperIndicators, StepperContent, useStepper } from "./Stepper";
 import BorderGlow from "./BorderGlow";
 import CustomDropdown from "./CustomDropdown";
 import CustomDatePicker from "./CustomDatePicker";
 import ImageUpload from "./ImageUpload";
-import { createEvent, createEquipment, createStaff, updateEvent, updateEquipment, updateStaff } from "@/actions/admin";
+import { 
+  createEvent, createEquipment, createStaff, createGalleryPhoto, createBlogPost,
+  updateEvent, updateEquipment, updateStaff, updateGalleryPhoto, updateBlogPost,
+  generateAIContent 
+} from "@/actions/admin";
 import { toast } from "sonner";
 
-type ModalType = "event" | "equipment" | "staff";
+type ModalType = "event" | "equipment" | "staff" | "gallery" | "blog";
 
 interface CreationModalProps {
   isOpen: boolean;
@@ -38,6 +42,18 @@ const typeConfig = {
     editTitle: "Update Staff Profile",
     subtitle: "Onboard or manage the creative talent on the active roster",
     steps: ["Profile", "Role", "Review"]
+  },
+  gallery: {
+    createTitle: "Upload Photos",
+    editTitle: "Update Photo Info",
+    subtitle: "Add new cinematic assets to your professional showcase",
+    steps: ["Select Media", "Category", "Review"]
+  },
+  blog: {
+    createTitle: "Write Article",
+    editTitle: "Update Post",
+    subtitle: "Publish cinematic stories and drive organic studio traffic",
+    steps: ["SEO & Title", "Content & Category", "Review"]
   }
 };
 
@@ -66,6 +82,10 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
             data.customCategory = data.category;
             data.category = "custom";
         }
+        if (type === "gallery") {
+            data.url = data.cloudinaryUrl;
+            data.isFeatured = data.featured;
+        }
         setFormData(data);
       } else {
         // Initialize with default values so validation matches UI view
@@ -79,6 +99,13 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
             defaults.quantity = "1";
         } else if (type === "staff") {
             defaults.position = "photographer";
+        } else if (type === "gallery") {
+            defaults.category = "wedding";
+            defaults.isFeatured = false;
+        } else if (type === "blog") {
+            defaults.category = "news";
+            defaults.status = "draft";
+            defaults.views = 0;
         }
         setFormData(defaults);
       }
@@ -132,6 +159,15 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
       if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Invalid Email format";
     }
 
+    if (type === "gallery" && step === 0) {
+      if (!formData.url && !formData.selectedFiles) errors.url = "Please select at least one photo";
+    }
+
+    if (type === "blog" && step === 0) {
+      if (!formData.title) errors.title = "Post Title is required";
+      if (!formData.slug) errors.slug = "Slug is required for SEO";
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -155,10 +191,23 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
       }
       delete payload.customCategory;
 
-      if (type === "event") {
+      if (type === "gallery") {
+          payload.cloudinaryUrl = payload.url;
+          payload.featured = !!payload.isFeatured;
+          delete payload.url;
+          delete payload.isFeatured;
+      }
+
+      if (type === "blog") {
+          res = id ? await updateBlogPost(id, payload) : await createBlogPost(payload);
+      } else if (type === "event") {
         res = id ? await updateEvent(id, payload) : await createEvent(payload);
       } else if (type === "equipment") {
         res = id ? await updateEquipment(id, payload) : await createEquipment(payload);
+      } else if (type === "gallery") {
+        // Gallery might have bulk upload if we use the same modal, 
+        // but for now let's handle the specific image selected in ImageUpload
+        res = id ? await updateGalleryPhoto(id, payload) : await createGalleryPhoto(payload);
       } else {
         res = id ? await updateStaff(id, payload) : await createStaff(payload);
       }
@@ -303,6 +352,24 @@ function ModalFooter({ isSubmitting, validateStep, errors }: { isSubmitting: boo
 
 function StepContent({ type, step, formData, onChange, isSubmitting, errors }: any) {
   const hasError = (field: string) => !!errors[field];
+  const [isAILoading, setIsAILoading] = useState(false);
+
+  const handleAIGenerate = async () => {
+    if (!formData.title) return toast.error("Please enter a topic/title first");
+    setIsAILoading(true);
+    const res = await generateAIContent(formData.title);
+    if (res.success) {
+      onChange("content", res.content);
+      if (res.content && !formData.excerpt) {
+        const textOnly = res.content.replace(/<[^>]*>/g, "").slice(0, 150) + "...";
+        onChange("excerpt", textOnly);
+      }
+      toast.success("AI Generation Complete!");
+    } else {
+      toast.error(res.error || "AI failed to generate content");
+    }
+    setIsAILoading(false);
+  };
 
   if (type === "event") {
     if (step === 0) return (
@@ -435,6 +502,144 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
     );
   }
 
+  if (type === "gallery") {
+    if (step === 0) return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <ImageUpload 
+          value={formData.url} 
+          onChange={(v: string) => onChange("url", v)} 
+          folder="4kmoviekesri-gallery" 
+          label="Gallery Image"
+        />
+        <Input label="Short Title (Optional)" value={formData.title} onChange={(v: string) => onChange("title", v)} placeholder="e.g. Dreamy Couple Logout" />
+      </div>
+    );
+    if (step === 1) return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <LabelWrapper label="Gallery Category">
+          <CustomDropdown 
+            options={[
+              { value: "wedding", label: "Wedding" },
+              { value: "engagement", label: "Engagement" },
+              { value: "portrait", label: "Portrait" },
+              { value: "corporate", label: "Corporate" }
+            ]}
+            value={formData.category || "wedding"}
+            onChange={(v: any) => onChange("category", v)}
+          />
+        </LabelWrapper>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <input 
+                type="checkbox" id="isFeatured" checked={formData.isFeatured || false} 
+                onChange={e => onChange("isFeatured", e.target.checked)} 
+                style={{ width: "18px", height: "18px", accentColor: "var(--accent)" }} 
+            />
+            <label htmlFor="isFeatured" style={{ fontSize: "0.9rem", color: "var(--text-secondary)", cursor: "pointer" }}>Highlight this in Showcase?</label>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "blog") {
+    if (step === 0) return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "12px" }}>
+          <div style={{ flex: 1 }}>
+            <Input
+              label="Article Topic / Title *"
+              value={formData.title}
+              onChange={(v: string) => {
+                onChange("title", v);
+                const slug = v.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, "");
+                onChange("slug", slug);
+              }}
+              placeholder="e.g. The Art of Cinematic Wedding Lighting"
+              error={hasError("title")}
+            />
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              type="button"
+              onClick={handleAIGenerate}
+              disabled={isAILoading}
+              title="Generate AI Text"
+              style={{
+                height: "48px", padding: "0 15px", borderRadius: "10px",
+                background: "rgba(232, 85, 10, 0.1)",
+                border: "1px solid rgba(232, 85, 10, 0.3)", color: "var(--accent)", fontSize: "0.85rem", fontWeight: 700,
+                display: "flex", alignItems: "center", gap: "8px", cursor: isAILoading ? "wait" : "pointer"
+              }}
+            >
+              {isAILoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!formData.title) return toast.error("Please enter a title first");
+                const prompt = encodeURIComponent(`${formData.title} cinematic photography, professional wedding lighting, 8k luxury studio style`);
+                const url = `https://pollinations.ai/p/${prompt}?width=1280&height=720&seed=${Math.floor(Math.random() * 1000000)}&nologo=true`;
+                onChange("coverImage", url);
+                toast.success("Cinematic Cover Generated!");
+              }}
+              title="Generate AI Cover"
+              style={{
+                height: "48px", padding: "0 15px", borderRadius: "10px",
+                background: "linear-gradient(135deg, var(--accent) 0%, #ff8c00 100%)",
+                border: "none", color: "white", fontSize: "0.85rem", fontWeight: 700,
+                display: "flex", alignItems: "center", gap: "8px", cursor: "pointer"
+              }}
+            >
+              <ImageIcon size={16} />
+            </button>
+          </div>
+        </div>
+        <Input label="Slug (SEO URL) *" value={formData.slug} onChange={(v: string) => onChange("slug", v)} placeholder="the-art-of-lighting" error={hasError("slug")} />
+        <TextArea label="Brief Excerpt (SEO Summary) *" value={formData.excerpt} onChange={(v: string) => onChange("excerpt", v)} placeholder="In this professional guide, we explore..." rows={2} />
+      </div>
+    );
+    if (step === 1) return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <LabelWrapper label="Primary Category">
+                    <CustomDropdown 
+                        options={[
+                            { value: "news", label: "Studio News" },
+                            { value: "tips", label: "Master Tips" },
+                            { value: "weddings", label: "Wedding Stories" },
+                            { value: "equipment", label: "Gear Reviews" }
+                        ]}
+                        value={formData.category || "news"}
+                        onChange={(v: any) => onChange("category", v)}
+                    />
+                </LabelWrapper>
+                <LabelWrapper label="Publishing Status">
+                    <CustomDropdown 
+                        options={[
+                            { value: "draft", label: "Keep as Draft" },
+                            { value: "published", label: "Publish Locally" }
+                        ]}
+                        value={formData.status || "draft"}
+                        onChange={(v: any) => onChange("status", v)}
+                    />
+                </LabelWrapper>
+            </div>
+            <TextArea 
+                label="Article Content (HTML Supported) *" 
+                value={formData.content} 
+                onChange={(v: string) => onChange("content", v)} 
+                placeholder="<h2>Introduction</h2><p>Begin your cinematic journey here...</p>" 
+                rows={10} 
+            />
+            <ImageUpload 
+                label="Cover Image (Optional)"
+                value={formData.coverImage}
+                onChange={(v: string) => onChange("coverImage", v)}
+                folder="blogs"
+            />
+        </div>
+    );
+  }
+
   // Final Step: Review
   return (
     <div style={{ background: "rgba(255,255,255,0.02)", padding: "32px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
@@ -456,7 +661,17 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px", background: "rgba(0,0,0,0.2)", padding: "20px", borderRadius: "12px" }}>
+      <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "1fr 1fr", 
+          gap: "16px", 
+          background: "rgba(0,0,0,0.3)", 
+          padding: "20px", 
+          borderRadius: "12px",
+          maxHeight: "350px",
+          overflowY: "auto",
+          border: "1px solid rgba(255,255,255,0.05)"
+      }} className="custom-scrollbar">
         {Object.entries(formData)
             .filter(([k]) => !['id', 'createdAt', 'updatedAt', 'customType', 'customCategory', 'imageUrl', 'profilePhoto'].includes(k))
             .map(([key, val]: any) => {
@@ -475,13 +690,18 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
             if (key === 'type' && val === 'custom') displayVal = formData.customType;
             if (key === 'category' && val === 'custom') displayVal = formData.customCategory;
             return (
-                <div key={key} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "1px" }}>{getLabel(key)}</div>
-                    <div style={{ fontSize: "0.9rem", color: "white", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{String(displayVal || "—")}</div>
+                <div key={key} style={{ display: "flex", flexDirection: "column", gap: "6px", borderBottom: "1px solid rgba(255,255,255,0.03)", paddingBottom: "8px" }}>
+                    <div style={{ fontSize: "0.6rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px", fontWeight: 700 }}>{getLabel(key)}</div>
+                    <div style={{ fontSize: "0.85rem", color: "white", fontWeight: 400, wordBreak: "break-all" }}>{String(displayVal || "—")}</div>
                 </div>
             );
         })}
       </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--accent); borderRadius: 10px; }
+      `}</style>
     </div>
   );
 }
@@ -511,4 +731,22 @@ function LabelWrapper({ label, children, error }: any) {
       {children}
     </div>
   );
+}
+
+function TextArea({ label, value, onChange, rows = 4, error, ...rest }: any) {
+    return (
+      <div>
+        <label style={{ display: "block", fontSize: "0.65rem", color: error ? "#ef4444" : "var(--text-muted)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>{label}</label>
+        <textarea 
+          value={value || ""} onChange={e => onChange(e.target.value)} rows={rows}
+          style={{ 
+            width: "100%", padding: "14px", background: "rgba(255,255,255,0.03)", 
+            borderRadius: "10px", border: `1px solid ${error ? "#ef4444" : "rgba(255,255,255,0.1)"}`,
+            fontSize: "0.9rem", color: "white", outline: "none", resize: "vertical",
+            transition: "all 0.2s ease"
+          }}
+          {...rest}
+        />
+      </div>
+    );
 }

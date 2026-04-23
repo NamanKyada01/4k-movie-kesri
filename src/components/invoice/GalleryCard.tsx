@@ -58,7 +58,7 @@ export default function GalleryCard({ photo, onEdit, onDelete }: GalleryCardProp
                     {photo.category}
                 </div>
                 <h4 style={{ fontSize: "0.85rem", color: "white", margin: "2px 0 0 0", fontWeight: 700, maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {photo.title || "Untitled Archive"}
+                    {photo.title || "Untitled Photo"}
                 </h4>
             </div>
 

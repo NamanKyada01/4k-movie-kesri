@@ -14,7 +14,7 @@ export const TopBar: React.FC<TopBarProps> = ({ currentView, onViewChange }) => 
   return (
     <header className="top-bar">
       <div className="left">
-        <span className="logo">⬡ Orbital Command</span>
+        <span className="logo">📅 Calendar</span>
       </div>
       
       <div className="center">
@@ -37,7 +37,7 @@ export const TopBar: React.FC<TopBarProps> = ({ currentView, onViewChange }) => 
           <span className="live-label">LIVE SYNC</span>
         </div>
         <MagneticButton onClick={() => {}}>
-          New Deployment
+          New Event
         </MagneticButton>
       </div>
 

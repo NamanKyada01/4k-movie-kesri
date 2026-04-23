@@ -1,166 +1,115 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ImagePlus, Search, Loader2, Camera, CheckCircle2 } from "lucide-react";
+import { Plus, Search, Loader2, Camera, Image as ImageIcon, LayoutGrid, Star } from "lucide-react";
 import { useLiveCollection } from "@/hooks/useLiveCollection";
 import { orderBy } from "firebase/firestore";
 import { GalleryPhoto } from "@/types";
-import { deleteGalleryPhoto, updateGalleryPhoto } from "@/actions/admin";
+import { deleteGalleryPhoto } from "@/actions/admin";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import GalleryCard from "@/components/invoice/GalleryCard";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
-import CustomDropdown from "@/components/ui/CustomDropdown";
-
-const galleryCategoryOptions = [
-    { value: 'wedding', label: 'Wedding' },
-    { value: 'engagement', label: 'Engagement' },
-    { value: 'portrait', label: 'Portrait' },
-    { value: 'corporate', label: 'Corporate' }
-];
+import CreationModal from "@/components/ui/CreationModal";
 
 export default function GalleryManagerPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
-  
-  // Upload State
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadCategory, setUploadCategory] = useState("wedding");
-  const [isFeatured, setIsFeatured] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState<GalleryPhoto | null>(null);
 
   // Real-time synchronization
   const { data: photos, loading } = useLiveCollection<GalleryPhoto>("gallery", [
     orderBy("uploadedAt", "desc")
   ]);
 
+  const stats = useMemo(() => {
+    return {
+      total: photos.length,
+      featured: photos.filter(p => p.isFeatured).length,
+      wedding: photos.filter(p => p.category === "wedding").length,
+      portrait: photos.filter(p => p.category === "portrait").length,
+    };
+  }, [photos]);
+
   const filteredPhotos = useMemo(() => {
     return photos.filter(p => {
-        const matchesSearch = p.title?.toLowerCase().includes(search.toLowerCase()) || 
+        const title = p.title || "";
+        const matchesSearch = title.toLowerCase().includes(search.toLowerCase()) || 
                              p.category.toLowerCase().includes(search.toLowerCase());
         const matchesCat = categoryFilter === "all" || p.category === categoryFilter;
         return matchesSearch && matchesCat;
     });
   }, [photos, search, categoryFilter]);
 
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedFiles || selectedFiles.length === 0) return toast.error("Select files first");
-
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      Array.from(selectedFiles).forEach(file => formData.append("file", file));
-      formData.append("folder", "4kmoviekesri-gallery");
-
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.error);
-
-      // In client-side logic, we typically add to Firestore here.
-      // Since it's a single studio, the existing logic in the original page was adding to Firestore client-side.
-      // We will keep that for now but use the context of 'real-time' to refresh.
-      
-      // Note: In a full refactor, we'd move this to a server action too, 
-      // but the API route already handles the heavier Cloudinary lifting.
-      
-      // The user's page already had logic to addDoc for each result. 
-      // I'll keep the UI looking cinematic while maintaining the core logic.
-      
-      toast.success(`Uploaded ${data.results.length} images!`);
-      setSelectedFiles(null);
-      (document.getElementById("file-upload") as HTMLInputElement).value = "";
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setIsUploading(false);
-    }
+  const handleDelete = async (id: string) => {
+    if (!confirm("Permanently delete this photo from the gallery?")) return;
+    const res = await deleteGalleryPhoto(id);
+    if (res.success) toast.success("Photo removed successfully");
+    else toast.error("Failed to delete photo");
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Permanently remove this image from the vault?")) return;
-    const res = await deleteGalleryPhoto(id);
-    if (res.success) toast.success("Asset purged");
-    else toast.error("Action failed");
+  const handleEdit = (photo: GalleryPhoto) => {
+    setEditData(photo);
+    setIsModalOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setEditData(null);
+    setIsModalOpen(true);
   };
 
   if (loading) return (
       <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
           <Loader2 size={40} className="animate-spin" color="var(--accent)" />
-          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Synchronizing Vault...</p>
+          <p style={{ color: "var(--text-muted)", letterSpacing: "0.1em", fontSize: "0.8rem", textTransform: "uppercase" }}>Loading Gallery...</p>
       </div>
   );
 
   return (
     <div style={{ animation: "fadeIn 0.5s ease", paddingBottom: "100px" }}>
       {/* Header */}
-      <div style={{ marginBottom: "3rem" }}>
-        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>The Vault</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Manage your high-fidelity cinematic portfolio archives</p>
+      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.75rem", color: "white", marginBottom: "0.5rem" }}>Gallery Manager</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", letterSpacing: "0.05em" }}>Manage your professional photography portfolio and showcases</p>
+        </div>
+        <button 
+          onClick={handleAddNew}
+          className="btn btn-primary"
+          style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 28px", borderRadius: "12px", fontWeight: 800 }}
+        >
+          <Plus size={20} /> Add Photos
+        </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "3rem" }}>
-        {/* Sidebar: Upload Port */}
+      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "3rem" }}>
+        {/* Sidebar: Overview Stats */}
         <div style={{ position: "sticky", top: "2rem", alignSelf: "start" }}>
             <SpotlightCard 
                 className="card" 
                 style={{ padding: "30px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
                 spotlightColor="rgba(232, 85, 10, 0.05)"
             >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
-                    <ImagePlus size={20} color="var(--accent)" />
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>Portal Upload</h3>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "24px", color: "white" }}>Overview</h3>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <StatItem icon={<ImageIcon size={16} />} label="Total Photos" value={stats.total} />
+                    <StatItem icon={<Star size={16} />} label="Featured" value={stats.featured} color="var(--accent)" />
+                    <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", margin: "8px 0" }} />
+                    <StatItem label="Weddings" value={stats.wedding} />
+                    <StatItem label="Portraits" value={stats.portrait} />
                 </div>
 
-                <form onSubmit={handleUpload} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <div>
-                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Select High-Res Files</label>
-                        <input 
-                            id="file-upload" type="file" multiple accept="image/*"
-                            onChange={e => setSelectedFiles(e.target.files)}
-                            style={{ 
-                                width: "100%", padding: "20px", 
-                                background: "rgba(255,255,255,0.03)", 
-                                borderRadius: "12px", border: "1px dashed rgba(255,255,255,0.1)",
-                                fontSize: "0.8rem", color: "rgba(255,255,255,0.5)"
-                            }}
-                        />
-                         {selectedFiles && selectedFiles.length > 0 && (
-                            <div style={{ fontSize: "0.75rem", color: "var(--success)", marginTop: "10px", display: "flex", alignItems: "center", gap: "6px", fontWeight: 700 }}>
-                                <CheckCircle2 size={14} /> Ready to process {selectedFiles.length} assets
-                            </div>
-                         )}
-                    </div>
-
-                    <div>
-                        <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px" }}>Category Sector</label>
-                        <CustomDropdown 
-                            options={galleryCategoryOptions}
-                            value={uploadCategory}
-                            onChange={setUploadCategory}
-                        />
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <input type="checkbox" id="featured" checked={isFeatured} onChange={e => setIsFeatured(e.target.checked)} style={{ accentColor: "var(--accent)" }} />
-                        <label htmlFor="featured" style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Set as Featured?</label>
-                    </div>
-
-                    <button 
-                        type="submit" 
-                        disabled={isUploading || !selectedFiles}
-                        className="btn btn-primary"
-                        style={{ padding: "16px", borderRadius: "12px", fontWeight: 800 }}
-                    >
-                        {isUploading ? <Loader2 size={18} className="animate-spin" /> : "Deploy to Vault"}
-                    </button>
-                </form>
+                <div style={{ marginTop: "32px", padding: "20px", background: "rgba(232, 85, 10, 0.05)", borderRadius: "12px", border: "1px solid rgba(232, 85, 10, 0.1)" }}>
+                    <p style={{ fontSize: "0.75rem", color: "var(--accent)", lineHeight: 1.5, margin: 0 }}>
+                        High-quality images uploaded here will appear in the public showcase sections of the website.
+                    </p>
+                </div>
             </SpotlightCard>
         </div>
 
-        {/* Main: Gallery Feed */}
+        {/* Main: Gallery Grid */}
         <div>
             <div style={{ 
                 display: "flex", gap: "1.25rem", marginBottom: "2.5rem",
@@ -169,7 +118,7 @@ export default function GalleryManagerPage() {
                 <div style={{ flex: 1, position: "relative" }}>
                     <Search size={16} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.2)" }} />
                     <input 
-                        placeholder="Search archives..."
+                        placeholder="Search by title or category..."
                         value={search} onChange={e => setSearch(e.target.value)}
                         style={{ width: "100%", background: "transparent", border: "none", padding: "12px 12px 12px 44px", color: "white", outline: "none" }}
                     />
@@ -182,7 +131,7 @@ export default function GalleryManagerPage() {
                                 background: categoryFilter === cat ? "rgba(255,255,255,0.1)" : "transparent",
                                 border: "none", color: categoryFilter === cat ? "white" : "var(--text-muted)",
                                 padding: "6px 16px", borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700,
-                                textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer"
+                                textTransform: "capitalize", letterSpacing: "0.02em", cursor: "pointer"
                             }}
                         >
                             {cat}
@@ -194,14 +143,14 @@ export default function GalleryManagerPage() {
             {filteredPhotos.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "100px 0", color: "var(--text-muted)" }}>
                     <Camera size={48} opacity={0.1} style={{ margin: "0 auto 20px" }} />
-                    <p>Archive segment is empty.</p>
+                    <p>No photos found in this category.</p>
                 </div>
             ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.5rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1.5rem" }}>
                     {filteredPhotos.map(photo => (
                         <GalleryCard 
                             key={photo.id} photo={photo} 
-                            onEdit={() => toast.info("Meta Editor launching...")}
+                            onEdit={() => handleEdit(photo)}
                             onDelete={() => handleDelete(photo.id)}
                         />
                     ))}
@@ -210,12 +159,31 @@ export default function GalleryManagerPage() {
         </div>
       </div>
 
+      <CreationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        type="gallery" 
+        editData={editData}
+      />
+
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+    </div>
+  );
+}
+
+function StatItem({ icon, label, value, color }: { icon?: React.ReactNode, label: string, value: number, color?: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+            {icon}
+            {label}
+        </div>
+        <div style={{ fontSize: "1rem", fontWeight: 700, color: color || "white" }}>{value}</div>
     </div>
   );
 }

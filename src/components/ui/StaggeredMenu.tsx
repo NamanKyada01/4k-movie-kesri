@@ -218,7 +218,7 @@ export function StaggeredMenu({ isOpen, onClose, links, pathname, socials }: Sta
                       href={link.href}
                       onClick={onClose}
                       style={{
-                        fontSize: "clamp(1.8rem, 5vw, 2.2rem)",
+                        fontSize: "clamp(1.4rem, 4vw, 1.8rem)",
                         fontFamily: "var(--font-heading)",
                         fontWeight: 800,
                         color: isActive ? "var(--accent)" : "var(--text-primary)",
@@ -228,7 +228,7 @@ export function StaggeredMenu({ isOpen, onClose, links, pathname, socials }: Sta
                         justifyContent: "space-between",
                         gap: "var(--space-4)",
                         letterSpacing: "-0.02em",
-                        padding: "var(--space-3) var(--space-4)",
+                        padding: "var(--space-2) var(--space-4)",
                         borderRadius: "var(--radius-lg)",
                         background: isActive ? "var(--accent-muted)" : "transparent",
                         transition: "all var(--transition-fast)",
@@ -411,7 +411,7 @@ export function StaggeredMenu({ isOpen, onClose, links, pathname, socials }: Sta
               )}
               
               <p style={{ 
-                fontSize: "0.75rem", 
+                fontSize: "0.65rem", 
                 color: "var(--text-muted)", 
                 letterSpacing: "0.05em", 
                 textTransform: "uppercase",

@@ -67,46 +67,60 @@ const itemVariants = {
 export default function ServicesPage() {
   return (
     <>
-      <CinemaBackground theme={{ primary: "cyan", secondary: "emerald" }} />
+      <CinemaBackground theme={{ primary: "amber", secondary: "gold" }} />
+      
+      {/* Hero Section */}
       <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)", position: "relative", overflow: "hidden" }}>
         {/* Ambient Glow */}
-        <div style={{ position: "absolute", top: "10%", right: "-5%", width: "30vw", height: "30vw", background: "radial-gradient(circle, rgba(232,85,10,0.05) 0%, transparent 70%)", filter: "blur(80px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "10%", right: "-5%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(232,85,10,0.05) 0%, transparent 70%)", filter: "blur(80px)", pointerEvents: "none" }} />
         
-        <div className="container" style={{ textAlign: "center", maxWidth: 800, position: "relative", zIndex: 1 }}>
+        <div className="container" style={{ position: "relative", zIndex: 1 }}>
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "var(--space-3)" }}
+            style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, display: "block", marginBottom: "var(--space-4)" }}
           >
-            What We Do
+            The Repository
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            style={{ marginBottom: "var(--space-5)" }}
+            style={{ 
+              fontSize: "clamp(2.5rem, 10vw, 4.5rem)", 
+              lineHeight: 0.9, 
+              fontWeight: 900, 
+              letterSpacing: "-0.04em",
+              marginBottom: "var(--space-6)" 
+            }}
           >
-            Our Professional Services
+            Our Professional <br />
+            <span style={{ color: "var(--text-secondary)", opacity: 0.5 }}>Services</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6 }}
+            style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.6, maxWidth: 600 }}
           >
-            Comprehensive media solutions for every occasion. We blend artistic vision with technical perfection to deliver outstanding photography and videography.
+            A curated suite of high-fidelity media services. We blend cinematic vision with surgical technical precision to capture moments that transcend time.
           </motion.p>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      {/* Services List */}
+      <section className="section" style={{ paddingTop: "var(--space-8)" }}>
         <div className="container">
           <motion.div 
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "var(--space-6)" }}
+            style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "var(--space-3)" 
+            }}
           >
             {servicesList.map((svc, i) => {
               const Icon = svc.icon;
@@ -114,58 +128,82 @@ export default function ServicesPage() {
                 <motion.div 
                   key={i} 
                   variants={itemVariants}
-                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                  className="card" 
+                  className="services-editorial-item" 
                   style={{ 
-                    background: "var(--bg-card)",
-                    border: "1px solid var(--border)",
-                    padding: "var(--space-10) var(--space-8)",
+                    background: "var(--bg-elevated)",
+                    padding: "var(--space-10) var(--space-6)",
                     position: "relative",
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
+                    borderRadius: "var(--radius-3xl)",
+                    border: "1px solid rgba(255,255,255,0.03)",
+                    backdropFilter: "blur(20px)",
                   }}
                 >
-                  <div style={{ position: "absolute", top: -20, right: -20, opacity: 0.03, color: "var(--accent)" }}>
-                    <Icon size={180} />
+                  <div style={{ position: "absolute", top: -40, right: -40, opacity: 0.05, color: "var(--accent)" }}>
+                    <Icon size={240} />
                   </div>
                   
                   <div style={{ 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: "20px", 
-                    background: "linear-gradient(135deg, var(--accent) 0%, #8B2E00 100%)", 
+                    width: 60, 
+                    height: 60, 
+                    borderRadius: "var(--radius-xl)", 
+                    background: "var(--bg-primary)", 
+                    border: "1px solid var(--border)",
                     display: "flex", 
                     alignItems: "center", 
                     justifyContent: "center", 
-                    marginBottom: "var(--space-8)", 
-                    boxShadow: "0 10px 30px rgba(232, 85, 10, 0.2)",
+                    marginBottom: "var(--space-8)",
                     position: "relative",
                     zIndex: 2
                   }}>
-                    <Icon size={30} color="white" />
+                    <Icon size={24} color="var(--accent)" />
                   </div>
                   
-                  <h3 style={{ fontSize: "1.45rem", marginBottom: "var(--space-4)", fontWeight: 800 }}>{svc.title}</h3>
-                  <p style={{ color: "var(--text-secondary)", fontSize: "0.98rem", lineHeight: 1.7, marginBottom: "var(--space-8)", flexGrow: 1 }}>
-                    {svc.desc}
-                  </p>
-                  
-                  <div style={{ borderTop: "1px solid var(--border)", paddingTop: "var(--space-6)" }}>
-                    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ position: "relative", zIndex: 2 }}>
+                    <h3 style={{ 
+                      fontSize: "1.75rem", 
+                      marginBottom: "var(--space-4)", 
+                      fontWeight: 800,
+                      letterSpacing: "-0.02em",
+                      lineHeight: 1.1
+                    }}>
+                      {svc.title}
+                    </h3>
+                    <p style={{ 
+                      color: "var(--text-muted)", 
+                      fontSize: "1rem", 
+                      lineHeight: 1.7, 
+                      marginBottom: "var(--space-8)", 
+                      maxWidth: "90%" 
+                    }}>
+                      {svc.desc}
+                    </p>
+                    
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                       {svc.features.map((feat, j) => (
-                        <li key={j} style={{ display: "flex", alignItems: "center", gap: 12, fontSize: "0.88rem", color: "var(--text-primary)" }}>
-                          <CheckCircle2 size={16} color="var(--accent)" style={{ opacity: 0.8 }} />
+                        <span key={j} style={{ 
+                          fontSize: "0.7rem", 
+                          color: "var(--text-secondary)", 
+                          background: "rgba(255,255,255,0.04)", 
+                          padding: "6px 14px", 
+                          borderRadius: "var(--radius-full)",
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          border: "1px solid rgba(255,255,255,0.05)"
+                        }}>
                           {feat}
-                        </li>
+                        </span>
                       ))}
-                    </ul>
+                    </div>
                   </div>
 
+                  {/* Kinetic Bottom Bar */}
                   <motion.div 
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "var(--accent)", transformOrigin: "left" }}
+                    className="service-accent-bar"
+                    style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: "var(--accent)", opacity: 0.3 }}
                   />
                 </motion.div>
               );
@@ -173,6 +211,24 @@ export default function ServicesPage() {
           </motion.div>
         </div>
       </section>
+
+      <style>{`
+        .services-editorial-item {
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .services-editorial-item:hover {
+          background: var(--bg-card) !important;
+          transform: scale(0.98);
+        }
+        .services-editorial-item:hover .service-accent-bar {
+          opacity: 1 !important;
+        }
+        @media (min-width: 1024px) {
+          .services-editorial-item {
+            padding: var(--space-12) !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

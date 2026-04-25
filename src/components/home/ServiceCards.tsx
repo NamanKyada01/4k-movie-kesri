@@ -7,151 +7,179 @@ import { StarBorder } from "@/components/ui/StarBorder";
 
 const services = [
   {
-    icon: "💍",
-    title: "Wedding Photography",
-    description: "Every vow, every tear, every smile — captured in cinematic 4K. Your love story, told with artistry.",
+    title: "Cinematic Wedding Films",
+    description: "Every vow, every tear, every smile — captured in cinematic 4K. Your love story, told with the precision of high-end cinema.",
     href: "/services",
-    tag: "Most Popular",
+    tag: "Trending",
+    icon: "🎞️",
+    color: "var(--accent)"
   },
   {
-    icon: "🎥",
-    title: "Cinematic Videography",
-    description: "4K highlight reels that feel like films. Drone shots, slow-motion, color graded to perfection.",
+    title: "Editorial Photography",
+    description: "High-fashion portraiture and event coverage. We master the light to create images that belong on a magazine cover.",
     href: "/services",
     tag: null,
+    icon: "📸",
+    color: "#C9A84C"
   },
   {
-    icon: "👤",
-    title: "Portrait Sessions",
-    description: "Studio and outdoor portraits that capture personality. Corporate headshots to family portraits.",
+    title: "Pre-Wedding Masterpieces",
+    description: "Atmospheric outdoor sessions that capture the chemistry between souls. Directional lighting and artistic framing.",
     href: "/services",
     tag: null,
+    icon: "💑",
+    color: "var(--accent)"
   },
   {
-    icon: "🏢",
-    title: "Corporate Events",
-    description: "Product launches, conferences, team outings. Professional documentation of your brand moments.",
+    title: "Luxury Photo Albums",
+    description: "Handcrafted, archival-grade memories. Your moments deserve the tactile excellence of premium leather and glass.",
     href: "/services",
     tag: null,
+    icon: "📖",
+    color: "#C9A84C"
   },
 ];
 
 export function ServiceCards() {
   return (
-    <section className="section" style={{ background: "transparent" }}>
+    <section className="section" style={{ background: "var(--bg-primary)", position: "relative", overflow: "hidden" }}>
+      {/* Decorative Light Leak */}
+      <div style={{ position: "absolute", top: "20%", left: "-10%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(232,85,10,0.08) 0%, transparent 70%)", filter: "blur(100px)", pointerEvents: "none" }} />
+      
       <div className="container">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          style={{ marginBottom: "clamp(var(--space-6), 5vw, var(--space-10))" }}
-          className="section-header-compact"
+          transition={{ duration: 0.7 }}
+          style={{ marginBottom: "var(--space-12)", position: "relative", zIndex: 2 }}
         >
-          <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-            What We Do
+          <span style={{ 
+            fontSize: "0.75rem", 
+            color: "var(--accent)", 
+            letterSpacing: "0.2em", 
+            textTransform: "uppercase", 
+            fontWeight: 700,
+            display: "block",
+            marginBottom: "var(--space-2)"
+          }}>
+            The Collection
           </span>
-          <h2 style={{ marginTop: "var(--space-1)", fontSize: "clamp(1.5rem, 5vw, 2.2rem)" }}>
-            Our Professional Services
+          <h2 style={{ 
+            fontSize: "clamp(2.2rem, 8vw, 3.5rem)", 
+            lineHeight: 1,
+            fontWeight: 900,
+            letterSpacing: "-0.03em"
+          }}>
+            Our Professional <br />
+            <span style={{ color: "var(--text-secondary)", opacity: 0.5 }}>Services</span>
           </h2>
         </motion.div>
 
-        {/* Cards Grid */}
+        {/* Vertical Stack for Mobile / Grid for Desktop */}
         <div
+          className="services-stack"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "var(--space-6)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-4)",
+            position: "relative",
+            zIndex: 2
           }}
         >
           {services.map((service, i) => (
             <motion.div
               key={service.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              style={{ position: "relative" }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
             >
-              <StarBorder
-                thickness={2}
-                color="rgba(232, 85, 10, 0.5)"
-                speed="8s"
-                className="w-full h-full"
+              <Link
+                href={service.href}
+                style={{ textDecoration: "none", display: "block" }}
               >
                 <div 
-                  className="card card-accent-hover service-card-inner"
+                  className="service-editorial-card"
                   style={{ 
-                    width: "100%", 
-                    height: "100%",
+                    background: "var(--bg-elevated)",
+                    padding: "var(--space-8) var(--space-6)",
+                    borderRadius: "var(--radius-2xl)",
                     display: "flex",
                     flexDirection: "column",
-                    padding: "clamp(var(--space-5), 4vw, var(--space-8))",
-                    border: "none", // Let StarBorder handle the "border" look
-                    background: "var(--bg-card)",
-                    borderRadius: "inherit"
+                    gap: "var(--space-6)",
+                    position: "relative",
+                    overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,0.03)",
+                    backdropFilter: "blur(10px)",
+                    transition: "all 0.3s ease",
                   }}
                 >
-                  {service.tag && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "var(--space-4)",
-                        right: "var(--space-4)",
-                      }}
-                    >
-                      <span className="badge badge-accent">{service.tag}</span>
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      fontSize: "2.5rem",
-                      marginBottom: "var(--space-5)",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {service.icon}
+                  {/* Subtle Accent Glow */}
+                  <div style={{ 
+                    position: "absolute", 
+                    top: "-20%", 
+                    right: "-10%", 
+                    width: "150px", 
+                    height: "150px", 
+                    background: `radial-gradient(circle, ${service.color}15 0%, transparent 70%)`,
+                    filter: "blur(30px)",
+                    pointerEvents: "none"
+                  }} />
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div style={{ fontSize: "2.5rem", opacity: 0.8 }}>{service.icon}</div>
+                    {service.tag && (
+                      <span style={{ 
+                        fontSize: "0.6rem", 
+                        background: "var(--accent)", 
+                        color: "white", 
+                        padding: "4px 10px", 
+                        borderRadius: "var(--radius-full)",
+                        fontWeight: 800,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em"
+                      }}>
+                        {service.tag}
+                      </span>
+                    )}
                   </div>
-                  <h3
-                    style={{
-                      fontSize: "1.25rem",
-                      fontWeight: 700,
-                      marginBottom: "var(--space-3)",
+
+                  <div>
+                    <h3 style={{ 
+                      fontSize: "1.5rem", 
+                      fontWeight: 800, 
+                      marginBottom: "var(--space-2)",
                       color: "var(--text-primary)",
                       letterSpacing: "-0.01em"
-                    }}
-                  >
-                    {service.title}
-                  </h3>
-                  <p style={{ fontSize: "0.9rem", lineHeight: 1.8, marginBottom: "var(--space-6)", color: "var(--text-muted)" }}>
-                    {service.description}
-                  </p>
-                  <Link
-                    href={service.href}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 8,
-                      fontSize: "0.85rem",
-                      fontWeight: 600,
-                      color: "var(--accent)",
-                      transition: "gap var(--transition-fast)",
-                      marginTop: "auto",
-                      paddingTop: "var(--space-4)",
-                      borderTop: "1px solid var(--border)",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.gap = "12px";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.gap = "8px";
-                    }}
-                  >
-                    Explore Service <ArrowRight size={14} />
-                  </Link>
+                    }}>
+                      {service.title}
+                    </h3>
+                    <p style={{ 
+                      fontSize: "0.95rem", 
+                      lineHeight: 1.6, 
+                      color: "var(--text-muted)",
+                      maxWidth: "90%"
+                    }}>
+                      {service.description}
+                    </p>
+                  </div>
+
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: 12, 
+                    fontSize: "0.8rem", 
+                    fontWeight: 700, 
+                    color: "var(--accent)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em"
+                  }}>
+                    Explore <ArrowRight size={14} />
+                  </div>
                 </div>
-              </StarBorder>
+              </Link>
             </motion.div>
           ))}
         </div>
@@ -161,19 +189,25 @@ export function ServiceCards() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          style={{ textAlign: "center", marginTop: "var(--space-8)" }}
+          style={{ textAlign: "center", marginTop: "var(--space-12)" }}
         >
-          <Link href="/services" className="btn btn-outline-accent btn-md">
-            View All Services
+          <Link href="/services" className="btn btn-ghost btn-xl" style={{ border: "1px solid var(--border)" }}>
+            View Full Repository
           </Link>
         </motion.div>
       </div>
 
       <style>{`
-        @media (max-width: 600px) {
-          .section-header-compact h2 { font-size: 1.6rem !important; }
-          .service-card-inner { padding: var(--space-5) !important; }
-          .service-card-inner h3 { fontSize: 1.1rem !important; }
+        .service-editorial-card:hover {
+          background: var(--bg-card) !important;
+          border-color: rgba(232, 85, 10, 0.2) !important;
+          transform: translateY(-4px);
+        }
+        @media (min-width: 1024px) {
+          .services-stack {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
       `}</style>
     </section>

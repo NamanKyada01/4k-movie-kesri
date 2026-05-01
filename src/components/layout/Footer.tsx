@@ -63,8 +63,9 @@ export function Footer({ config }: { config?: any }) {
                 style={{
                   width: 38,
                   height: 38,
-                  borderRadius: "50%",
-                  border: "2px solid var(--accent)",
+                  borderRadius: "var(--radius-lg)",
+                  border: "1.5px solid var(--border-accent)",
+                  background: "var(--accent-muted)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -74,10 +75,10 @@ export function Footer({ config }: { config?: any }) {
                 <Camera size={18} color="var(--accent)" />
               </div>
               <div>
-                <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)", lineHeight: 1.1 }}>
+                <div style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "1.05rem", color: "var(--accent)", lineHeight: 1.1, letterSpacing: "0.04em" }}>
                   4K MOVIE KESRI
                 </div>
-                <div style={{ fontSize: "0.6rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "var(--font-body)" }}>
                   SURAT
                 </div>
               </div>
@@ -209,7 +210,7 @@ export function Footer({ config }: { config?: any }) {
         </div>
 
         {/* Divider */}
-        <div style={{ borderTop: "1px solid var(--border)", paddingTop: "var(--space-6)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)" }}>
+        <div className="footer-bottom" style={{ borderTop: "1px solid var(--border)", paddingTop: "var(--space-6)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)" }}>
           <p style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
             © {new Date().getFullYear()} 4K Movie Kesri Surat. All rights reserved.
           </p>
@@ -234,12 +235,13 @@ export function Footer({ config }: { config?: any }) {
 
       <style>{`
         @media (max-width: 900px) {
-          .footer-grid { grid-template-columns: 1fr 1fr !important; }
+          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: var(--space-8) !important; }
         }
         @media (max-width: 550px) {
-          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: var(--space-8) !important; }
-          .footer-grid > div:first-child { grid-column: span 2 !important; }
-          .footer-grid > div:last-child { grid-column: span 2 !important; }
+          .footer-grid { grid-template-columns: 1fr !important; gap: var(--space-8) !important; }
+        }
+        @media (max-width: 480px) {
+          .footer-bottom { flex-direction: column !important; align-items: flex-start !important; gap: var(--space-3) !important; }
         }
       `}</style>
     </footer>

@@ -77,12 +77,12 @@ export function CinemaBackground({ theme }: CinemaBackgroundProps) {
         />
       )}
       {/* Dynamic Particles Background */}
-      <div style={{ position: "absolute", inset: 0, opacity: 0.4, zIndex: 0 }}>
+      <div style={{ position: "absolute", inset: 0, opacity: 0.18, zIndex: 0 }}>
         <Particles 
-          particleCount={60}
-          particleColors={["#E8550A", "#FFB800", "#ffffff"]}
-          speed={0.05}
-          particleBaseSize={80}
+          particleCount={40}
+          particleColors={["#D4A017", "#F5D76E", "#C8102E"]}
+          speed={0.03}
+          particleBaseSize={55}
         />
       </div>
 

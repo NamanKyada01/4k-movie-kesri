@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { StarBorder } from "@/components/ui/StarBorder";
 
 const services = [
   {
@@ -12,7 +11,7 @@ const services = [
     href: "/services",
     tag: "Trending",
     icon: "🎞️",
-    color: "var(--accent)"
+    accentVar: "--accent",       /* gold */
   },
   {
     title: "Editorial Photography",
@@ -20,7 +19,7 @@ const services = [
     href: "/services",
     tag: null,
     icon: "📸",
-    color: "#C9A84C"
+    accentVar: "--gold",         /* cream-gold */
   },
   {
     title: "Pre-Wedding Masterpieces",
@@ -28,7 +27,7 @@ const services = [
     href: "/services",
     tag: null,
     icon: "💑",
-    color: "var(--accent)"
+    accentVar: "--accent",
   },
   {
     title: "Luxury Photo Albums",
@@ -36,148 +35,74 @@ const services = [
     href: "/services",
     tag: null,
     icon: "📖",
-    color: "#C9A84C"
+    accentVar: "--accent-2",     /* crimson */
   },
 ];
 
 export function ServiceCards() {
   return (
-    <section className="section" style={{ background: "var(--bg-primary)", position: "relative", overflow: "hidden" }}>
-      {/* Decorative Light Leak */}
-      <div style={{ position: "absolute", top: "20%", left: "-10%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(232,85,10,0.08) 0%, transparent 70%)", filter: "blur(100px)", pointerEvents: "none" }} />
-      
+    <section className="svc-section">
       <div className="container">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          style={{ marginBottom: "var(--space-12)", position: "relative", zIndex: 2 }}
+          transition={{ duration: 0.6 }}
+          className="svc-header"
         >
-          <span style={{ 
-            fontSize: "0.75rem", 
-            color: "var(--accent)", 
-            letterSpacing: "0.2em", 
-            textTransform: "uppercase", 
-            fontWeight: 700,
-            display: "block",
-            marginBottom: "var(--space-2)"
-          }}>
-            The Collection
-          </span>
-          <h2 style={{ 
-            fontSize: "clamp(2.2rem, 8vw, 3.5rem)", 
-            lineHeight: 1,
-            fontWeight: 900,
-            letterSpacing: "-0.03em"
-          }}>
-            Our Professional <br />
-            <span style={{ color: "var(--text-secondary)", opacity: 0.5 }}>Services</span>
+          <span className="svc-eyebrow">The Collection</span>
+          <h2 className="svc-title">
+            Our Professional
+            <br />
+            <em className="svc-title-em">Services</em>
           </h2>
         </motion.div>
 
-        {/* Vertical Stack for Mobile / Grid for Desktop */}
-        <div
-          className="services-stack"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "var(--space-4)",
-            position: "relative",
-            zIndex: 2
-          }}
-        >
-          {services.map((service, i) => (
+        {/* Grid */}
+        <div className="svc-grid">
+          {services.map((svc, i) => (
             <motion.div
-              key={service.title}
-              initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              key={svc.title}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
             >
-              <Link
-                href={service.href}
-                style={{ textDecoration: "none", display: "block" }}
-              >
-                <div 
-                  className="service-editorial-card"
-                  style={{ 
-                    background: "var(--bg-elevated)",
-                    padding: "var(--space-8) var(--space-6)",
-                    borderRadius: "var(--radius-2xl)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "var(--space-6)",
-                    position: "relative",
-                    overflow: "hidden",
-                    border: "1px solid rgba(255,255,255,0.03)",
-                    backdropFilter: "blur(10px)",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {/* Subtle Accent Glow */}
-                  <div style={{ 
-                    position: "absolute", 
-                    top: "-20%", 
-                    right: "-10%", 
-                    width: "150px", 
-                    height: "150px", 
-                    background: `radial-gradient(circle, ${service.color}15 0%, transparent 70%)`,
-                    filter: "blur(30px)",
-                    pointerEvents: "none"
-                  }} />
+              <Link href={svc.href} className="svc-card-link">
+                <div className="svc-card">
+                  {/* Corner glow */}
+                  <div
+                    className="svc-glow"
+                    style={{
+                      background: `radial-gradient(circle at 90% 10%, var(${svc.accentVar})20 0%, transparent 60%)`,
+                    }}
+                  />
 
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div style={{ fontSize: "2.5rem", opacity: 0.8 }}>{service.icon}</div>
-                    {service.tag && (
-                      <span style={{ 
-                        fontSize: "0.6rem", 
-                        background: "var(--accent)", 
-                        color: "white", 
-                        padding: "4px 10px", 
-                        borderRadius: "var(--radius-full)",
-                        fontWeight: 800,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em"
-                      }}>
-                        {service.tag}
-                      </span>
+                  {/* Top row */}
+                  <div className="svc-top">
+                    <span className="svc-icon">{svc.icon}</span>
+                    {svc.tag && (
+                      <span className="svc-tag">{svc.tag}</span>
                     )}
                   </div>
 
-                  <div>
-                    <h3 style={{ 
-                      fontSize: "1.5rem", 
-                      fontWeight: 800, 
-                      marginBottom: "var(--space-2)",
-                      color: "var(--text-primary)",
-                      letterSpacing: "-0.01em"
-                    }}>
-                      {service.title}
-                    </h3>
-                    <p style={{ 
-                      fontSize: "0.95rem", 
-                      lineHeight: 1.6, 
-                      color: "var(--text-muted)",
-                      maxWidth: "90%"
-                    }}>
-                      {service.description}
-                    </p>
+                  {/* Body */}
+                  <div className="svc-body">
+                    <h3 className="svc-name">{svc.title}</h3>
+                    <p className="svc-desc">{svc.description}</p>
                   </div>
 
-                  <div style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    gap: 12, 
-                    fontSize: "0.8rem", 
-                    fontWeight: 700, 
-                    color: "var(--accent)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em"
-                  }}>
-                    Explore <ArrowRight size={14} />
+                  {/* Footer link */}
+                  <div className="svc-link" style={{ color: `var(${svc.accentVar})` }}>
+                    Explore <ArrowRight size={13} />
                   </div>
+
+                  {/* Bottom bar */}
+                  <div
+                    className="svc-bar"
+                    style={{ background: `var(${svc.accentVar})` }}
+                  />
                 </div>
               </Link>
             </motion.div>
@@ -189,25 +114,166 @@ export function ServiceCards() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          style={{ textAlign: "center", marginTop: "var(--space-12)" }}
+          style={{ textAlign: "center", marginTop: "var(--space-10)" }}
         >
-          <Link href="/services" className="btn btn-ghost btn-xl" style={{ border: "1px solid var(--border)" }}>
-            View Full Repository
+          <Link href="/services" className="btn btn-ghost btn-lg">
+            View All Services
           </Link>
         </motion.div>
       </div>
 
       <style>{`
-        .service-editorial-card:hover {
-          background: var(--bg-card) !important;
-          border-color: rgba(232, 85, 10, 0.2) !important;
-          transform: translateY(-4px);
+        .svc-section {
+          background: var(--bg-primary);
+          position: relative;
+          overflow: hidden;
+          padding-block: clamp(3rem, 8vw, 6rem);
         }
-        @media (min-width: 1024px) {
-          .services-stack {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
+        /* Ambient gold glow */
+        .svc-section::before {
+          content: '';
+          position: absolute;
+          top: 10%;
+          left: -10%;
+          width: 50vw; height: 50vw;
+          max-width: 600px; max-height: 600px;
+          background: radial-gradient(circle, rgba(212,160,23,0.07) 0%, transparent 70%);
+          filter: blur(80px);
+          pointer-events: none;
+        }
+
+        .svc-header {
+          margin-bottom: var(--space-10);
+          position: relative;
+          z-index: 2;
+        }
+        .svc-eyebrow {
+          font-size: 0.68rem;
+          color: var(--accent);
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          font-weight: 600;
+          font-family: var(--font-body);
+          display: block;
+          margin-bottom: var(--space-2);
+        }
+        .svc-title {
+          font-size: clamp(1.9rem, 6vw, 3.2rem);
+          line-height: 1.05;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+        }
+        .svc-title-em {
+          font-style: italic;
+          /* gold shimmer on the italic word */
+          background: linear-gradient(90deg, var(--accent) 0%, var(--gold) 50%, var(--accent) 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: gold-shimmer 5s linear infinite;
+        }
+
+        /* 2-col desktop, 1-col mobile */
+        .svc-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: var(--space-4);
+          position: relative;
+          z-index: 2;
+        }
+
+        .svc-card-link { display: block; text-decoration: none; height: 100%; }
+
+        .svc-card {
+          background: var(--bg-elevated);
+          padding: var(--space-6);
+          border-radius: var(--radius-2xl);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-4);
+          position: relative;
+          overflow: hidden;
+          border: 1px solid var(--border);
+          transition: transform 0.26s ease, border-color 0.26s ease, background 0.26s ease;
+          height: 100%;
+        }
+        .svc-card:hover {
+          background: var(--bg-card);
+          border-color: var(--border-accent);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 40px rgba(212,160,23,0.10);
+        }
+        .svc-card:hover .svc-bar { opacity: 0.65; }
+
+        .svc-glow {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .svc-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          position: relative;
+          z-index: 1;
+        }
+        .svc-icon { font-size: 2rem; line-height: 1; }
+        .svc-tag {
+          font-size: 0.56rem;
+          background: var(--accent-muted);
+          color: var(--accent);
+          border: 1px solid var(--border-accent);
+          padding: 3px 10px;
+          border-radius: var(--radius-full);
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          font-family: var(--font-body);
+        }
+
+        .svc-body { position: relative; z-index: 1; flex: 1; }
+        .svc-name {
+          font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+          font-weight: 700;
+          margin-bottom: var(--space-2);
+          color: var(--text-primary);
+          letter-spacing: -0.01em;
+          line-height: 1.2;
+        }
+        .svc-desc {
+          font-size: 0.87rem;
+          line-height: 1.65;
+          color: var(--text-muted);
+        }
+
+        .svc-link {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          font-family: var(--font-body);
+          position: relative;
+          z-index: 1;
+        }
+
+        .svc-bar {
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          height: 2px;
+          opacity: 0.18;
+          transition: opacity 0.26s ease;
+        }
+
+        @media (max-width: 640px) {
+          .svc-grid { grid-template-columns: 1fr; gap: var(--space-3); }
+          .svc-card { padding: var(--space-5); }
+          .svc-name { font-size: 1.05rem; }
         }
       `}</style>
     </section>

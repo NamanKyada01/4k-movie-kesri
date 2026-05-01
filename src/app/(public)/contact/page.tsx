@@ -81,11 +81,11 @@ export default function ContactPage() {
               Connect With Us
             </span>
             <h1 style={{ 
-              fontSize: "clamp(3rem, 8vw, 6rem)", 
+              fontSize: "clamp(2rem, 7vw, 5rem)", 
               textTransform: "uppercase", 
               fontWeight: 900,
               lineHeight: 1,
-              letterSpacing: "-0.04em",
+              letterSpacing: "-0.03em",
               maxWidth: "900px"
             }}>
               Let&apos;s Frame Your <span style={{ color: "transparent", WebkitTextStroke: "1px var(--text-primary)" }}>Story</span>
@@ -185,7 +185,7 @@ export default function ContactPage() {
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-10)" }}>
                   <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(232, 85, 10, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
                       <MapPin size={20} />
                     </div>
                     <div>
@@ -199,7 +199,7 @@ export default function ContactPage() {
                   </div>
                   
                   <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(232, 85, 10, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
                       <Phone size={20} />
                     </div>
                     <div>
@@ -211,7 +211,7 @@ export default function ContactPage() {
                   </div>
                   
                   <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(232, 85, 10, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
                       <Mail size={20} />
                     </div>
                     <div>
@@ -223,7 +223,7 @@ export default function ContactPage() {
                   </div>
                   
                   <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(232, 85, 10, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
                       <Clock size={20} />
                     </div>
                     <div>
@@ -303,12 +303,18 @@ export default function ContactPage() {
         @media (max-width: 1024px) {
           .contact-grid { 
             grid-template-columns: 1fr !important; 
-            gap: var(--space-20) !important;
+            gap: var(--space-10) !important;
           }
         }
         
         @media (max-width: 640px) {
           .form-grid { grid-template-columns: 1fr !important; gap: var(--space-8) !important; }
+        }
+
+        @media (max-width: 480px) {
+          .contact-hero-title {
+            font-size: clamp(2rem, 11vw, 3rem) !important;
+          }
         }
       `}</style>
     </>

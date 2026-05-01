@@ -73,25 +73,27 @@ export function Navbar() {
           >
             <div
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: "50%",
-                border: "2px solid var(--accent)",
+                width: 36,
+                height: 36,
+                borderRadius: "var(--radius-lg)",
+                border: "1.5px solid var(--border-accent)",
+                background: "var(--accent-muted)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <Camera size={16} color="var(--accent)" strokeWidth={2.5} />
+              <Camera size={17} color="var(--accent)" strokeWidth={2} />
             </div>
             <div>
               <span
                 style={{
                   fontFamily: "var(--font-heading)",
-                  fontWeight: 800,
-                  fontSize: "0.95rem",
-                  color: "var(--text-primary)",
-                  letterSpacing: "-0.02em",
+                  fontWeight: 700,
+                  fontSize: "1.05rem",
+                  color: "var(--accent)",
+                  letterSpacing: "0.04em",
                   lineHeight: 1.1,
                   display: "block",
                 }}
@@ -100,12 +102,14 @@ export function Navbar() {
               </span>
               <span
                 style={{
-                  fontSize: "0.58rem",
-                  color: "var(--accent)",
-                  letterSpacing: "0.12em",
+                  fontSize: "0.52rem",
+                  color: "var(--text-muted)",
+                  letterSpacing: "0.20em",
                   textTransform: "uppercase",
                   display: "block",
                   lineHeight: 1,
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 500,
                 }}
               >
                 SURAT
@@ -134,7 +138,7 @@ export function Navbar() {
                   style={{
                     fontSize: "0.85rem",
                     fontWeight: link.live ? 600 : 500,
-                    color: isActive ? "var(--accent)" : link.live ? "#E6C364" : "var(--text-secondary)",
+                    color: isActive ? "var(--accent)" : link.live ? "var(--accent-2)" : "var(--text-secondary)",
                     transition: "color var(--transition-fast)",
                     position: "relative",
                     paddingBottom: 2,
@@ -145,19 +149,19 @@ export function Navbar() {
                   onMouseEnter={(e) => {
                     if (!isActive)
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        link.live ? "#fdd977" : "var(--text-primary)";
+                        link.live ? "var(--accent-2)" : "var(--text-primary)";
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive)
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        link.live ? "#E6C364" : "var(--text-secondary)";
+                        link.live ? "var(--accent-2)" : "var(--text-secondary)";
                   }}
                 >
                   {link.live && (
                     <span style={{
                       width: 6, height: 6, borderRadius: "50%",
-                      background: "#ef4444",
-                      boxShadow: "0 0 6px 2px rgba(239,68,68,0.6)",
+                      background: "var(--accent-2)",
+                      boxShadow: "0 0 6px 2px rgba(200,16,46,0.5)",
                       display: "inline-block",
                       flexShrink: 0,
                     }} />

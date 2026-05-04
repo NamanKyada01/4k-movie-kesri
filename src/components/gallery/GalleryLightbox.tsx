@@ -2,7 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Tag, Info, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface GalleryPhoto {
   id: string;
@@ -24,15 +25,19 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
   onNext,
   onPrev,
 }) => {
-  // Prevent scroll when open
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, []);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -145,7 +150,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             <div>
               <span
                 style={{
-                  fontSize: "0.75rem",
+                  fontSize: "0.9rem",
                   color: "var(--accent)",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -185,25 +190,25 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <Tag size={16} color="var(--accent)" />
               <div>
-                <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Category</div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)", textTransform: "capitalize" }}>{photo.category}</div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Category</div>
+                <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--text-primary)", textTransform: "capitalize" }}>{photo.category}</div>
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <Calendar size={16} color="var(--accent)" />
               <div>
-                <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Session Date</div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)" }}>Autumn 2024</div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Session Date</div>
+                <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--text-primary)" }}>Autumn 2024</div>
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <Info size={16} color="var(--accent)" />
               <div>
-                <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Technical Notes</div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
-                  Captured in native 4K RAW. Optimized for cinematic HDR reproduction. Post-processed at 4K Movie Kesri Studios.
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Technical Notes</div>
+                <div style={{ fontSize: "1rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
+                   Captured in native 4K RAW. Optimized for cinematic HDR reproduction. Post-processed at 4K Movie Kesri Studios.
                 </div>
               </div>
             </div>
@@ -212,7 +217,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
           <div style={{ flexGrow: 1 }} />
 
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "var(--space-6)" }}>
-            <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
+            <p style={{ fontSize: "1rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
               This masterpiece is part of our legacy collection. Interested in a similar cinematic session?
             </p>
             <a
@@ -232,6 +237,7 @@ export const GalleryLightbox: React.FC<GalleryLightboxProps> = ({
           .lightbox-layout { grid-template-columns: 1fr !important; overflow-y: auto; height: auto !important; max-height: 100%; }
         }
       `}</style>
-    </motion.div>
+    </motion.div>,
+    document.body
   );
 };

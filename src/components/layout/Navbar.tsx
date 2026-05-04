@@ -118,14 +118,14 @@ export function Navbar() {
               </span>
               <span
                 style={{
-                  fontSize: "0.48rem",
+                  fontSize: "0.68rem",
                   color: "var(--text-muted)",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "0.25em",
                   textTransform: "uppercase",
                   display: "block",
                   lineHeight: 1,
                   fontFamily: "var(--font-body)",
-                  fontWeight: 500,
+                  fontWeight: 600,
                 }}
               >
                 SURAT
@@ -154,7 +154,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   style={{
-                    fontSize: "0.82rem",
+                    fontSize: "0.88rem",
                     fontWeight: link.live ? 600 : 500,
                     color: isActive
                       ? "var(--accent)"
@@ -224,7 +224,7 @@ export function Navbar() {
             <Link
               href="/contact"
               className="btn btn-primary btn-sm hidden-mobile"
-              style={{ borderRadius: "var(--radius-full)", fontSize: "0.78rem" }}
+              style={{ borderRadius: "var(--radius-full)", fontSize: "0.85rem" }}
             >
               Book Now
             </Link>

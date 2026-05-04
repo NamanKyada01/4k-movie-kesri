@@ -6,7 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { Toaster } from "sonner";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { MagneticCursor } from "@/components/ui/MagneticCursor";
+
 
 export const metadata: Metadata = {
   title: {
@@ -56,7 +56,6 @@ export default function RootLayout({
       <body>
         <ScrollProgress />
         <ThemeProvider>
-          <MagneticCursor />
           <Toaster 
             position="top-right" 
             theme="dark" 

@@ -200,7 +200,7 @@ export function ServiceCards() {
         }
 
         .svc-eyebrow {
-          font-size: 0.72rem;
+          font-size: 0.9rem;
           color: var(--accent);
           letter-spacing: 0.15em;
           text-transform: uppercase;
@@ -276,14 +276,14 @@ export function ServiceCards() {
           top: 12px;
           left: 14px;
           font-family: var(--font-mono);
-          font-size: 0.65rem;
+          font-size: 0.85rem;
           font-weight: 700;
           color: var(--gold);
           letter-spacing: 0.05em;
           background: rgba(6,6,6,0.6);
           border: 1px solid rgba(245,215,110,0.2);
           border-radius: var(--radius-full);
-          padding: 2px 8px;
+          padding: 3px 12px;
         }
 
         .svc-tag {
@@ -337,7 +337,7 @@ export function ServiceCards() {
         }
 
         .svc-desc {
-          font-size: 0.85rem;
+          font-size: 1rem;
           line-height: 1.6;
           color: var(--text-muted);
           flex: 1;
@@ -347,7 +347,7 @@ export function ServiceCards() {
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          font-size: 0.75rem;
+          font-size: 0.88rem;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.1em;

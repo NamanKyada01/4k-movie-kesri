@@ -125,23 +125,28 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ photos }) => {
         ) : (
           <motion.div
             key="dome"
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             style={{ 
-              height: "70vh", 
-              width: "100%", 
-              borderRadius: "var(--radius-2xl)", 
+              width: "100vw",
+              height: "85vh",
+              marginLeft: "calc(50% - 50vw)",
+              marginRight: "calc(50% - 50vw)",
+              position: "relative",
+              background: "rgba(0,0,0,0.8)",
               overflow: "hidden",
-              border: "1px solid var(--border)",
-              background: "rgba(0,0,0,0.5)",
-              position: "relative"
+              borderTop: "1px solid var(--border)",
+              borderBottom: "1px solid var(--border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <DomeGallery 
               images={domeImages} 
-              fit={0.6}
+              fit={0.7}
               grayscale={false}
               overlayBlurColor="transparent"
               imageBorderRadius="12px"
@@ -151,19 +156,21 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({ photos }) => {
             <div 
               style={{ 
                 position: "absolute", 
-                bottom: 20, 
+                bottom: 30, 
                 left: "50%", 
                 transform: "translateX(-50%)",
                 background: "rgba(0,0,0,0.6)",
-                padding: "8px 16px",
+                padding: "8px 20px",
                 borderRadius: 100,
-                fontSize: "0.7rem",
-                color: "var(--text-muted)",
+                fontSize: "0.75rem",
+                color: "var(--text-primary)",
                 pointerEvents: "none",
-                zIndex: 10
+                zIndex: 10,
+                border: "1px solid rgba(255,255,255,0.1)",
+                backdropFilter: "blur(4px)",
               }}
             >
-              DRAG TO ROTATE • CLICK TO ENLARGE
+              DRAG TO ROTATE • SCROLL TO ZOOM • CLICK TO ENLARGE
             </div>
           </motion.div>
         )}

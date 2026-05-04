@@ -152,12 +152,12 @@ export function StatCounters() {
         }
 
         .stat-label {
-          font-size: 0.72rem;
+          font-size: 0.95rem;
           font-weight: 600;
           color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          max-width: 120px;
+          max-width: 160px;
         }
 
         @media (max-width: 768px) {

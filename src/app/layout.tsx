@@ -5,6 +5,8 @@ import { AlertProvider } from "@/contexts/AlertContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { Toaster } from "sonner";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { MagneticCursor } from "@/components/ui/MagneticCursor";
 
 export const metadata: Metadata = {
   title: {
@@ -49,9 +51,11 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
       <body>
+        <MagneticCursor />
+        <ScrollProgress />
         <ThemeProvider>
           <Toaster 
             position="top-right" 

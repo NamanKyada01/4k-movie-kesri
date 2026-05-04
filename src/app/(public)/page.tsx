@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ServiceCards } from "@/components/home/ServiceCards";
 import { YouTubeSection } from "@/components/home/YouTubeSection";
-import { CinemaBackground } from "@/components/layout/CinemaBackground";
+import { StatCounters } from "@/components/home/StatCounters";
 import { adminDb } from "@/lib/firebase-admin";
 import type { YouTubeVideo, GalleryPhoto, Testimonial } from "@/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -183,41 +183,62 @@ function HowItWorks() {
     {
       number: "01",
       title: "Consultation",
-      desc: "We start with a free discovery call to understand your vision, timeline, and aesthetic preferences.",
+      desc: "Free discovery call to understand your vision, timeline, and aesthetic preferences.",
       icon: "💬",
+      color: "rgba(212,160,23,0.08)",
     },
     {
       number: "02",
       title: "Planning",
-      desc: "Our team scouts locations, plans lighting setups, and prepares a detailed shot list tailored to your event.",
+      desc: "Location scouting, lighting design, and a detailed shot list crafted just for your event.",
       icon: "📋",
+      color: "rgba(200,16,46,0.06)",
     },
     {
       number: "03",
       title: "Production",
-      desc: "On the day, we arrive early, set up cinema-grade equipment, and capture every moment with precision.",
+      desc: "We arrive early, deploy cinema-grade gear, and capture every moment with precision.",
       icon: "🎬",
+      color: "rgba(212,160,23,0.08)",
     },
     {
       number: "04",
       title: "Delivery",
-      desc: "Fully color-graded photos and 4K films delivered within 48 hours via a private online gallery.",
+      desc: "Color-graded 4K films and edited photos delivered within 48 hours to a private gallery.",
       icon: "✨",
+      color: "rgba(200,16,46,0.06)",
     },
   ];
 
   return (
-    <section className="section" style={{ background: "var(--bg-secondary)" }}>
+    <section style={{ background: "var(--bg-primary)", position: "relative", overflow: "hidden", paddingBlock: "clamp(4rem, 10vw, 7rem)" }}>
+      {/* Oversized watermark */}
+      <div style={{
+        position: "absolute",
+        top: 0,
+        left: -20,
+        fontFamily: "var(--font-heading)",
+        fontSize: "clamp(8rem, 22vw, 18rem)",
+        fontWeight: 900,
+        color: "var(--accent)",
+        opacity: 0.025,
+        lineHeight: 1,
+        pointerEvents: "none",
+        userSelect: "none",
+        letterSpacing: "-0.04em",
+      }} aria-hidden>PROCESS</div>
+
       <div className="container">
         <ScrollReveal>
-          <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-8), 6vw, var(--space-12))" }}>
-            <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-              The Process
+          <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-10), 6vw, var(--space-16))" }}>
+            <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
+              — The Process
             </span>
-            <h2 style={{ marginTop: "var(--space-2)", fontSize: "clamp(1.5rem, 5vw, 2.5rem)" }}>
-              From Vision to Masterpiece
+            <h2 style={{ marginTop: "var(--space-3)", fontSize: "clamp(2rem, 6vw, 3.5rem)", letterSpacing: "-0.03em" }}>
+              From Vision to<br />
+              <span className="text-gradient-gold">Masterpiece.</span>
             </h2>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginTop: "var(--space-3)", maxWidth: 480, marginInline: "auto" }}>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginTop: "var(--space-4)", maxWidth: 460, marginInline: "auto", lineHeight: 1.7 }}>
               A seamless four-step journey that turns your most important moments into cinematic art.
             </p>
           </div>
@@ -225,43 +246,34 @@ function HowItWorks() {
 
         <div className="process-grid">
           {steps.map((step, i) => (
-            <ScrollReveal key={step.number} delay={i * 0.1}>
-              <div
-                className="process-card"
-                style={{
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-2xl)",
-                  padding: "var(--space-8)",
-                  position: "relative",
-                  overflow: "hidden",
-                  height: "100%",
-                }}
-              >
-                {/* Step number watermark */}
+            <ScrollReveal key={step.number} delay={i * 0.12}>
+              <div className="process-card" style={{ background: `linear-gradient(135deg, var(--bg-card) 0%, ${step.color} 100%)`, border: "1px solid var(--border)", borderRadius: "var(--radius-2xl)", padding: "var(--space-8)", position: "relative", overflow: "hidden", height: "100%" }}>
+                {/* Giant step watermark */}
                 <div style={{
                   position: "absolute",
-                  top: -10,
-                  right: 16,
-                  fontSize: "5rem",
+                  bottom: -16,
+                  right: 12,
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "7rem",
                   fontWeight: 900,
                   color: "var(--accent)",
                   opacity: 0.06,
-                  fontFamily: "var(--font-heading)",
                   lineHeight: 1,
                   userSelect: "none",
-                }}>
-                  {step.number}
-                </div>
+                  letterSpacing: "-0.04em",
+                }}>{step.number}</div>
 
-                <div style={{ fontSize: "2rem", marginBottom: "var(--space-4)" }}>{step.icon}</div>
-                <div style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, marginBottom: "var(--space-2)" }}>
+                {/* Gold top accent line */}
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: i % 2 === 0 ? "linear-gradient(90deg, var(--accent), transparent)" : "linear-gradient(90deg, var(--accent-2), transparent)", borderRadius: "var(--radius-2xl) var(--radius-2xl) 0 0" }} />
+
+                <div style={{ fontSize: "2rem", marginBottom: "var(--space-5)" }}>{step.icon}</div>
+                <div style={{ fontSize: "0.62rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: "var(--space-2)", fontFamily: "var(--font-body)" }}>
                   Step {step.number}
                 </div>
-                <h3 style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: "var(--space-3)" }}>{step.title}</h3>
-                <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", lineHeight: 1.65 }}>{step.desc}</p>
+                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, marginBottom: "var(--space-3)", letterSpacing: "-0.01em" }}>{step.title}</h3>
+                <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", lineHeight: 1.7 }}>{step.desc}</p>
 
-                {/* Connector line (not on last) */}
+                {/* Arrow connector (not on last) */}
                 {i < steps.length - 1 && (
                   <div className="process-connector" />
                 )}
@@ -271,8 +283,8 @@ function HowItWorks() {
         </div>
 
         <ScrollReveal delay={0.4}>
-          <div style={{ textAlign: "center", marginTop: "var(--space-10)" }}>
-            <Link href="/contact" className="btn btn-primary btn-lg">
+          <div style={{ textAlign: "center", marginTop: "var(--space-12)" }}>
+            <Link href="/contact" className="btn btn-primary btn-lg" style={{ borderRadius: "var(--radius-full)" }}>
               Start Your Journey <ArrowRight size={16} />
             </Link>
           </div>
@@ -283,18 +295,30 @@ function HowItWorks() {
         .process-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: var(--space-4);
+          gap: var(--space-5);
           position: relative;
         }
         .process-card {
-          transition: transform 0.3s ease, border-color 0.3s ease;
+          transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
         }
         .process-card:hover {
-          transform: translateY(-4px);
+          transform: translateY(-6px);
           border-color: var(--border-accent) !important;
+          box-shadow: var(--shadow-accent);
+        }
+        .process-connector {
+          position: absolute;
+          top: 50%;
+          right: -18px;
+          transform: translateY(-50%);
+          width: 16px;
+          height: 2px;
+          background: linear-gradient(90deg, var(--accent), transparent);
+          z-index: 10;
         }
         @media (max-width: 1024px) {
           .process-grid { grid-template-columns: repeat(2, 1fr); }
+          .process-connector { display: none; }
         }
         @media (max-width: 600px) {
           .process-grid { grid-template-columns: 1fr; }
@@ -304,67 +328,104 @@ function HowItWorks() {
   );
 }
 
-// ─── Infinite Highlights Marquee ──────────────────────────────────────────
+// ─── Infinite Highlights Marquee (Dual Row Bidirectional) ─────────────────
 function InfiniteHighlights() {
-  const highlights = [
+  const row1 = [
     { title: "Weddings",     emoji: "💍", desc: "Cinematic wedding films" },
-    { title: "Pre-Wedding",  emoji: "💑", desc: "Beautiful outdoor shoots" },
+    { title: "Pre-Wedding",  emoji: "💑", desc: "Golden hour sessions" },
     { title: "Corporate",    emoji: "🏢", desc: "Professional event coverage" },
     { title: "Portraits",    emoji: "📸", desc: "Studio & outdoor sessions" },
-    { title: "Products",     emoji: "🛍️", desc: "High-end commercial lighting" },
+    { title: "Products",     emoji: "🛍️", desc: "High-end commercial" },
+    { title: "Videography",  emoji: "🎬", desc: "4K cinematic films" },
+  ];
+  const row2 = [
+    { title: "LED Screens",  emoji: "📺", desc: "Stage & event backdrops" },
+    { title: "Crane Shots",  emoji: "🎥", desc: "Aerial & jib coverage" },
+    { title: "Live Telecast",emoji: "📡", desc: "Multi-camera production" },
+    { title: "YouTube Live", emoji: "▶️", desc: "Global streaming" },
+    { title: "Facebook Live",emoji: "👥", desc: "Social broadcast" },
+    { title: "Post-Wedding", emoji: "✨", desc: "Album design & print" },
   ];
 
-  // Tripled array for seamless infinite looping
-  const marqueeItems = [...highlights, ...highlights, ...highlights];
+  const MarqueeRow = ({ items, direction = "left" }: { items: typeof row1; direction?: "left" | "right" }) => {
+    const tripled = [...items, ...items, ...items];
+    return (
+      <div style={{ overflow: "hidden", width: "100%" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "var(--space-4)",
+            width: "max-content",
+            animation: `marquee-${direction} 35s linear infinite`,
+          }}
+        >
+          {tripled.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                width: 220,
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-3)",
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-xl)",
+                padding: "var(--space-3) var(--space-4)",
+                transition: "border-color 0.25s ease",
+              }}
+            >
+              <div style={{
+                fontSize: "1.4rem",
+                background: "var(--bg-elevated)",
+                width: 42,
+                height: 42,
+                borderRadius: "var(--radius-lg)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                {item.emoji}
+              </div>
+              <div>
+                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 1 }}>{item.title}</div>
+                <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <section style={{ overflow: "hidden", padding: "var(--space-6) 0", background: "var(--bg-card)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-      <ScrollReveal>
-        <div 
-          className="infinite-marquee"
-        style={{ 
-          display: "flex", 
-          gap: "var(--space-5)", 
-          width: "max-content",
-        }}
-      >
-        {marqueeItems.map((item, i) => (
-          <div
-            key={i}
-            className="card"
-            style={{
-              width: 240,
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              gap: "var(--space-3)",
-              background: "var(--bg-primary)",
-              padding: "var(--space-3) var(--space-4)",
-            }}
-          >
-             <div style={{ fontSize: "1.6rem", background: "var(--bg-elevated)", width: 46, height: 46, borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-               {item.emoji}
-             </div>
-             <div>
-               <h4 style={{ fontSize: "0.95rem", marginBottom: 2 }}>{item.title}</h4>
-               <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{item.desc}</p>
-             </div>
-          </div>
-        ))}
-      </div>
-      </ScrollReveal>
+    <section style={{
+      overflow: "hidden",
+      padding: "var(--space-8) 0",
+      background: "var(--bg-secondary)",
+      borderTop: "1px solid var(--border)",
+      borderBottom: "1px solid var(--border)",
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--space-4)",
+    }}>
+      <MarqueeRow items={row1} direction="left" />
+      <MarqueeRow items={row2} direction="right" />
       <style>{`
-        .infinite-marquee {
-          animation: marquee-scroll 40s linear infinite;
+        @keyframes marquee-left {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(calc(-33.333333% - (var(--space-4) / 3))); }
         }
-        @keyframes marquee-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(calc(-33.333333% - (var(--space-5) / 3))); }
+        @keyframes marquee-right {
+          0%   { transform: translateX(calc(-33.333333% - (var(--space-4) / 3))); }
+          100% { transform: translateX(0); }
         }
       `}</style>
     </section>
   );
 }
+
 
 // ─── Testimonials Section ─────────────────────────────────────────────────
 function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
@@ -483,49 +544,79 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
 // ─── CTA Section ──────────────────────────────────────────────────────────
 function CtaSection({ text }: { text?: string }) {
   return (
-    <section className="section" style={{ background: "var(--bg-primary)", textAlign: "center" }}>
-      <div className="container" style={{ maxWidth: 720 }}>
+    <section style={{ position: "relative", overflow: "hidden", paddingBlock: "clamp(5rem, 12vw, 9rem)", textAlign: "center" }}>
+      {/* Dramatic dark gradient background */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "linear-gradient(135deg, var(--bg-card) 0%, var(--bg-primary) 50%, var(--bg-secondary) 100%)",
+        zIndex: 0,
+      }} />
+
+      {/* Central gold explosion glow */}
+      <div style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "60vw",
+        height: "60vw",
+        maxWidth: 700,
+        maxHeight: 700,
+        background: "radial-gradient(ellipse, rgba(212,160,23,0.12) 0%, rgba(212,160,23,0.04) 40%, transparent 70%)",
+        filter: "blur(60px)",
+        pointerEvents: "none",
+        zIndex: 1,
+        animation: "pulse-orb-slow 8s ease-in-out infinite",
+      }} />
+
+      {/* Top border glow line */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, var(--accent), var(--gold), var(--accent), transparent)", zIndex: 2 }} />
+
+      <div className="container" style={{ maxWidth: 760, position: "relative", zIndex: 3 }}>
         <ScrollReveal>
-          {/* Glow orb */}
-          <div style={{ position: "relative", display: "inline-block", marginBottom: "var(--space-4)" }}>
-            <div style={{
-              position: "absolute",
-              inset: -40,
-              background: "radial-gradient(circle, rgba(196,149,106,0.12) 0%, transparent 70%)",
-              filter: "blur(30px)",
-              pointerEvents: "none",
-            }} />
-            <span className="badge badge-accent" style={{ fontSize: "0.7rem", padding: "6px 16px", position: "relative" }}>
-              ✦ Limited Slots Available
+          {/* Badge */}
+          <div style={{ marginBottom: "var(--space-6)" }}>
+            <span className="badge badge-accent" style={{ fontSize: "0.72rem", padding: "7px 18px" }}>
+              ✦ Limited Slots Available for 2026
             </span>
           </div>
 
-          <h2 style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-4)", fontSize: "clamp(1.8rem, 5vw, 3rem)", lineHeight: 1.1 }}>
+          {/* Large headline with serif mix */}
+          <h2 style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "clamp(2.5rem, 8vw, 5rem)",
+            fontWeight: 700,
+            lineHeight: 1.0,
+            letterSpacing: "-0.03em",
+            marginBottom: "var(--space-6)",
+          }}>
             Ready to Tell<br />
-            <span style={{ color: "var(--accent)" }}>Your Story?</span>
+            <span className="text-gradient-gold">Your Story?</span>
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1rem", marginBottom: "var(--space-8)", maxWidth: 520, marginInline: "auto", lineHeight: 1.65 }}>
-            {text || "Whether it's a wedding, corporate event, or personal portrait session — we'd love to capture your moments in cinematic 4K."}
+
+          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", marginBottom: "var(--space-10)", maxWidth: 520, marginInline: "auto", lineHeight: 1.7 }}>
+            {text || "Wedding, corporate, portrait or live event — we'd love to capture your moments in cinematic 4K."}
           </p>
 
-          <div style={{ display: "flex", gap: "var(--space-4)", justifyContent: "center", flexWrap: "wrap", marginBottom: "var(--space-8)" }}>
-            <Link href="/contact" className="btn btn-primary btn-xl">
+          <div style={{ display: "flex", gap: "var(--space-4)", justifyContent: "center", flexWrap: "wrap", marginBottom: "var(--space-10)" }}>
+            <Link href="/contact" className="btn btn-primary btn-xl" style={{ borderRadius: "var(--radius-full)", boxShadow: "0 12px 40px rgba(212,160,23,0.35)" }}>
               Book a Session <ArrowRight size={16} />
             </Link>
-            <Link href="/gallery" className="btn btn-ghost btn-xl">
+            <Link href="/gallery" className="btn btn-ghost btn-xl" style={{ borderRadius: "var(--radius-full)" }}>
               Browse Gallery
             </Link>
           </div>
 
-          {/* Social proof strip */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-6)", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", gap: 2 }}>
+          {/* Social proof */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 3 }}>
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={14} fill="var(--gold)" color="var(--gold)" />
+                <Star key={i} size={15} fill="var(--gold)" color="var(--gold)" />
               ))}
             </div>
-            <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-              Rated 5/5 by <strong style={{ color: "var(--text-secondary)" }}>200+ clients</strong> across Gujarat
+            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+              Rated 5/5 by <strong style={{ color: "var(--gold)", fontWeight: 700 }}>500+ clients</strong> across Gujarat
             </span>
           </div>
         </ScrollReveal>
@@ -533,6 +624,7 @@ function CtaSection({ text }: { text?: string }) {
     </section>
   );
 }
+
 
 // ─── Main Page ────────────────────────────────────────────────────────────
 export default async function HomePage() {
@@ -545,6 +637,7 @@ export default async function HomePage() {
         subtitle={content?.heroSubtitle} 
       />
       <TrustBar />
+      <StatCounters />
       <InfiniteHighlights />
       <FeaturedWorks photos={photos} />
       <HowItWorks />

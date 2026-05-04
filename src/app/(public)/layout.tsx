@@ -30,7 +30,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: "var(--nav-height)" }}>
+      <main>
         {children}
       </main>
       <Footer config={configData} />

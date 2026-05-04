@@ -37,6 +37,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: background-color var(--transition-slow), color var(--transition-slow);
+  /* Custom cursor — only on true pointer devices */
+  cursor: none;
+}
+@media (hover: none) {
+  body { cursor: auto; }
 }
 
 /* ─────────────── TYPOGRAPHY ─────────────── */

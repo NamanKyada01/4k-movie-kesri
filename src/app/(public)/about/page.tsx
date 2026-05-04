@@ -148,7 +148,7 @@ export default async function AboutPage() {
       {/* ── Stats Strip ── */}
       <section
         style={{
-          background: "var(--bg-card)",
+          background: "transparent",
           borderTop: "1px solid var(--border)",
           borderBottom: "1px solid var(--border)",
           padding: "var(--space-8) 0",
@@ -167,7 +167,8 @@ export default async function AboutPage() {
               <div key={stat.label} style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    fontFamily: "var(--font-heading)",
+                    fontFamily: "var(--font-body)",
+                    fontVariantNumeric: "tabular-nums lining-nums",
                     fontWeight: 900,
                     fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
                     color: "var(--accent)",
@@ -195,7 +196,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Our Values ── */}
-      <section className="section" style={{ background: "var(--bg-primary)" }}>
+      <section className="section" style={{ background: "transparent" }}>
         <div className="container">
           <ScrollReveal>
             <div style={{ marginBottom: "var(--space-10)" }}>
@@ -258,7 +259,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Our Approach ── */}
-      <section className="section" style={{ background: "var(--bg-secondary)" }}>
+      <section className="section" style={{ background: "transparent" }}>
         <div className="container">
           <div
             style={{
@@ -420,7 +421,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Team ── */}
-      <section className="section" style={{ background: "var(--bg-primary)" }}>
+      <section className="section" style={{ background: "transparent" }}>
         <div className="container">
           <ScrollReveal>
             <div style={{ marginBottom: "var(--space-10)" }}>
@@ -499,7 +500,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Timeline ── */}
-      <section className="section journey-section" style={{ background: "var(--bg-secondary)", overflow: "hidden" }}>
+      <section className="section journey-section" style={{ background: "transparent", overflow: "hidden" }}>
         <div className="container">
           <ScrollReveal>
             <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-10), 6vw, var(--space-16))" }}>
@@ -746,7 +747,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="section" style={{ background: "var(--bg-primary)", textAlign: "center" }}>
+      <section className="section" style={{ background: "transparent", textAlign: "center" }}>
         <div className="container" style={{ maxWidth: 600 }}>
           <ScrollReveal>
             <h2 style={{ marginBottom: "var(--space-4)" }}>

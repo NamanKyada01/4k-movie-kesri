@@ -10,13 +10,8 @@ function ThemeEnforcer({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   
   useEffect(() => {
-    // Check if current route is an admin route
-    const isAdminRoute = pathname?.startsWith("/admin");
-    
-    if (isAdminRoute && theme !== "dark") {
+    if (theme !== "dark") {
       setTheme("dark");
-    } else if (!isAdminRoute && theme !== "orange-light") {
-      setTheme("orange-light");
     }
   }, [pathname, theme, setTheme]);
   
@@ -27,7 +22,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <NextThemesProvider
       attribute="data-theme"
-      defaultTheme="orange-light"
+      defaultTheme="dark"
       enableSystem={false}
       themes={["dark", "light", "orange-light"]}
     >

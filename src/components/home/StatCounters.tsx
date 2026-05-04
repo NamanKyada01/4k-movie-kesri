@@ -48,7 +48,8 @@ function StatItem({ stat, index, triggered }: {
         <Icon size={18} />
       </div>
       <div className="stat-num">
-        {count}{stat.suffix}
+        <span>{count}</span>
+        <span style={{ color: "var(--gold)" }}>{stat.suffix}</span>
       </div>
       <div className="stat-label">{stat.label}</div>
     </motion.div>
@@ -85,7 +86,7 @@ export function StatCounters() {
         .stats-section {
           position: relative;
           padding-block: clamp(3rem, 7vw, 5rem);
-          background: var(--bg-secondary);
+          background: transparent;
           border-top: 1px solid var(--border);
           border-bottom: 1px solid var(--border);
           overflow: hidden;
@@ -136,13 +137,18 @@ export function StatCounters() {
         }
 
         .stat-num {
-          font-family: var(--font-heading);
+          font-family: var(--font-body);
+          font-variant-numeric: tabular-nums;
           font-size: clamp(2.8rem, 6vw, 4.5rem);
           font-weight: 700;
           color: var(--accent);
           line-height: 1;
           letter-spacing: -0.03em;
           margin-bottom: var(--space-2);
+          display: flex;
+          align-items: baseline;
+          justify-content: center;
+          gap: 2px;
         }
 
         .stat-label {

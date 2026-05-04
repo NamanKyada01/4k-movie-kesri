@@ -21,7 +21,7 @@ const services = [
     description: "Every vow, every tear, every smile — captured with cinema-grade precision that stands the test of time.",
     href: "/services",
     icon: Film,
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800", // Grand wedding
     tag: "",
   },
   {
@@ -30,7 +30,7 @@ const services = [
     description: "High-end portraiture, corporate, and event photography. Studio and on-location available.",
     href: "/services",
     icon: Camera,
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&q=80&w=800", // Portrait/fashion
     tag: "",
   },
   {
@@ -39,7 +39,7 @@ const services = [
     description: "Cinematic 4K storytelling tailored for your special moments — color-graded and delivered in 48h.",
     href: "/services",
     icon: Video,
-    image: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?auto=format&fit=crop&q=80&w=800", // Video camera
     tag: "",
   },
   {
@@ -57,7 +57,7 @@ const services = [
     description: "High-resolution LED walls and stage backdrops that transform any venue into a visual spectacle.",
     href: "/services",
     icon: Monitor,
-    image: "https://images.unsplash.com/photo-1505909182942-e2f09aee3e89?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1470229722913-7c090be5c520?auto=format&fit=crop&q=80&w=800", // Stage concert LED
     tag: "",
   },
   {
@@ -186,7 +186,7 @@ export function ServiceCards() {
 
       <style>{`
         .svc-section {
-          background: var(--bg-primary);
+          background: transparent;
           position: relative;
           overflow: hidden;
           padding-block: clamp(4rem, 10vw, 7rem);

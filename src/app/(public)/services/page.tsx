@@ -66,6 +66,7 @@ const itemVariants = {
 export default function ServicesPage() {
   return (
     <>
+      <CinemaBackground theme={{ primary: "indigo", secondary: "rose" }} />
       {/* ── Hero ── */}
       <section
         className="section"
@@ -305,7 +306,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── FAQ / Reassurance ── */}
-      <section className="section" style={{ background: "var(--bg-primary)" }}>
+      <section className="section" style={{ background: "transparent" }}>
         <div className="container" style={{ maxWidth: 720 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -374,7 +375,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="section" style={{ background: "var(--bg-secondary)", textAlign: "center" }}>
+      <section className="section" style={{ background: "transparent", textAlign: "center" }}>
         <div className="container" style={{ maxWidth: 600 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

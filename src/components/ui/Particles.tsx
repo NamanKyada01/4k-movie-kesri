@@ -126,6 +126,8 @@ export const Particles = ({
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(request);
+      const ext = gl.getExtension('WEBGL_lose_context');
+      if (ext) ext.loseContext();
       gl.canvas.remove();
     };
   }, [particleColors, particleCount, particleSpread, speed, particleBaseSize, pixelRatio]);

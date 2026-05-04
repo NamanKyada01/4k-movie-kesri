@@ -52,7 +52,7 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
               <>
                 Capture<br />
                 the moment.<br />
-                <span className="hero-headline-accent">Keep the memory.</span>
+                <em className="hero-headline-accent">Keep the memory.</em>
               </>
             )}
           </motion.h1>
@@ -150,7 +150,6 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
           margin-top: calc(var(--nav-height) * -1);
           padding-top: calc(var(--nav-height) + var(--space-8));
           overflow: hidden;
-          cursor: none;
         }
 
         /* ── Background ── */
@@ -248,19 +247,23 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
 
         /* Headline */
         .hero-headline {
-          font-family: var(--font-heading);
-          font-size: clamp(3.2rem, 8vw, 6.5rem);
+          font-family: 'Playfair Display', var(--font-heading), Georgia, serif;
+          font-size: clamp(3rem, 8vw, 6.5rem);
           font-weight: 700;
           line-height: 1.0;
           color: #FAFAF8;
           margin-bottom: var(--space-6);
-          letter-spacing: -0.03em;
+          letter-spacing: -0.02em;
+          font-style: italic;
         }
         .hero-headline-accent {
-          background: linear-gradient(135deg, var(--gold) 0%, var(--accent) 60%);
+          font-style: italic;
+          background: linear-gradient(110deg, var(--gold) 0%, var(--accent) 50%, var(--gold) 100%);
+          background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          animation: gold-shimmer 4s linear infinite;
         }
 
         /* Tagline */

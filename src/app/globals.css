@@ -30,6 +30,7 @@ html {
 
 body {
   font-family: var(--font-body);
+  font-variant-numeric: lining-nums tabular-nums;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
@@ -37,11 +38,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: background-color var(--transition-slow), color var(--transition-slow);
-  /* Custom cursor — only on true pointer devices */
-  cursor: none;
-}
-@media (hover: none) {
-  body { cursor: auto; }
 }
 
 /* ─────────────── TYPOGRAPHY ─────────────── */
@@ -106,11 +102,24 @@ a {
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-primary) 100%);
 }
 .text-gradient-gold {
-  background: linear-gradient(135deg, var(--gold) 0%, var(--accent) 60%, var(--gold) 100%);
+  background: linear-gradient(110deg, var(--gold) 0%, var(--accent) 40%, var(--gold) 80%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gold-shimmer 5s linear infinite;
 }
+
+/* ── Section gold divider line ── */
+.section-gold-line {
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: var(--radius-full);
+  display: block;
+  margin: var(--space-3) auto;
+}
+.section-gold-line-left { margin-inline: 0; }
 
 /* ─────────────── CARD ─────────────── */
 .card {
@@ -321,3 +330,4 @@ a {
 @media (max-width: 768px) {
   a, button { -webkit-tap-highlight-color: transparent; }
 }
+

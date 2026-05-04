@@ -1,8 +1,20 @@
 # Current State
 
 ## Tasks in Progress
-- **Wave 5/6**: CSS token polish, footer grain textures, page transitions
-- **Gallery**: Firestore image loading verified only in authenticated context
+- **Wave 7**: Final review and client presentation prep
+
+## Recent Changes (Wave 6)
+- **Stock Imagery**: Implemented high-quality, cinematic Unsplash image arrays as fallbacks for the Gallery and Portfolio pages when the database is empty or restricted.
+- **ServiceCards**: Replaced generic icons/images with moody, premium stock photography for each of the core services.
+- **Theme**: Reverted the default theme from `orange-light` back to the cinematic `dark` theme across all public routes.
+- **Typography**: Removed unused Google Fonts and standardized on `Outfit` for body text and `Playfair Display` for headings globally.
+
+## Completed Waves
+- **Wave 1**: Floating pill navbar + scroll % counter + ScrollProgress bar
+- **Wave 2**: HeroSection cinematic rebuild (Ken Burns, staggered entry, floating stats card)
+- **Wave 3**: StatCounters animated component
+- **Wave 4**: ServiceCards + bidirectional InfiniteHighlights + HowItWorks + CtaSection upgrades
+- **Wave 5**: Footer rebuild + PageTransition + Playfair Display typography + gold shimmer utilities
 
 ## Recent Changes (Wave 3 & 4 — Cinematic Overhaul Session 2)
 - **StatCounters**: New animated count-up component with IntersectionObserver trigger (500+, 4K, 5★, 48h)

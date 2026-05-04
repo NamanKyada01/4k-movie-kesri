@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ReactNode } from "react";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { adminDb } from "@/lib/firebase-admin";
 import { redirect } from "next/navigation";
 
@@ -31,7 +32,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     <>
       <Navbar />
       <main>
-        {children}
+        <PageTransition>
+          {children}
+        </PageTransition>
       </main>
       <Footer config={configData} />
       <WhatsAppButton phone={supportPhone} />

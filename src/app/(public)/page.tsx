@@ -9,6 +9,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import Link from "next/link";
 import { ArrowRight, Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "lucide-react";
 import TiltedCard from "@/components/ui/TiltedCard";
+import { CinemaBackground } from "@/components/layout/CinemaBackground";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -78,11 +79,20 @@ function TrustBar() {
 }
 
 // ─── Featured Works Section ───────────────────────────────────────────────
+const FALLBACK_GALLERY_IMAGES = [
+  { id: "f1", title: "Royal Rajput Wedding", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" },
+  { id: "f2", title: "Golden Hour Pre-Wedding", category: "pre-wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=800" },
+  { id: "f3", title: "Corporate Gala 2025", category: "corporate", cloudinaryUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800" },
+  { id: "f4", title: "Cinematic Portrait", category: "portrait", cloudinaryUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800" },
+  { id: "f5", title: "Haldi Ceremony", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=800" },
+  { id: "f6", title: "Product Launch", category: "event", cloudinaryUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800" },
+];
+
 function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
-  const mockCategories = ["Wedding", "Portrait", "Corporate", "Events", "Product"];
+  const displayPhotos = photos.length > 0 ? photos : FALLBACK_GALLERY_IMAGES;
 
   return (
-    <section className="section" style={{ background: "var(--bg-primary)" }}>
+    <section className="section" style={{ background: "transparent" }}>
       <div className="container">
         <ScrollReveal>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-8)", flexWrap: "wrap", gap: "var(--space-4)" }}>
@@ -100,70 +110,37 @@ function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
           </div>
         </ScrollReveal>
 
-        {photos.length === 0 ? (
-          // Placeholder masonry
-          <ScrollReveal delay={0.2}>
-            <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  breakInside: "avoid",
-                  marginBottom: "var(--space-4)",
-                  aspectRatio: i % 3 === 1 ? "2/3" : i % 3 === 0 ? "3/2" : "1/1",
-                  background: `linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%)`,
-                  borderRadius: "var(--radius-xl)",
-                  border: "1px solid var(--border)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--text-muted)",
-                  fontSize: "2rem",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <span style={{ opacity: 0.3 }}>📷</span>
-                <div style={{ position: "absolute", bottom: 12, left: 12 }}>
-                  <span className="badge badge-accent">{mockCategories[i % mockCategories.length]}</span>
-                </div>
+        <ScrollReveal delay={0.2}>
+          <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
+          {displayPhotos.map((photo, i) => (
+            <Link
+              key={photo.id}
+              href="/gallery"
+              className="group"
+              style={{
+                display: "block",
+                breakInside: "avoid",
+                marginBottom: "var(--space-4)",
+                aspectRatio: i % 3 === 1 ? "2/3" : "3/2",
+                borderRadius: "var(--radius-xl)",
+                overflow: "hidden",
+                position: "relative",
+                background: "var(--bg-elevated)",
+              }}
+            >
+              <img
+                src={photo.cloudinaryUrl}
+                alt={photo.title}
+                className="group-hover:scale-105"
+                style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
+              />
+              <div style={{ position: "absolute", bottom: 12, left: 12 }}>
+                <span className="badge badge-accent" style={{ textTransform: "capitalize" }}>{photo.category}</span>
               </div>
-            ))}
-            </div>
-          </ScrollReveal>
-        ) : (
-          <ScrollReveal delay={0.2}>
-            <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
-            {photos.map((photo, i) => (
-              <Link
-                key={photo.id}
-                href="/gallery"
-                style={{
-                  display: "block",
-                  breakInside: "avoid",
-                  marginBottom: "var(--space-4)",
-                  aspectRatio: i % 3 === 1 ? "2/3" : "3/2",
-                  borderRadius: "var(--radius-xl)",
-                  overflow: "hidden",
-                  position: "relative",
-                  background: "var(--bg-elevated)",
-                }}
-              >
-                <img
-                  src={photo.cloudinaryUrl}
-                  alt={photo.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1.05)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1)"; }}
-                />
-                <div style={{ position: "absolute", bottom: 12, left: 12 }}>
-                  <span className="badge badge-accent" style={{ textTransform: "capitalize" }}>{photo.category}</span>
-                </div>
-              </Link>
-            ))}
-            </div>
-          </ScrollReveal>
-        )}
+            </Link>
+          ))}
+          </div>
+        </ScrollReveal>
       </div>
       <style>{`
         @media (max-width: 768px) {
@@ -403,7 +380,7 @@ function InfiniteHighlights() {
     <section style={{
       overflow: "hidden",
       padding: "var(--space-8) 0",
-      background: "var(--bg-secondary)",
+      background: "transparent",
       borderTop: "1px solid var(--border)",
       borderBottom: "1px solid var(--border)",
       display: "flex",
@@ -549,7 +526,7 @@ function CtaSection({ text }: { text?: string }) {
       <div style={{
         position: "absolute",
         inset: 0,
-        background: "linear-gradient(135deg, var(--bg-card) 0%, var(--bg-primary) 50%, var(--bg-secondary) 100%)",
+        background: "transparent",
         zIndex: 0,
       }} />
 
@@ -632,6 +609,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <CinemaBackground theme={{ primary: "gold", secondary: "amber" }} />
       <HeroSection 
         title={content?.heroTitle} 
         subtitle={content?.heroSubtitle} 

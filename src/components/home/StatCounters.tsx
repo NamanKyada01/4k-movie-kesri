@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Camera, Film, Star, Clock } from "lucide-react";
+import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
 const STATS = [
   { icon: Film,   value: 500,  suffix: "+", label: "Events Delivered",   duration: 2000 },
@@ -71,8 +72,7 @@ export function StatCounters() {
 
   return (
     <section ref={ref} className="stats-section">
-      {/* Decorative orb */}
-      <div className="stats-orb" />
+      <SectionDecorator watermark="IMPACT" />
 
       <div className="container">
         <div className="stats-grid">

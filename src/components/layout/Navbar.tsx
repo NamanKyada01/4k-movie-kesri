@@ -217,31 +217,7 @@ export function Navbar() {
 
           {/* ── Right: Scroll % + Theme + CTA + Hamburger ── */}
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexShrink: 0 }}>
-            {/* Scroll percentage badge — desktop only */}
-            {scrolled && scrollPercent > 0 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="hidden-mobile"
-                style={{
-                  fontSize: "0.65rem",
-                  fontWeight: 700,
-                  color: "var(--accent)",
-                  background: "var(--accent-muted)",
-                  border: "1px solid var(--border-accent)",
-                  borderRadius: "var(--radius-full)",
-                  padding: "2px 8px",
-                  fontFamily: "var(--font-mono)",
-                  letterSpacing: "0.05em",
-                  minWidth: 36,
-                  textAlign: "center",
-                  userSelect: "none",
-                }}
-              >
-                {scrollPercent}%
-              </motion.div>
-            )}
+
 
             <ThemeToggle />
 

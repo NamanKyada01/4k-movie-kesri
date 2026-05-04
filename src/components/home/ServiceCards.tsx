@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Camera, Film, Monitor, Radio, Share2, Video } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
 const services = [
   {
@@ -92,6 +93,7 @@ const services = [
 export function ServiceCards() {
   return (
     <section className="svc-section">
+      <SectionDecorator watermark="SERVICES" />
       <div className="container">
         {/* ── Header ── */}
         <motion.div
@@ -101,8 +103,6 @@ export function ServiceCards() {
           transition={{ duration: 0.7 }}
           className="svc-header"
         >
-          {/* Oversized watermark */}
-          <div className="svc-watermark" aria-hidden>SERVICES</div>
 
           <span className="svc-eyebrow">— Our Expertise</span>
           <h2 className="svc-title">
@@ -190,22 +190,6 @@ export function ServiceCards() {
           position: relative;
           overflow: hidden;
           padding-block: clamp(4rem, 10vw, 7rem);
-        }
-
-        /* Oversized watermark */
-        .svc-watermark {
-          position: absolute;
-          top: 40px;
-          right: -20px;
-          font-family: var(--font-heading);
-          font-size: clamp(6rem, 16vw, 14rem);
-          font-weight: 900;
-          color: var(--accent);
-          opacity: 0.03;
-          line-height: 1;
-          pointer-events: none;
-          user-select: none;
-          letter-spacing: -0.04em;
         }
 
         .svc-header {

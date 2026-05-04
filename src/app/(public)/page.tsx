@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ArrowRight, Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "lucide-react";
 import TiltedCard from "@/components/ui/TiltedCard";
 import { CinemaBackground } from "@/components/layout/CinemaBackground";
+import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -188,22 +189,9 @@ function HowItWorks() {
   ];
 
   return (
-    <section style={{ background: "var(--bg-primary)", position: "relative", overflow: "hidden", paddingBlock: "clamp(4rem, 10vw, 7rem)" }}>
-      {/* Oversized watermark */}
-      <div style={{
-        position: "absolute",
-        top: 0,
-        left: -20,
-        fontFamily: "var(--font-heading)",
-        fontSize: "clamp(8rem, 22vw, 18rem)",
-        fontWeight: 900,
-        color: "var(--accent)",
-        opacity: 0.025,
-        lineHeight: 1,
-        pointerEvents: "none",
-        userSelect: "none",
-        letterSpacing: "-0.04em",
-      }} aria-hidden>PROCESS</div>
+    <section style={{ background: "transparent", position: "relative", overflow: "hidden", paddingBlock: "clamp(4rem, 10vw, 7rem)" }}>
+      <SectionDecorator watermark="PROCESS" />
+
 
       <div className="container">
         <ScrollReveal>
@@ -522,30 +510,8 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
 function CtaSection({ text }: { text?: string }) {
   return (
     <section style={{ position: "relative", overflow: "hidden", paddingBlock: "clamp(5rem, 12vw, 9rem)", textAlign: "center" }}>
-      {/* Dramatic dark gradient background */}
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        background: "transparent",
-        zIndex: 0,
-      }} />
+      <SectionDecorator watermark="LEGACY" />
 
-      {/* Central gold explosion glow */}
-      <div style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "60vw",
-        height: "60vw",
-        maxWidth: 700,
-        maxHeight: 700,
-        background: "radial-gradient(ellipse, rgba(212,160,23,0.12) 0%, rgba(212,160,23,0.04) 40%, transparent 70%)",
-        filter: "blur(60px)",
-        pointerEvents: "none",
-        zIndex: 1,
-        animation: "pulse-orb-slow 8s ease-in-out infinite",
-      }} />
 
       {/* Top border glow line */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, var(--accent), var(--gold), var(--accent), transparent)", zIndex: 2 }} />

@@ -4,6 +4,8 @@ import { adminDb } from "@/lib/firebase-admin";
 import { CinemaBackground } from "@/components/layout/CinemaBackground";
 import type { GalleryPhoto } from "@/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { GalleryGrid } from "@/components/gallery/GalleryGrid";
+import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -39,8 +41,9 @@ export default async function GalleryPage() {
     <>
       <CinemaBackground theme={{ primary: "blue", secondary: "teal" }} />
       {/* Header */}
-      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 800 }}>
+      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)", position: "relative" }}>
+        <SectionDecorator watermark="GALLERY" />
+        <div className="container" style={{ textAlign: "center", maxWidth: 800, position: "relative", zIndex: 1 }}>
           <ScrollReveal>
             <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
               Our Lifetime Masterpieces
@@ -56,36 +59,11 @@ export default async function GalleryPage() {
       </section>
 
       {/* Gallery Grid placeholder (will connect to Firebase) */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
+      <section className="section" style={{ paddingTop: 0, position: "relative" }}>
+        <SectionDecorator showGrain showCorners={false} />
+        <div className="container" style={{ position: "relative", zIndex: 1 }}>
           <ScrollReveal delay={0.2}>
-            <div style={{ columnCount: 3, columnGap: "var(--space-5)" }} className="full-gallery-masonry">
-              {displayPhotos.map((photo, i) => (
-                <div
-                  key={photo.id}
-                  style={{
-                    breakInside: "avoid",
-                    marginBottom: "var(--space-5)",
-                    borderRadius: "var(--radius-xl)",
-                    border: "1px solid var(--border)",
-                    position: "relative",
-                    overflow: "hidden",
-                    background: "var(--bg-elevated)"
-                  }}
-                >
-                  <img 
-                    src={photo.cloudinaryUrl} 
-                    alt={photo.title || "Gallery Photo"} 
-                    style={{ width: "100%", height: "auto", display: "block" }} 
-                    loading="lazy"
-                  />
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, background: "linear-gradient(transparent, rgba(0,0,0,0.85))" }}>
-                    <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{photo.title}</div>
-                    <div style={{ fontSize: "0.7rem", color: "var(--accent)", marginTop: 2, textTransform: "capitalize" }}>{photo.category}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <GalleryGrid photos={displayPhotos} />
           </ScrollReveal>
         </div>
       </section>

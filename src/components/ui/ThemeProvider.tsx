@@ -4,8 +4,8 @@ import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { ReactNode, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-// Component to force dark theme for admin routes
-function AdminThemeEnforcer({ children }: { children: ReactNode }) {
+// Component to force themes based on routes
+function ThemeEnforcer({ children }: { children: ReactNode }) {
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   
@@ -13,9 +13,10 @@ function AdminThemeEnforcer({ children }: { children: ReactNode }) {
     // Check if current route is an admin route
     const isAdminRoute = pathname?.startsWith("/admin");
     
-    // Force dark theme for admin routes
     if (isAdminRoute && theme !== "dark") {
       setTheme("dark");
+    } else if (!isAdminRoute && theme !== "orange-light") {
+      setTheme("orange-light");
     }
   }, [pathname, theme, setTheme]);
   
@@ -26,13 +27,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <NextThemesProvider
       attribute="data-theme"
-      defaultTheme="dark"
+      defaultTheme="orange-light"
       enableSystem={false}
-      themes={["dark", "light"]}
+      themes={["dark", "light", "orange-light"]}
     >
-      <AdminThemeEnforcer>
+      <ThemeEnforcer>
         {children}
-      </AdminThemeEnforcer>
+      </ThemeEnforcer>
     </NextThemesProvider>
   );
 }

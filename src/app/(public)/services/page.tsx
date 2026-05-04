@@ -66,8 +66,6 @@ const itemVariants = {
 export default function ServicesPage() {
   return (
     <>
-      <CinemaBackground theme={{ primary: "amber", secondary: "gold" }} />
-
       {/* ── Hero ── */}
       <section
         className="section"

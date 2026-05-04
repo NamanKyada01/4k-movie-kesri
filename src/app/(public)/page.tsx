@@ -540,7 +540,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <CinemaBackground theme={{ primary: "amber", secondary: "gold" }} />
       <HeroSection 
         title={content?.heroTitle} 
         subtitle={content?.heroSubtitle} 

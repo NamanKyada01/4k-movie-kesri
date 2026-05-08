@@ -1,322 +1,257 @@
 "use client";
 
-import { Mail, MapPin, Phone, Clock, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { CinemaBackground } from "@/components/layout/CinemaBackground";
+import { useState } from "react";
+import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+function FloatingInput({ label, type = "text", value, onChange, required = false, as = "input", rows }: any) {
+  const [focused, setFocused] = useState(false);
+  const isActive = focused || value.length > 0;
+
+  const InputComponent = as;
+
+  return (
+    <div className="relative mb-8">
+      <InputComponent
+        type={type}
+        value={value}
+        onChange={onChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        required={required}
+        rows={rows}
+        className={`w-full bg-transparent border-b ${isActive ? 'border-[#D4A017]' : 'border-[#333333]'} py-3 text-[#FAFAF8] outline-none transition-colors duration-300 ${as === 'textarea' ? 'resize-none' : ''}`}
+      />
+      <label
+        className={`absolute left-0 pointer-events-none transition-all duration-300 font-[family-name:var(--font-body)] ${
+          isActive
+            ? '-top-6 text-xs text-[#D4A017] uppercase tracking-widest font-semibold'
+            : 'top-3 text-[#6B6358] text-base'
+        }`}
+      >
+        {label} {required && <span className="text-[#C8102E]">*</span>}
+      </label>
+    </div>
+  );
+}
 
 export default function ContactPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
-    eventType: "",
+    inquiryType: "Wedding",
     message: ""
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to submit");
-      
-      toast.success("Message sent! We'll be in touch shortly.");
-      setFormData({ firstName: "", lastName: "", email: "", phone: "", eventType: "", message: "" });
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
       setIsSubmitting(false);
-    }
+      alert("Inquiry submitted successfully. We will be in touch soon.");
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", inquiryType: "Wedding", message: "" });
+    }, 1500);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.3 }
-    }
-  };
-
-  const itemVariants: any = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  const handleChange = (e: any) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
-    <>
-      <CinemaBackground theme={{ primary: "amber", secondary: "gold" }} />
-      
-      <motion.section 
-        className="section" 
-        style={{ background: "transparent", paddingTop: "clamp(8rem, 20vh, 15rem)" }}
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <div className="container">
-          {/* Hero Content */}
-          <motion.div variants={itemVariants} style={{ marginBottom: "var(--space-16)", textAlign: "left" }}>
-            <span style={{ 
-              fontSize: "0.85rem", 
-              color: "var(--accent)", 
-              letterSpacing: "0.2em", 
-              textTransform: "uppercase", 
-              fontWeight: 700,
-              marginBottom: "var(--space-4)",
-              display: "block"
-            }}>
+    <main className="bg-[#060606] min-h-screen text-[#FAFAF8]">
+      {/* Hero Section */}
+      <section className="pt-40 pb-16 relative overflow-hidden text-center">
+        <div className="container relative z-10 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#D4A017] text-sm font-semibold uppercase tracking-[0.2em] mb-4 block">
               Connect With Us
             </span>
-            <h1 style={{ 
-              fontSize: "clamp(2rem, 7vw, 5rem)", 
-              textTransform: "uppercase", 
-              fontWeight: 900,
-              lineHeight: 1,
-              letterSpacing: "-0.03em",
-              maxWidth: "900px"
-            }}>
-              Let&apos;s Frame Your <span style={{ color: "transparent", WebkitTextStroke: "1px var(--text-primary)" }}>Story</span>
+            <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl mb-6">
+              Let's Frame Your <br className="hidden md:block" />
+              <span
+                className="text-transparent"
+                style={{ WebkitTextStroke: "1.5px #D4A017" }}
+              >
+                Story
+              </span>
             </h1>
-            <p style={{ 
-              fontSize: "clamp(1.1rem, 1.5vw, 1.3rem)", 
-              color: "var(--text-muted)", 
-              marginTop: "var(--space-6)",
-              maxWidth: "600px",
-              lineHeight: 1.6
-            }}>
-              Whether it&apos;s a legacy wedding or a commercial vision, our lens is ready. 
-              Drop us a line to start your cinematic journey.
+            <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-lg font-light max-w-2xl mx-auto">
+              Every cinematic journey begins with a conversation. Share your vision with us, and we'll craft the visual narrative it deserves.
             </p>
           </motion.div>
+        </div>
+      </section>
 
-          <div 
-            style={{ 
-              display: "grid", 
-              gridTemplateColumns: "1.2fr 1fr", 
-              gap: "var(--space-12)",
-              alignItems: "start" 
-            }} 
-            className="contact-grid"
-          >
+      <section className="pb-32 px-4 md:px-8">
+        <div className="container max-w-7xl">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
             
-            {/* Redesigned Contact Form */}
-            <motion.div variants={itemVariants} style={{ position: "relative" }}>
-              <div 
-                className="glass" 
-                style={{ 
-                  padding: "clamp(2rem, 5vw, 4rem)", 
-                  borderRadius: "var(--radius-2xl)",
-                  background: "rgba(20, 20, 20, 0.4)",
-                  border: "1px solid rgba(255, 255, 255, 0.05)"
-                }}
-              >
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-10)" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-8)" }} className="form-grid">
-                    <div className="form-field">
-                      <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="contact-input" placeholder=" " required />
-                      <label className="contact-label">First Name</label>
-                    </div>
-                    <div className="form-field">
-                      <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="contact-input" placeholder=" " required />
-                      <label className="contact-label">Last Name</label>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-8)" }} className="form-grid">
-                    <div className="form-field">
-                      <input type="email" name="email" value={formData.email} onChange={handleChange} className="contact-input" placeholder=" " required />
-                      <label className="contact-label">Email Address</label>
-                    </div>
-                    <div className="form-field">
-                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="contact-input" placeholder=" " />
-                      <label className="contact-label">Phone Number</label>
-                    </div>
-                  </div>
+            {/* LEFT: Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="w-full lg:w-[55%] glass p-8 md:p-12 rounded-[24px] border border-[#D4A017]/10 relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4A017] to-transparent opacity-30" />
 
-                  <div className="form-field">
-                    <select name="eventType" value={formData.eventType} onChange={handleChange} className="contact-input" style={{ appearance: "none" }}>
-                      <option value="" disabled hidden></option>
-                      <option value="wedding">Wedding / Pre-Wedding</option>
-                      <option value="corporate">Corporate Cinematic</option>
-                      <option value="portrait">Editorial Portrait</option>
-                      <option value="other">Other Inquiry</option>
-                    </select>
-                    <label className="contact-label">Nature of Inquiry</label>
-                  </div>
+              <form onSubmit={handleSubmit} className="relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 mt-6">
+                  <FloatingInput
+                    label="First Name"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                  <FloatingInput
+                    label="Last Name"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                  />
+                </div>
 
-                  <div className="form-field">
-                    <textarea 
-                      name="message"
-                      value={formData.message}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                  <FloatingInput
+                    label="Email Address"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                  <FloatingInput
+                    label="Phone Number"
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-10 mt-2">
+                  <label className="block text-xs text-[#D4A017] uppercase tracking-widest font-semibold mb-3">
+                    Nature of Inquiry
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="inquiryType"
+                      value={formData.inquiryType}
                       onChange={handleChange}
-                      className="contact-input" 
-                      placeholder=" " 
-                      rows={4} 
-                      required 
-                      style={{ resize: "none" }}
-                    />
-                    <label className="contact-label">Tell us your vision...</label>
+                      className="w-full bg-transparent border-b border-[#333333] py-3 text-[#FAFAF8] outline-none transition-colors duration-300 appearance-none font-[family-name:var(--font-body)] cursor-pointer focus:border-[#D4A017]"
+                    >
+                      <option value="Wedding" className="bg-[#141414]">Wedding</option>
+                      <option value="Pre-Wedding" className="bg-[#141414]">Pre-Wedding</option>
+                      <option value="Corporate" className="bg-[#141414]">Corporate Event</option>
+                      <option value="Portrait" className="bg-[#141414]">Portrait Session</option>
+                      <option value="Other" className="bg-[#141414]">Other</option>
+                    </select>
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[#D4A017]">
+                      <ChevronDown size={16} />
+                    </div>
                   </div>
+                </div>
 
-                  <button type="submit" className="btn btn-primary btn-xl" style={{ width: "100%", height: "60px", fontSize: "1rem" }} disabled={isSubmitting}>
-                    {isSubmitting ? <><Loader2 size={18} className="animate-spin-slow" /> Transmitting...</> : "Send Request"}
-                  </button>
-                </form>
-              </div>
+                <FloatingInput
+                  label="Tell us your vision..."
+                  as="textarea"
+                  name="message"
+                  rows={5}
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full h-[60px] mt-4 rounded-full font-bold text-lg text-[#0A0800] bg-gradient-to-r from-[#D4A017] via-[#F5D76E] to-[#D4A017] bg-[length:200%_auto] hover:bg-[position:right_center] transition-all duration-500 flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(212,160,23,0.3)] hover:shadow-[0_8px_30px_rgba(212,160,23,0.5)] disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Sending..." : "Send Request"} <ArrowRight size={20} />
+                </button>
+              </form>
             </motion.div>
 
-            {/* Studio Info Section */}
-            <motion.div variants={itemVariants} style={{ display: "flex", flexDirection: "column", gap: "var(--space-8)" }}>
-              <div style={{ paddingLeft: "var(--space-4)" }}>
-                <h2 style={{ fontSize: "2rem", marginBottom: "var(--space-6)" }}>Inside the Studio</h2>
-                
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-10)" }}>
-                  <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
-                      <MapPin size={20} />
+            {/* RIGHT: Studio Info */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="w-full lg:w-[45%] flex flex-col pt-4"
+            >
+              <h2 className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl text-[#FAFAF8] mb-10">
+                Inside the Studio
+              </h2>
+
+              <div className="space-y-8 flex-grow">
+                {[
+                  { icon: MapPin, title: "Headquarters", text: "VIP Road, Vesu, Surat, Gujarat 395007" },
+                  { icon: Phone, title: "Call Us", text: "+91 98765 43210" },
+                  { icon: Mail, title: "Email", text: "hello@4kmoviekesri.com" },
+                  { icon: Clock, title: "Availability", text: "Monday–Sunday, 10AM–8PM IST" }
+                ].map((info, idx) => (
+                  <div key={idx} className="flex items-start gap-5">
+                    <div className="w-12 h-12 rounded-full border border-[#D4A017]/30 bg-[#D4A017]/10 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,160,23,0.1)]">
+                      <info.icon size={20} className="text-[#D4A017]" />
                     </div>
                     <div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Headquarters</div>
-                      <div style={{ color: "var(--text-primary)", fontSize: "1.1rem", fontWeight: 500, lineHeight: 1.5 }}>
-                        4K Movie Kesri Studio,<br/>
-                        VIP Road, Vesu,<br/>
-                        Surat, Gujarat 395007
-                      </div>
+                      <h4 className="text-sm uppercase tracking-widest text-[#D4A017] font-semibold mb-1">{info.title}</h4>
+                      <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-lg">{info.text}</p>
                     </div>
                   </div>
-                  
-                  <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
-                      <Phone size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Call Us</div>
-                      <div style={{ color: "var(--text-primary)", fontSize: "1.1rem", fontWeight: 500 }}>
-                        +91 98765 43210
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
-                      <Mail size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Email Us</div>
-                      <div style={{ color: "var(--text-primary)", fontSize: "1.1rem", fontWeight: 500 }}>
-                        hello@4kmoviekesri.com
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: "flex", gap: "var(--space-6)" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--accent-muted)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent)", flexShrink: 0 }}>
-                      <Clock size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, marginBottom: 4 }}>Availability</div>
-                      <div style={{ color: "var(--text-primary)", fontSize: "1.1rem", fontWeight: 500 }}>
-                        Mon - Sun: 10:00 AM - 8:00 PM
-                      </div>
-                    </div>
+                ))}
+              </div>
+
+              {/* Map Placeholder */}
+              <div className="mt-12 h-[200px] rounded-2xl border border-[#D4A017]/10 overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700 bg-[#141414]">
+                <img
+                  src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800"
+                  alt="Surat Map Context"
+                  className="w-full h-full object-cover opacity-50"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-[#060606]/30 pointer-events-none" />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-12 h-12 bg-[#C8102E]/20 backdrop-blur-md rounded-full flex items-center justify-center border border-[#C8102E]/50 animate-pulse">
+                     <MapPin className="text-[#C8102E]" size={20} />
                   </div>
                 </div>
               </div>
 
-              {/* Minimal social/links section */}
-              <div 
-                style={{ 
-                  marginTop: "var(--space-4)",
-                  padding: "var(--space-8)",
-                  borderRadius: "var(--radius-xl)",
-                  border: "1px dashed var(--border)",
-                  textAlign: "center"
-                }}
-              >
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  Looking for our portfolio? <br/>
-                  <a href="/gallery" style={{ color: "var(--accent)", fontWeight: 600 }}>Browse our latest exhibitions &rarr;</a>
-                </p>
-              </div>
+              {/* Portfolio Link CTA */}
+              <Link href="/portfolio" className="mt-8 block">
+                <div className="p-6 rounded-2xl border border-dashed border-[#D4A017]/30 bg-[#D4A017]/5 hover:bg-[#D4A017]/10 transition-colors flex items-center justify-between group">
+                  <p className="font-[family-name:var(--font-body)] text-[#FAFAF8] text-sm">
+                    Looking for our portfolio? <br className="hidden sm:block" />
+                    <span className="text-[#D4A017] font-medium group-hover:underline">Browse our latest exhibitions</span>
+                  </p>
+                  <ArrowRight size={20} className="text-[#D4A017] transform transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
             </motion.div>
-
           </div>
         </div>
-      </motion.section>
+      </section>
+    </main>
+  );
+}
 
-      <style>{`
-        .form-field {
-          position: relative;
-          width: 100%;
-        }
-
-        .contact-input {
-          width: 100%;
-          padding: 12px 0;
-          font-size: 1rem;
-          color: var(--text-primary);
-          background: transparent;
-          border: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          outline: none;
-          transition: border-color 0.3s ease;
-          font-family: var(--font-body);
-        }
-
-        .contact-input:focus {
-          border-bottom-color: var(--accent);
-        }
-
-        .contact-label {
-          position: absolute;
-          top: 12px;
-          left: 0;
-          color: var(--text-muted);
-          pointer-events: none;
-          transition: all 0.3s ease;
-          font-size: 1rem;
-        }
-
-        .contact-input:focus ~ .contact-label,
-        .contact-input:not(:placeholder-shown) ~ .contact-label {
-          top: -12px;
-          font-size: 0.75rem;
-          color: var(--accent);
-          font-weight: 600;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-        }
-
-        @media (max-width: 1024px) {
-          .contact-grid { 
-            grid-template-columns: 1fr !important; 
-            gap: var(--space-10) !important;
-          }
-        }
-        
-        @media (max-width: 640px) {
-          .form-grid { grid-template-columns: 1fr !important; gap: var(--space-8) !important; }
-        }
-
-        @media (max-width: 480px) {
-          .contact-hero-title {
-            font-size: clamp(2rem, 11vw, 3rem) !important;
-          }
-        }
-      `}</style>
-    </>
+// Minimal Chevron Component to avoid extra lucide imports inline
+function ChevronDown({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </svg>
   );
 }

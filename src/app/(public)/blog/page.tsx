@@ -1,105 +1,189 @@
-import type { Metadata } from "next";
+"use client";
 
-import { adminDb } from "@/lib/firebase-admin";
-import { CinemaBackground } from "@/components/layout/CinemaBackground";
-import type { BlogPost } from "@/types";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { ArrowRight } from "lucide-react";
+import { PL_BLOG } from "@/lib/data/placeholder";
+import { useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Journal & Blog",
-  description: "Photography tips, wedding planning advice, and stories from 4K Movie Kesri Surat.",
-};
+export default function BlogPage() {
+  const [activeCategory, setActiveCategory] = useState("All");
 
-export const revalidate = 60;
+  // Use the first post as featured, the rest for the grid.
+  const featuredPost = PL_BLOG[0];
+  const gridPosts = PL_BLOG.slice(1);
+  const categories = ["All", ...Array.from(new Set(PL_BLOG.map(p => p.category)))];
 
-export default async function BlogPage() {
-  let posts: BlogPost[] = [];
-  try {
-    const snap = await adminDb.collection("blogPosts")
-      .where("status", "==", "published")
-      .orderBy("createdAt", "desc")
-      .get();
-    
-    posts = snap.docs.map(d => ({ id: d.id, ...d.data() })) as BlogPost[];
-  } catch (error) {
-    console.error("Failed to fetch posts:", error);
-  }
+  const filteredGridPosts = activeCategory === "All"
+    ? gridPosts
+    : gridPosts.filter(p => p.category === activeCategory);
 
   return (
-    <>
-      <CinemaBackground theme={{ primary: "sepia", secondary: "amber" }} />
-      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 800 }}>
-          <ScrollReveal>
-            <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
+    <main className="bg-[#060606] min-h-screen text-[#FAFAF8]">
+      {/* Hero Section */}
+      <section className="pt-40 pb-16 relative overflow-hidden text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,160,23,0.08),transparent_50%)] pointer-events-none" />
+
+        <div className="container relative z-10 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#D4A017] text-sm font-semibold uppercase tracking-[0.2em] mb-4 block">
               Journal
             </span>
-            <h1 style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)" }}>
-              News & Stories
+            <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl mb-8">
+              News & <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#D4A017] to-[#F5D76E]">Stories</span>
             </h1>
-            <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Read the latest updates from our studio, tips for preparing for your photoshoot, and deep dives into our favorite lighting techniques.
+            <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-lg font-light max-w-2xl mx-auto">
+              Behind the scenes of our cinematic productions, wedding guides, and industry insights from Surat's premier studio.
             </p>
-          </ScrollReveal>
+          </motion.div>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      {/* Featured Post (Full Width) */}
+      {activeCategory === "All" && featuredPost && (
+        <section className="pb-16 px-4 md:px-8">
+          <div className="container max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="group flex flex-col lg:flex-row bg-[#141414] rounded-2xl overflow-hidden border border-[#D4A017]/10 hover:border-[#D4A017]/30 transition-colors"
+            >
+              {/* Image (60%) */}
+              <div className="w-full lg:w-[60%] h-[300px] lg:h-[500px] relative overflow-hidden">
+                <div className="absolute inset-0 bg-[#060606]/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                <img
+                  src={featuredPost.image}
+                  alt={featuredPost.title}
+                  className="w-full h-full object-cover transform transition-transform duration-[1.5s] group-hover:scale-[1.03]"
+                />
+              </div>
+
+              {/* Content (40%) */}
+              <div className="w-full lg:w-[40%] p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="bg-[#D4A017]/10 text-[#D4A017] border border-[#D4A017]/30 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                    {featuredPost.category}
+                  </span>
+                  <span className="font-[family-name:var(--font-mono)] text-[#6B6358] text-sm">
+                    {new Date(featuredPost.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
+
+                <h2 className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl text-[#FAFAF8] mb-6 leading-tight group-hover:text-[#D4A017] transition-colors">
+                  {featuredPost.title}
+                </h2>
+
+                <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-lg mb-10 leading-relaxed">
+                  {featuredPost.excerpt}
+                </p>
+
+                <Link
+                  href={`/blog/${featuredPost.id}`}
+                  className="inline-flex items-center gap-2 text-[#D4A017] font-medium uppercase tracking-widest text-sm hover:gap-4 transition-all"
+                >
+                  Read Post <ArrowRight size={16} />
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Categories Horizontal Strip */}
+      <section className="py-8 border-y border-[#D4A017]/10 bg-[#0C0C0C]">
         <div className="container">
-          <ScrollReveal delay={0.2}>
-            {posts.length === 0 ? (
-               <div style={{ textAlign: "center", padding: "var(--space-10)", color: "var(--text-muted)" }}>
-                 <p>More articles coming soon.</p>
-               </div>
-            ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "var(--space-6)" }}>
-                {posts.map((post) => (
-                  <Link 
-                    key={post.id} 
-                    href={`/blog/${post.slug}`}
-                    style={{ 
-                      background: "var(--bg-card)",
-                      borderRadius: "var(--radius-xl)",
-                      border: "1px solid var(--border)",
-                      overflow: "hidden",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      textDecoration: "none",
-                      display: "block"
-                    }}
-                    className="blog-card"
-                  >
-                    <div style={{ aspectRatio: "16/10", background: "var(--bg-elevated)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent)" }} />
-                       <span style={{ fontSize: "2rem", opacity: 0.2 }}>📰</span>
-                    </div>
-                    <div style={{ padding: "var(--space-5)" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", marginBottom: "var(--space-3)", fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "capitalize" }}>
-                        <span className="badge badge-accent">{post.category}</span>
-                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      <h3 style={{ fontSize: "1.2rem", marginBottom: "var(--space-3)", lineHeight: 1.4, color: "var(--text-primary)" }}>
-                        {post.title}
-                      </h3>
-                      <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.5, marginBottom: "var(--space-4)" }}>
-                        {post.excerpt}
-                      </p>
-                      <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--accent)", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        Read Post →
+          <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-2 md:pb-0 md:justify-center">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`whitespace-nowrap px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  activeCategory === cat
+                    ? 'bg-[#D4A017] text-[#0A0800] shadow-[0_0_15px_rgba(212,160,23,0.3)]'
+                    : 'bg-[#141414] text-[#C8C0B0] border border-[#D4A017]/20 hover:border-[#D4A017]/50'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Article Grid */}
+      <section className="py-16 md:py-24 bg-[#060606]">
+        <div className="container max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredGridPosts.map((post, i) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                <Link
+                  href={`/blog/${post.id}`}
+                  className="group flex flex-col h-full bg-[#141414] rounded-2xl overflow-hidden border border-[#D4A017]/10 hover:border-[#D4A017]/40 hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent opacity-80" />
+                    <div className="absolute bottom-4 left-4">
+                      <span className="bg-[#D4A017] text-[#0A0800] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
+                        {post.category}
                       </span>
                     </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </ScrollReveal>
+                  </div>
+
+                  <div className="p-8 flex flex-col flex-grow">
+                    <span className="font-[family-name:var(--font-mono)] text-[#6B6358] text-xs mb-4 block">
+                      {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+
+                    <h3 className="font-[family-name:var(--font-heading)] text-xl text-[#FAFAF8] mb-3 group-hover:text-[#D4A017] transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+
+                    <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-sm mb-6 line-clamp-3 flex-grow">
+                      {post.excerpt}
+                    </p>
+
+                    <span className="inline-flex items-center gap-2 text-[#D4A017] font-medium text-sm mt-auto group-hover:gap-3 transition-all">
+                      Read Post <ArrowRight size={16} />
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {filteredGridPosts.length === 0 && (
+             <div className="text-center py-20">
+               <p className="text-[#6B6358] text-lg">No articles found in this category.</p>
+             </div>
+          )}
         </div>
       </section>
 
-      <style>{`
-        .blog-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
       `}</style>
-    </>
+    </main>
   );
 }

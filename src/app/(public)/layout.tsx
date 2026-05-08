@@ -5,6 +5,7 @@ import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { adminDb } from "@/lib/firebase-admin";
 import { redirect } from "next/navigation";
+import { MagneticCursor } from "@/components/ui/MagneticCursor";
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   let maintenanceMode = false;
@@ -30,6 +31,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <>
+      <MagneticCursor />
       <Navbar />
       <main>
         <PageTransition>

@@ -25,6 +25,7 @@ export default function SiteSettingsPage() {
 
   const fetchSettings = async () => {
     try {
+      if (!db) return;
       const docRef = doc(db, "settings", "globalConfig");
       const snap = await getDoc(docRef);
       if (snap.exists()) {
@@ -47,8 +48,9 @@ export default function SiteSettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      if (!db) return;
       await setDoc(
-        doc(db, "settings", "globalConfig"),
+         doc(db, "settings", "globalConfig"),
         { 
           maintenanceMode, 
           supportEmail, 

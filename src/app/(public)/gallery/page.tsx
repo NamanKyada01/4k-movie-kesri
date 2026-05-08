@@ -1,77 +1,200 @@
-import type { Metadata } from "next";
+"use client";
 
-import { adminDb } from "@/lib/firebase-admin";
-import { CinemaBackground } from "@/components/layout/CinemaBackground";
-import type { GalleryPhoto } from "@/types";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { GalleryGrid } from "@/components/gallery/GalleryGrid";
-import { SectionDecorator } from "@/components/ui/SectionDecorator";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { PL_GALLERY } from "@/lib/data/placeholder";
 
-export const metadata: Metadata = {
-  title: "Gallery",
-  description: "Browse our complete collection of stunning photography from weddings, events, and portrait sessions.",
-};
+export default function GalleryPage() {
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-export const revalidate = 60; // Revalidate every 60 seconds
+  const categories = ["All", ...Array.from(new Set(PL_GALLERY.map(p => p.category)))];
+  const filteredPhotos = activeFilter === "All" ? PL_GALLERY : PL_GALLERY.filter(p => p.category === activeFilter);
 
-const FALLBACK_GALLERY_IMAGES = [
-  { id: "f1", title: "Royal Rajput Wedding", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" },
-  { id: "f2", title: "Golden Hour Pre-Wedding", category: "pre-wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=800" },
-  { id: "f3", title: "Corporate Gala 2025", category: "corporate", cloudinaryUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800" },
-  { id: "f4", title: "Cinematic Portrait", category: "portrait", cloudinaryUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800" },
-  { id: "f5", title: "Haldi Ceremony", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=800" },
-  { id: "f6", title: "Product Launch", category: "event", cloudinaryUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800" },
-  { id: "f7", title: "Bridal Glow", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&q=80&w=800" },
-  { id: "f8", title: "Live Concert Telecast", category: "videography", cloudinaryUrl: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&q=80&w=800" },
-  { id: "f9", title: "Couple Outdoors", category: "pre-wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&q=80&w=800" },
-];
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    document.body.style.overflow = 'hidden';
+  };
 
-export default async function GalleryPage() {
-  let photos: GalleryPhoto[] = [];
-  try {
-    const snap = await adminDb.collection("gallery").orderBy("uploadedAt", "desc").get();
-    photos = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as GalleryPhoto[];
-  } catch (error) {
-    console.error("Error fetching gallery:", error);
-  }
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+    document.body.style.overflow = 'auto';
+  };
 
-  const displayPhotos = photos.length > 0 ? photos : FALLBACK_GALLERY_IMAGES;
+  const nextPhoto = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex + 1) % filteredPhotos.length);
+    }
+  };
+
+  const prevPhoto = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex - 1 + filteredPhotos.length) % filteredPhotos.length);
+    }
+  };
 
   return (
-    <>
-      <CinemaBackground theme={{ primary: "blue", secondary: "teal" }} />
-      {/* Header */}
-      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)", position: "relative" }}>
-        <SectionDecorator watermark="GALLERY" />
-        <div className="container" style={{ textAlign: "center", maxWidth: 800, position: "relative", zIndex: 1 }}>
-          <ScrollReveal>
-            <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
-              Our Lifetime Masterpieces
+    <main className="bg-[#060606] min-h-screen text-[#FAFAF8]">
+      {/* Hero Section */}
+      <section className="pt-40 pb-16 relative overflow-hidden text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,160,23,0.1),transparent_60%)] pointer-events-none" />
+
+        <div className="container relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#D4A017] text-sm font-semibold uppercase tracking-[0.2em] mb-4 block">
+              Visual Archive
             </span>
-            <h1 style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)" }}>
+            <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl mb-12">
               The Gallery
             </h1>
-            <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Explore our curated portfolio of weddings, pre-weddings, corporate events, and stunning portraits captured in breathtaking 4K cinematic quality.
-            </p>
-          </ScrollReveal>
+
+            {/* Filter Bar */}
+            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveFilter(cat)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                    activeFilter === cat
+                      ? 'bg-[#D4A017] text-[#0A0800] shadow-[0_0_20px_rgba(212,160,23,0.4)]'
+                      : 'bg-[#141414] text-[#C8C0B0] border border-[#D4A017]/20 hover:border-[#D4A017]/50'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Gallery Grid placeholder (will connect to Firebase) */}
-      <section className="section" style={{ paddingTop: 0, position: "relative" }}>
-        <SectionDecorator showGrain showCorners={false} />
-        <div className="container" style={{ position: "relative", zIndex: 1 }}>
-          <ScrollReveal delay={0.2}>
-            <GalleryGrid photos={displayPhotos} />
-          </ScrollReveal>
+      {/* Masonry Grid */}
+      <section className="pb-32 px-4 md:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          <motion.div
+            layout
+            className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
+          >
+            <AnimatePresence>
+              {filteredPhotos.map((photo, i) => (
+                <motion.div
+                  key={photo.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  className="break-inside-avoid"
+                >
+                  <div
+                    className="group relative rounded-xl overflow-hidden cursor-pointer border border-transparent hover:border-[#D4A017]/60 hover:shadow-[0_0_0_2px_rgba(212,160,23,0.6)] transition-all duration-300 bg-[#141414]"
+                    onClick={() => openLightbox(i)}
+                  >
+                    <img
+                      src={photo.image}
+                      alt={photo.title}
+                      className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#060606]/90 via-[#060606]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                      <span className="text-[#D4A017] text-xs font-semibold uppercase tracking-wider mb-2">
+                        {photo.category}
+                      </span>
+                      <div className="flex justify-between items-end">
+                        <h3 className="font-[family-name:var(--font-heading)] text-xl text-white drop-shadow-md">
+                          {photo.title}
+                        </h3>
+                        <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
+                          <ArrowRight size={18} className="text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </section>
 
-      <style>{`
-        @media (max-width: 900px) { .full-gallery-masonry { column-count: 2 !important; } }
-        @media (max-width: 500px) { .full-gallery-masonry { column-count: 1 !important; } }
-      `}</style>
-    </>
+      {/* Lightbox Overlay */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-10"
+            onClick={closeLightbox}
+          >
+            {/* Blurred Dark Overlay */}
+            <div className="absolute inset-0 bg-[#060606]/95 backdrop-blur-xl" />
+
+            {/* Close Button */}
+            <button
+              className="absolute top-6 right-6 z-50 w-12 h-12 rounded-full bg-[#141414] border border-[#D4A017]/30 flex items-center justify-center text-[#D4A017] hover:bg-[#D4A017] hover:text-[#060606] transition-colors shadow-[0_0_20px_rgba(212,160,23,0.15)]"
+              onClick={closeLightbox}
+            >
+              <X size={24} />
+            </button>
+
+            {/* Navigation Arrows */}
+            <button
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-[#141414] border border-[#D4A017]/30 flex items-center justify-center text-[#D4A017] hover:bg-[#D4A017] hover:text-[#060606] transition-colors shadow-[0_0_20px_rgba(212,160,23,0.15)] hidden md:flex"
+              onClick={prevPhoto}
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-[#141414] border border-[#D4A017]/30 flex items-center justify-center text-[#D4A017] hover:bg-[#D4A017] hover:text-[#060606] transition-colors shadow-[0_0_20px_rgba(212,160,23,0.15)] hidden md:flex"
+              onClick={nextPhoto}
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            {/* Main Image Container */}
+            <div
+              className="relative z-10 max-w-6xl w-full max-h-full flex flex-col items-center justify-center pointer-events-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <motion.img
+                key={lightboxIndex}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                src={filteredPhotos[lightboxIndex].image}
+                alt={filteredPhotos[lightboxIndex].title}
+                className="max-h-[80vh] w-auto object-contain rounded-lg shadow-2xl pointer-events-auto"
+              />
+
+              {/* Image Info */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-6 text-center pointer-events-auto"
+              >
+                <h3 className="font-[family-name:var(--font-heading)] text-2xl md:text-3xl text-white mb-2">
+                  {filteredPhotos[lightboxIndex].title}
+                </h3>
+                <span className="text-[#D4A017] text-sm uppercase tracking-widest">
+                  {filteredPhotos[lightboxIndex].category}
+                </span>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
   );
 }

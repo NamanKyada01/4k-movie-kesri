@@ -23,6 +23,7 @@ export default function BlogManagerPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!db) return;
     const q = query(collection(db, "blogPosts"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as BlogPost[];

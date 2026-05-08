@@ -73,6 +73,7 @@ export default function AdminLoginPage() {
     const res = await verifyOtp(email, otpStr);
     if (res.success && res.token) {
       try {
+        if (!auth) throw new Error("Auth not initialized");
         await signInWithCustomToken(auth, res.token);
         toast.success("Welcome back! Redirecting...");
         setTimeout(() => router.push("/admin/dashboard"), 800);

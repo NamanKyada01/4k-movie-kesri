@@ -6,7 +6,7 @@ import DashboardMain from "./DashboardMain";
 export const metadata: Metadata = { title: "Dashboard | Admin" };
 
 export default async function AdminDashboardPage() {
-  let stats = {
+  const stats = {
     totalEvents: 0,
     totalPhotos: 0,
     pendingInquiries: 0,

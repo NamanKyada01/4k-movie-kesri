@@ -1,133 +1,124 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Portfolio",
-  description: "Dive deep into our featured cinematic highlights and full photography case studies.",
-};
-
-import { adminDb } from "@/lib/firebase-admin";
-import { CinemaBackground } from "@/components/layout/CinemaBackground";
-import type { GalleryPhoto } from "@/types";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { useRef } from "react";
+import { PL_PORTFOLIO } from "@/lib/data/placeholder";
 
-async function getPortfolioData() {
-  try {
-    const photosSnap = await adminDb.collection("gallery")
-      .where("featured", "==", true)
-      .limit(10)
-      .get();
-    
-    return photosSnap.docs.map(d => ({ id: d.id, ...d.data() })) as GalleryPhoto[];
-  } catch (err) {
-    console.error("Portfolio fetch error:", err);
-    return [];
-  }
-}
+function ProjectCard({ project, index }: { project: any, index: number }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "center center"]
+  });
 
-const FALLBACK_PORTFOLIO_PROJECTS = [
-  {
-    id: "p1",
-    title: "The Grand Rajputana Wedding",
-    category: "wedding",
-    cloudinaryUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200",
-    description: "A three-day cinematic documentation of a royal wedding in Udaipur. Featuring sweeping drone shots of the palace, intimate portraiture during the Haldi, and a majestic 4K highlight reel of the evening reception.",
-  },
-  {
-    id: "p2",
-    title: "Global Tech Summit 2025",
-    category: "corporate",
-    cloudinaryUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=1200",
-    description: "Multi-camera live telecast and post-event documentary for a premier tech summit. Delivered real-time broadcast feeds to LED walls and produced a high-energy corporate aftermovie.",
-  },
-  {
-    id: "p3",
-    title: "Desert Sunset Pre-Wedding",
-    category: "pre-wedding",
-    cloudinaryUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=1200",
-    description: "An atmospheric, highly stylized pre-wedding shoot in the dunes. Utilized cinematic lighting setups and golden hour natural light to create a moody, romantic, and unforgettable visual story.",
-  },
-];
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.2, 1]);
+  const imageOpacity = useTransform(scrollYProgress, [0, 1], [0.5, 1]);
+  const textY = useTransform(scrollYProgress, [0, 1], [50, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
-export default async function PortfolioPage() {
-  const photos = await getPortfolioData();
-  const displayPhotos = photos.length > 0 ? photos : FALLBACK_PORTFOLIO_PROJECTS;
+  const isEven = index % 2 === 0;
 
   return (
-    <>
-      <CinemaBackground theme={{ primary: "teal", secondary: "amber" }} />
-      <section className="section" style={{ background: "transparent", paddingTop: "clamp(8rem, 15vh, 12rem)" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 800 }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
-            Featured Collections
-          </span>
-          <h1 style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)" }}>
-            Cinematic Portfolio
-          </h1>
-          <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-            Step into the stories we&apos;ve captured. From grand Indian weddings to high-impact corporate documentary reels.
-          </p>
+    <div ref={containerRef} className="relative py-12 md:py-24 border-b border-[#D4A017]/10 last:border-b-0">
+      <div className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 md:gap-16 items-center`}>
+
+        {/* Image Panel (1.2fr) */}
+        <div className="w-full md:w-[55%] lg:w-[60%] overflow-hidden rounded-[20px] relative aspect-[4/3] group">
+          <motion.div
+            style={{ scale: imageScale, opacity: imageOpacity }}
+            className="w-full h-full relative"
+          >
+            <div className="absolute inset-0 bg-[#060606]/20 group-hover:bg-[#060606]/40 transition-colors duration-700 z-10" />
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.03]"
+            />
+          </motion.div>
+        </div>
+
+        {/* Content Panel (1fr) */}
+        <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col justify-center">
+          <motion.div
+            style={{ y: textY, opacity: textOpacity }}
+            className={`flex flex-col ${isEven ? 'md:items-start md:text-left' : 'md:items-end md:text-right'} items-center text-center`}
+          >
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D4A017] border border-[#D4A017]/30 px-4 py-1.5 rounded-full mb-6 bg-[#D4A017]/5">
+              {project.category}
+            </span>
+
+            <h2 className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl lg:text-5xl text-[#FAFAF8] mb-6 leading-tight">
+              {project.title}
+            </h2>
+
+            <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-lg mb-10 max-w-md font-light">
+              {project.description}
+            </p>
+
+            <Link
+              href="/gallery"
+              className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-[#D4A017]/30 text-[#FAFAF8] hover:border-[#D4A017] hover:bg-[#D4A017]/5 transition-all"
+            >
+              <span className="font-medium text-sm tracking-wide uppercase">View Full Collection</span>
+              <ArrowRight size={18} className="text-[#D4A017] transition-transform group-hover:translate-x-1" />
+            </Link>
+          </motion.div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export default function PortfolioPage() {
+  return (
+    <main className="bg-[#060606] min-h-screen text-[#FAFAF8]">
+      {/* Hero Section */}
+      <section className="pt-40 pb-20 relative overflow-hidden text-center">
+        {/* Background ambient light */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-radial from-[#D4A017]/10 to-transparent blur-3xl pointer-events-none" />
+
+        <div className="container relative z-10 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <span className="text-[#D4A017] text-sm font-semibold uppercase tracking-[0.2em] mb-6 block">
+              Featured Collections
+            </span>
+            <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl lg:text-[80px] leading-tight mb-8">
+              Cinematic <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#D4A017] to-[#F5D76E]">Portfolio</span>
+            </h1>
+            <p className="font-[family-name:var(--font-body)] text-[#C8C0B0] text-lg md:text-xl font-light max-w-2xl mx-auto">
+              Dive deep into our featured cinematic highlights and full photography case studies. Each project is a testament to our commitment to visual storytelling.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-12)" }}>
-            {displayPhotos.map((photo, i) => (
-              <div 
-                key={photo.id} 
-                className="card"
-                style={{ 
-                  display: "grid", 
-                  gridTemplateColumns: i % 2 === 0 ? "1.2fr 1fr" : "1fr 1.2fr", 
-                  gap: "var(--space-8)", 
-                  padding: 0, 
-                  overflow: "hidden",
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <div style={{ 
-                  order: i % 2 === 0 ? 1 : 2,
-                  background: "var(--bg-secondary)", 
-                  minHeight: 450, 
-                  position: "relative",
-                  overflow: "hidden" 
-                }}>
-                  <img 
-                    src={photo.cloudinaryUrl} 
-                    alt={photo.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </div>
-                <div style={{ 
-                  order: i % 2 === 0 ? 2 : 1,
-                  padding: "var(--space-10) var(--space-8)", 
-                  display: "flex", 
-                  flexDirection: "column", 
-                  justifyContent: "center" 
-                }}>
-                  <div className="badge badge-accent" style={{ alignSelf: "flex-start", marginBottom: "var(--space-4)", textTransform: "capitalize" }}>
-                    {photo.category} Case Study
-                  </div>
-                  <h2 style={{ fontSize: "2.2rem", marginBottom: "var(--space-4)" }}>{photo.title}</h2>
-                  <p style={{ color: "var(--text-secondary)", fontSize: "1rem", lineHeight: 1.7, marginBottom: "var(--space-8)" }}>
-                    {photo.description || `A breathtaking premium ${photo.category} session captured in 4K resolution. Highlighting the raw emotions, cinematic lighting, and professional composition that defines 4K Movie Kesri.`}
-                  </p>
-                  <Link href="/gallery" className="btn btn-ghost" style={{ alignSelf: "flex-start" }}>View Full Collection →</Link>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Editorial Case Studies Grid */}
+      <section className="pb-32 bg-[#060606]">
+        <div className="container max-w-7xl">
+          {PL_PORTFOLIO.map((project, idx) => (
+            <ProjectCard key={project.id} project={project} index={idx} />
+          ))}
         </div>
       </section>
 
-      {/* Basic Responsive flip for alternating rows or standardizing on mobile */}
-      <style>{`
-        @media (max-width: 900px) {
-          .card { grid-template-columns: 1fr !important; }
-          .card > div:first-child { min-height: 250px !important; }
-        }
-      `}</style>
-    </>
+      {/* CTA Footer */}
+      <section className="py-24 border-t border-[#D4A017]/10 bg-[#0C0C0C] text-center">
+        <div className="container max-w-2xl">
+          <h2 className="font-[family-name:var(--font-heading)] text-3xl md:text-4xl text-[#FAFAF8] mb-6">
+            Ready to frame your own legacy?
+          </h2>
+          <Link href="/contact" className="btn btn-primary rounded-full px-8 py-4 text-lg shadow-[0_0_20px_rgba(212,160,23,0.3)]">
+            Start the Conversation
+          </Link>
+        </div>
+      </section>
+    </main>
   );
 }

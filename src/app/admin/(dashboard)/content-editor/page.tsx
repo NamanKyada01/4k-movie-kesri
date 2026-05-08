@@ -22,6 +22,7 @@ export default function ContentEditorPage() {
 
   const fetchContent = async () => {
     try {
+      if (!db) return;
       const docRef = doc(db, "settings", "globalContent");
       const snap = await getDoc(docRef);
       if (snap.exists()) {
@@ -41,6 +42,7 @@ export default function ContentEditorPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      if (!db) return;
       await setDoc(
         doc(db, "settings", "globalContent"),
         { heroTitle, heroSubtitle, aboutText, contactFooterText },

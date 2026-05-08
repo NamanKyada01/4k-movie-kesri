@@ -33,6 +33,7 @@ export default function TestimonialsManager() {
 
   const fetchTestimonials = async () => {
     try {
+      if (!db) return;
       const q = query(collection(db, "testimonials"), orderBy("createdAt", "desc"));
       const snap = await getDocs(q);
       const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as Testimonial[];
@@ -60,6 +61,7 @@ export default function TestimonialsManager() {
         createdAt: Date.now()
       };
 
+      if (!db) return;
       const docRef = await addDoc(collection(db, "testimonials"), newReview);
       setTestimonials(prev => [{ id: docRef.id, ...newReview }, ...prev]);
       
@@ -78,6 +80,7 @@ export default function TestimonialsManager() {
   const handleDelete = async (id: string) => {
     if (!confirm("Remove this testimonial?")) return;
     try {
+      if (!db) return;
       await deleteDoc(doc(db, "testimonials", id));
       setTestimonials(p => p.filter(t => t.id !== id));
       toast.success("Testimonial deleted");
@@ -88,6 +91,7 @@ export default function TestimonialsManager() {
 
   const toggleFeatured = async (id: string, currentVal: boolean) => {
     try {
+      if (!db) return;
       await updateDoc(doc(db, "testimonials", id), { featured: !currentVal });
       setTestimonials(p => p.map(t => t.id === id ? { ...t, featured: !currentVal } : t));
       toast.success("Featured status updated");

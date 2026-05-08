@@ -24,7 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       attribute="data-theme"
       defaultTheme="dark"
       enableSystem={false}
-      themes={["dark", "light", "orange-light"]}
+      forcedTheme="dark"
     >
       <ThemeEnforcer>
         {children}

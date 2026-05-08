@@ -22,6 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading]     = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser?.email) {
@@ -36,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithToken = async (token: string) => {
+    if (!auth) throw new Error("Auth not initialized");
     const cred = await signInWithCustomToken(auth, token);
     if (cred.user?.email) {
       const data = await getAdminUser(cred.user.email);
@@ -44,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await signOut(auth);
+    if (auth) await signOut(auth);
     setUser(null);
     setAdminData(null);
   };

@@ -18,6 +18,10 @@ export function useLiveCollection<T>(
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const colRef = collection(db, collectionName);
     const q = query(colRef, ...constraints);

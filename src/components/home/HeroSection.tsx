@@ -12,7 +12,7 @@ const STAGGER = {
   },
 };
 
-export function HeroSection({ title, subtitle }: { title?: string; subtitle?: string }) {
+export function HeroSection({ title, subtitle, stats }: { title?: string; subtitle?: string; stats?: any }) {
   return (
     <section className="hero-section">
       {/* ── Background Image with Ken Burns ── */}
@@ -68,7 +68,7 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
             <Link href="/contact" className="hero-btn-primary">
               Book a Session <ArrowRight size={16} />
             </Link>
-            <Link href="/gallery" className="hero-btn-ghost">
+            <Link href="/portfolio" className="hero-btn-ghost">
               View Our Work
             </Link>
           </motion.div>
@@ -83,7 +83,7 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
               ))}
             </div>
             <span className="hero-proof-text">
-              <strong>500+</strong> happy clients across Gujarat
+              <strong>{stats?.clientsCount || "500+"}</strong> happy clients across Gujarat
             </span>
           </motion.div>
         </motion.div>
@@ -96,17 +96,17 @@ export function HeroSection({ title, subtitle }: { title?: string; subtitle?: st
           className="hero-stats-card"
         >
           <div className="hero-stat">
-            <span className="hero-stat-num">4K</span>
+            <span className="hero-stat-num">{stats?.resolution || "4K"}</span>
             <span className="hero-stat-label">Cinema Quality</span>
           </div>
           <div className="hero-stat-divider" />
           <div className="hero-stat">
-            <span className="hero-stat-num">500+</span>
+            <span className="hero-stat-num">{stats?.eventsCount || "500+"}</span>
             <span className="hero-stat-label">Events Shot</span>
           </div>
           <div className="hero-stat-divider" />
           <div className="hero-stat">
-            <span className="hero-stat-num">48h</span>
+            <span className="hero-stat-num">{stats?.deliveryHours || "48h"}</span>
             <span className="hero-stat-label">Delivery</span>
           </div>
         </motion.div>

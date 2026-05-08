@@ -132,31 +132,17 @@ export interface Equipment {
   createdAt: number;
 }
 
-// ─── Gallery ──────────────────────────────────────────────────────────────
-export type GalleryCategory =
-  | 'wedding'
-  | 'engagement'
-  | 'portrait'
-  | 'corporate'
-  | 'product'
-  | 'event'
-  | 'other';
 
-export interface GalleryPhoto {
+// ─── Portfolio ────────────────────────────────────────────────────────────
+export interface PortfolioProject {
   id: string;
-  cloudinaryUrl: string;
-  cloudinaryPublicId: string;
   title: string;
-  description?: string;
-  category: GalleryCategory;
-  equipment?: string;
-  photographer?: string;
+  category: string;
+  description: string;
+  cloudinaryUrl: string;
   featured: boolean;
-  order?: number;
-  tags: string[];
-  width?: number;
-  height?: number;
-  uploadedAt: number;
+  order: number;
+  createdAt: number;
 }
 
 // ─── YouTube Videos ───────────────────────────────────────────────────────
@@ -167,7 +153,7 @@ export interface YouTubeVideo {
   description?: string;
   url: string;
   thumbnail?: string;
-  category: GalleryCategory;
+  category: string;
   duration?: string;
   featured: boolean;
   order: number;

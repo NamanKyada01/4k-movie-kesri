@@ -22,7 +22,7 @@ import TiltedCard from "@/components/ui/TiltedCard";
 interface DashboardMainProps {
   stats: {
     totalEvents: number;
-    totalPhotos: number;
+    totalProjects: number;
     pendingInquiries: number;
   };
   upcomingEvents: Event[];
@@ -83,7 +83,7 @@ export default function DashboardMain({ stats, upcomingEvents, recentInquiries, 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2rem", marginBottom: "4rem" }}>
          {[
            { title: "Production Events", val: stats.totalEvents, icon: CalendarDays, sub: "Scheduled Archives" },
-           { title: "Asset Vault", val: stats.totalPhotos, icon: Camera, sub: "High-Res Deliverables" },
+           { title: "Portfolio Projects", val: stats.totalProjects, icon: Camera, sub: "Cinematic Case Studies" },
            { title: "Incoming Queries", val: stats.pendingInquiries, icon: MessageSquare, sub: "Pending Responses", urgent: stats.pendingInquiries > 0 },
            { title: "Studio Growth", val: "—", icon: TrendingUp, sub: "Month-over-Month" },
          ].map((s, i) => (

@@ -106,38 +106,6 @@ export async function deleteStaff(id: string) {
   }
 }
 
-// --- GALLERY MUTATIONS ---
-
-export async function createGalleryPhoto(data: any) {
-  try {
-    const docRef = await adminDb.collection("gallery").add({
-      ...data,
-      uploadedAt: Date.now(),
-    });
-    return { success: true, id: docRef.id };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function updateGalleryPhoto(id: string, data: any) {
-  try {
-    await adminDb.collection("gallery").doc(id).update(data);
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function deleteGalleryPhoto(id: string) {
-  try {
-    await adminDb.collection("gallery").doc(id).delete();
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
 // --- INQUIRY MUTATIONS ---
 
 export async function updateInquiry(id: string, data: any) {

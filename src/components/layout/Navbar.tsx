@@ -11,7 +11,6 @@ import { useScrollPercent } from "@/components/ui/ScrollProgress";
 
 const navLinks = [
   { label: "Home",      href: "/" },
-  { label: "Gallery",   href: "/gallery" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Services",  href: "/services" },
   { label: "Blog",      href: "/blog" },

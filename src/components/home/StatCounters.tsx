@@ -5,13 +5,6 @@ import { motion } from "framer-motion";
 import { Camera, Film, Star, Clock } from "lucide-react";
 import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
-const STATS = [
-  { icon: Film,   value: 500,  suffix: "+", label: "Events Delivered",   duration: 2000 },
-  { icon: Camera, value: 4,    suffix: "K",  label: "Cinematic Resolution", duration: 800 },
-  { icon: Star,   value: 5,    suffix: "★",  label: "Average Rating",    duration: 600 },
-  { icon: Clock,  value: 48,   suffix: "h",  label: "Delivery Turnaround", duration: 1200 },
-];
-
 function useCountUp(target: number, duration: number, start: boolean) {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -31,7 +24,7 @@ function useCountUp(target: number, duration: number, start: boolean) {
 }
 
 function StatItem({ stat, index, triggered }: {
-  stat: typeof STATS[0];
+  stat: { icon: any, value: number, suffix: string, label: string, duration: number };
   index: number;
   triggered: boolean;
 }) {
@@ -57,9 +50,16 @@ function StatItem({ stat, index, triggered }: {
   );
 }
 
-export function StatCounters() {
+export function StatCounters({ stats }: { stats?: any }) {
   const ref = useRef<HTMLDivElement>(null);
   const [triggered, setTriggered] = useState(false);
+
+  const finalStats = [
+    { icon: Film,   value: stats?.eventsCount || 500,  suffix: "+", label: "Events Delivered",   duration: 2000 },
+    { icon: Camera, value: stats?.resolution || 4,    suffix: "K",  label: "Cinematic Resolution", duration: 800 },
+    { icon: Star,   value: stats?.rating || 5,    suffix: "★",  label: "Average Rating",    duration: 600 },
+    { icon: Clock,  value: stats?.deliveryHours || 48,   suffix: "h",  label: "Delivery Turnaround", duration: 1200 },
+  ];
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -76,7 +76,7 @@ export function StatCounters() {
 
       <div className="container">
         <div className="stats-grid">
-          {STATS.map((stat, i) => (
+          {finalStats.map((stat, i) => (
             <StatItem key={stat.label} stat={stat} index={i} triggered={triggered} />
           ))}
         </div>

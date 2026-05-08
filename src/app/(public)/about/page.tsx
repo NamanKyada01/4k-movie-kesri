@@ -11,71 +11,45 @@ export const metadata: Metadata = {
     "Meet the team behind 4K Movie Kesri Surat. 8+ years of cinematic photography and videography excellence in Surat, Gujarat.",
 };
 
-const values = [
-  {
-    icon: Eye,
-    title: "Cinematic Vision",
-    desc: "We don't just photograph — we direct. Every frame is composed with the precision of a feature film.",
-  },
-  {
-    icon: Heart,
-    title: "Emotional Authenticity",
-    desc: "We chase real moments. The laugh, the tear, the glance — these are the frames that last a lifetime.",
-  },
-  {
-    icon: Zap,
-    title: "Technical Excellence",
-    desc: "Sony & Canon cinema cameras, professional lighting rigs, and 4K post-production workflows.",
-  },
-  {
-    icon: Shield,
-    title: "Reliability",
-    desc: "We've never missed a delivery. Every project is backed by a clear timeline and a dedicated editor.",
-  },
-];
-
-const team = [
-  {
-    name: "Kesri Patel",
-    role: "Founder & Lead Cinematographer",
-    bio: "8+ years behind the lens. Trained in Mumbai's film industry before bringing cinematic storytelling to Surat.",
-    initials: "KP",
-  },
-  {
-    name: "Meera Shah",
-    role: "Senior Photographer",
-    bio: "Specializes in candid wedding photography and editorial portraiture. Known for her mastery of natural light.",
-    initials: "MS",
-  },
-  {
-    name: "Aryan Desai",
-    role: "Video Editor & Colorist",
-    bio: "Post-production specialist with expertise in DaVinci Resolve color grading and cinematic sound design.",
-    initials: "AD",
-  },
-];
-
-const milestones = [
-  { year: "2016", event: "Studio founded in Surat with a single camera and a big dream." },
-  { year: "2018", event: "Expanded to a full team of 5. First corporate client — a Fortune 500 company." },
-  { year: "2020", event: "Upgraded to full 4K cinema workflow. Launched Dhyey TV YouTube channel." },
-  { year: "2022", event: "500th event milestone. Recognized as Surat's top wedding studio." },
-  { year: "2024", event: "Launched AI-powered blog and premium album service. 50+ industry awards." },
-];
-
-export default async function AboutPage() {
-  let aboutText = "";
+async function getAboutData() {
   try {
-    const contentDoc = await adminDb.collection("settings").doc("globalContent").get();
-    if (contentDoc.exists) {
-      aboutText = contentDoc.data()?.aboutText || "";
-    }
+    const [contentSnap, statsSnap] = await Promise.all([
+      adminDb.collection("settings").doc("aboutContent").get(),
+      adminDb.collection("settings").doc("stats").get(),
+    ]);
+
+    const content = contentSnap.exists ? contentSnap.data() : null;
+    const stats = statsSnap.exists ? statsSnap.data() : null;
+
+    return {
+      aboutText: content?.aboutText || "",
+      values: content?.values || [],
+      team: content?.team || [],
+      milestones: content?.milestones || [],
+      stats: stats || null,
+    };
   } catch (err) {
     console.error("About page fetch error:", err);
+    return { aboutText: "", values: [], team: [], milestones: [], stats: null };
   }
+}
+
+export default async function AboutPage() {
+  const { aboutText, values, team, milestones, stats } = await getAboutData();
 
   const defaultAbout =
     "Since opening our doors in Surat, Gujarat, 4K Movie Kesri has been driven by a singular passion: turning fleeting moments into timeless masterpieces. We believe that photography isn't just about clicking a button — it's about anticipating emotions, managing brilliant lighting, and crafting a cinematic narrative.";
+
+  const statsList = [
+    { number: stats?.eventsCount || "500+", label: "Events Covered" },
+    { number: stats?.photosDelivered || "10K+", label: "Photos Delivered" },
+    { number: stats?.yearsExperience || "8+", label: "Years Experience" },
+    { number: stats?.awardsWon || "50+", label: "Awards Won" },
+    { number: stats?.fiveStarReviews || "200+", label: "5-Star Reviews" },
+    { number: stats?.deliveryHours || "48h", label: "Delivery Turnaround" },
+  ];
+
+  const valueIcons: Record<string, any> = { Eye, Heart, Zap, Shield };
 
   return (
     <>
@@ -156,14 +130,7 @@ export default async function AboutPage() {
       >
         <div className="container">
           <div className="about-stats-grid">
-            {[
-              { number: "500+", label: "Events Covered" },
-              { number: "10K+", label: "Photos Delivered" },
-              { number: "8+", label: "Years Experience" },
-              { number: "50+", label: "Awards Won" },
-              { number: "200+", label: "5-Star Reviews" },
-              { number: "48h", label: "Delivery Turnaround" },
-            ].map((stat) => (
+            {statsList.map((stat) => (
               <div key={stat.label} style={{ textAlign: "center" }}>
                 <div
                   style={{
@@ -216,8 +183,8 @@ export default async function AboutPage() {
           </ScrollReveal>
 
           <div className="values-grid">
-            {values.map((v, i) => {
-              const Icon = v.icon;
+            {values.map((v: any, i: number) => {
+              const Icon = valueIcons[v.iconName] || Zap;
               return (
                 <ScrollReveal key={v.title} delay={i * 0.1}>
                   <div
@@ -441,7 +408,7 @@ export default async function AboutPage() {
           </ScrollReveal>
 
           <div className="team-grid">
-            {team.map((member, i) => (
+            {team.map((member: any, i: number) => (
               <ScrollReveal key={member.name} delay={i * 0.1}>
                 <div
                   className="team-card"
@@ -519,7 +486,7 @@ export default async function AboutPage() {
             {/* Centre spine */}
             <div className="journey-spine" aria-hidden="true" />
 
-            {milestones.map((m, i) => {
+            {milestones.map((m: any, i: number) => {
               const isLeft = i % 2 === 0;
               return (
                 <ScrollReveal key={m.year} delay={i * 0.12}>

@@ -4,7 +4,7 @@ import { ServiceCards } from "@/components/home/ServiceCards";
 import { YouTubeSection } from "@/components/home/YouTubeSection";
 import { StatCounters } from "@/components/home/StatCounters";
 import { adminDb } from "@/lib/firebase-admin";
-import type { YouTubeVideo, GalleryPhoto, Testimonial } from "@/types";
+import type { YouTubeVideo, Testimonial } from "@/types";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import Link from "next/link";
 import { ArrowRight, Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "lucide-react";
@@ -21,21 +21,25 @@ export const metadata: Metadata = {
 // Fetch data server-side
 async function getHomeData() {
   try {
-    const [videosSnap, photosSnap, testimonialsSnap, contentSnap] = await Promise.all([
+    const [videosSnap, testimonialsSnap, contentSnap, statsSnap, homeSectionsSnap, servicesSnap] = await Promise.all([
       adminDb.collection("youtubeVideos").orderBy("order").limit(4).get(),
-      adminDb.collection("gallery").where("featured", "==", true).limit(6).get(),
       adminDb.collection("testimonials").where("status", "==", "approved").where("featured", "==", true).limit(6).get(),
       adminDb.collection("settings").doc("globalContent").get(),
+      adminDb.collection("settings").doc("stats").get(),
+      adminDb.collection("settings").doc("homeSections").get(),
+      adminDb.collection("settings").doc("servicesContent").get(),
     ]);
 
     return {
       videos: videosSnap.docs.map((d) => ({ id: d.id, ...d.data() })) as YouTubeVideo[],
-      photos: photosSnap.docs.map((d) => ({ id: d.id, ...d.data() })) as GalleryPhoto[],
       testimonials: testimonialsSnap.docs.map((d) => ({ id: d.id, ...d.data() })) as Testimonial[],
       content: contentSnap.exists ? contentSnap.data() : null,
+      stats: statsSnap.exists ? statsSnap.data() : null,
+      homeSections: homeSectionsSnap.exists ? homeSectionsSnap.data() : null,
+      services: servicesSnap.exists ? servicesSnap.data()?.services || [] : [],
     };
   } catch {
-    return { videos: [], photos: [], testimonials: [] };
+    return { videos: [], testimonials: [], content: null, stats: null, homeSections: null, services: [] };
   }
 }
 
@@ -79,85 +83,10 @@ function TrustBar() {
   );
 }
 
-// ─── Featured Works Section ───────────────────────────────────────────────
-const FALLBACK_GALLERY_IMAGES = [
-  { id: "f1", title: "Royal Rajput Wedding", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" },
-  { id: "f2", title: "Golden Hour Pre-Wedding", category: "pre-wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=800" },
-  { id: "f3", title: "Corporate Gala 2025", category: "corporate", cloudinaryUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800" },
-  { id: "f4", title: "Cinematic Portrait", category: "portrait", cloudinaryUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800" },
-  { id: "f5", title: "Haldi Ceremony", category: "wedding", cloudinaryUrl: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=800" },
-  { id: "f6", title: "Product Launch", category: "event", cloudinaryUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800" },
-];
-
-function FeaturedWorks({ photos }: { photos: GalleryPhoto[] }) {
-  const displayPhotos = photos.length > 0 ? photos : FALLBACK_GALLERY_IMAGES;
-
-  return (
-    <section className="section" style={{ background: "transparent" }}>
-      <div className="container">
-        <ScrollReveal>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "var(--space-8)", flexWrap: "wrap", gap: "var(--space-4)" }}>
-            <div>
-              <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
-                Our Work
-              </span>
-              <h2 style={{ marginTop: "var(--space-1)", fontSize: "clamp(1.5rem, 5vw, 2.22rem)" }}>
-                Featured Gallery
-              </h2>
-            </div>
-            <Link href="/gallery" className="btn btn-ghost btn-sm" style={{ display: "inline-flex", gap: 6 }}>
-              View All <ArrowRight size={14} />
-            </Link>
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal delay={0.2}>
-          <div style={{ columnCount: 3, columnGap: "var(--space-4)" }} className="gallery-masonry">
-          {displayPhotos.map((photo, i) => (
-            <Link
-              key={photo.id}
-              href="/gallery"
-              className="group"
-              style={{
-                display: "block",
-                breakInside: "avoid",
-                marginBottom: "var(--space-4)",
-                aspectRatio: i % 3 === 1 ? "2/3" : "3/2",
-                borderRadius: "var(--radius-xl)",
-                overflow: "hidden",
-                position: "relative",
-                background: "var(--bg-elevated)",
-              }}
-            >
-              <img
-                src={photo.cloudinaryUrl}
-                alt={photo.title}
-                className="group-hover:scale-105"
-                style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
-              />
-              <div style={{ position: "absolute", bottom: 12, left: 12 }}>
-                <span className="badge badge-accent" style={{ textTransform: "capitalize" }}>{photo.category}</span>
-              </div>
-            </Link>
-          ))}
-          </div>
-        </ScrollReveal>
-      </div>
-      <style>{`
-        @media (max-width: 768px) {
-          .gallery-masonry { column-count: 2 !important; }
-        }
-        @media (max-width: 420px) {
-          .gallery-masonry { column-count: 1 !important; }
-        }
-      `}</style>
-    </section>
-  );
-}
 
 // ─── How It Works Section ─────────────────────────────────────────────────
-function HowItWorks() {
-  const steps = [
+function HowItWorks({ steps }: { steps?: any[] }) {
+  const defaultSteps = [
     {
       number: "01",
       title: "Consultation",
@@ -188,6 +117,8 @@ function HowItWorks() {
     },
   ];
 
+  const displaySteps = steps && steps.length > 0 ? steps : defaultSteps;
+
   return (
     <section style={{ background: "transparent", position: "relative", overflow: "hidden", paddingBlock: "clamp(4rem, 10vw, 7rem)" }}>
       <SectionDecorator watermark="PROCESS" />
@@ -210,7 +141,7 @@ function HowItWorks() {
         </ScrollReveal>
 
         <div className="process-grid">
-          {steps.map((step, i) => (
+          {displaySteps.map((step, i) => (
             <ScrollReveal key={step.number} delay={i * 0.12}>
               <div className="process-card" style={{ background: `linear-gradient(135deg, var(--bg-card) 0%, ${step.color} 100%)`, border: "1px solid var(--border)", borderRadius: "var(--radius-2xl)", padding: "var(--space-8)", position: "relative", overflow: "hidden", height: "100%" }}>
                 {/* Giant step watermark */}
@@ -239,7 +170,7 @@ function HowItWorks() {
                 <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", lineHeight: 1.7 }}>{step.desc}</p>
 
                 {/* Arrow connector (not on last) */}
-                {i < steps.length - 1 && (
+                {i < displaySteps.length - 1 && (
                   <div className="process-connector" />
                 )}
               </div>
@@ -294,8 +225,8 @@ function HowItWorks() {
 }
 
 // ─── Infinite Highlights Marquee (Dual Row Bidirectional) ─────────────────
-function InfiniteHighlights() {
-  const row1 = [
+function InfiniteHighlights({ highlights }: { highlights?: any[] }) {
+  const defaultRow1 = [
     { title: "Weddings",     emoji: "💍", desc: "Cinematic wedding films" },
     { title: "Pre-Wedding",  emoji: "💑", desc: "Golden hour sessions" },
     { title: "Corporate",    emoji: "🏢", desc: "Professional event coverage" },
@@ -303,7 +234,7 @@ function InfiniteHighlights() {
     { title: "Products",     emoji: "🛍️", desc: "High-end commercial" },
     { title: "Videography",  emoji: "🎬", desc: "4K cinematic films" },
   ];
-  const row2 = [
+  const defaultRow2 = [
     { title: "LED Screens",  emoji: "📺", desc: "Stage & event backdrops" },
     { title: "Crane Shots",  emoji: "🎥", desc: "Aerial & jib coverage" },
     { title: "Live Telecast",emoji: "📡", desc: "Multi-camera production" },
@@ -311,6 +242,10 @@ function InfiniteHighlights() {
     { title: "Facebook Live",emoji: "👥", desc: "Social broadcast" },
     { title: "Post-Wedding", emoji: "✨", desc: "Album design & print" },
   ];
+
+  const items = highlights && highlights.length > 0 ? highlights : [...defaultRow1, ...defaultRow2];
+  const row1 = items.slice(0, Math.ceil(items.length / 2));
+  const row2 = items.slice(Math.ceil(items.length / 2));
 
   const MarqueeRow = ({ items, direction = "left" }: { items: typeof row1; direction?: "left" | "right" }) => {
     const tripled = [...items, ...items, ...items];
@@ -394,25 +329,7 @@ function InfiniteHighlights() {
 
 // ─── Testimonials Section ─────────────────────────────────────────────────
 function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
-  const mockTestimonials = [
-    { clientName: "Priya & Rahul Patel", eventType: "Wedding", rating: 5, text: "Absolutely stunning work! Every moment of our wedding was captured beautifully. The team was professional, punctual and incredibly talented. We will cherish these photos forever." },
-    { clientName: "Anjali Mehta", eventType: "Portrait", rating: 5, text: "Got my corporate headshots done here. The lighting, composition, and post-processing was exceptional. Exactly what I needed for my brand." },
-    { clientName: "InnovateTech Ltd", eventType: "Corporate Event", rating: 5, text: "Covered our annual conference perfectly. All 200+ attendees were photographed and the team delivered the edited photos within 48 hours. Highly recommended!" },
-    { clientName: "Sneha & Arjun Shah", eventType: "Pre-Wedding", rating: 5, text: "Our pre-wedding shoot was a dream. The locations they suggested, the direction, the final edits — everything was beyond our expectations. Pure cinema." },
-    { clientName: "Riya Desai", eventType: "Portrait", rating: 5, text: "I needed photos for my modeling portfolio and they absolutely nailed it. The studio lighting setup was world-class and the retouching was flawless." },
-    { clientName: "Sunrise Exports", eventType: "Product Shoot", rating: 5, text: "Our product catalog looks like it belongs in a luxury magazine. Sales have gone up since we updated our website with these photos. Worth every rupee." },
-  ];
-
-  const displayItems = testimonials.length > 0
-    ? testimonials
-    : mockTestimonials.map((t, i) => ({
-        ...t,
-        id: String(i),
-        featured: true,
-        status: "approved" as const,
-        createdAt: Date.now(),
-        clientPhoto: undefined,
-      }));
+  const displayItems = testimonials;
 
   return (
     <section className="section" style={{ background: "transparent" }}>
@@ -546,8 +463,8 @@ function CtaSection({ text }: { text?: string }) {
             <Link href="/contact" className="btn btn-primary btn-xl" style={{ borderRadius: "var(--radius-full)", boxShadow: "0 12px 40px rgba(212,160,23,0.35)" }}>
               Book a Session <ArrowRight size={16} />
             </Link>
-            <Link href="/gallery" className="btn btn-ghost btn-xl" style={{ borderRadius: "var(--radius-full)" }}>
-              Browse Gallery
+            <Link href="/contact" className="btn btn-ghost btn-xl" style={{ borderRadius: "var(--radius-full)" }}>
+              View Portfolio
             </Link>
           </div>
 
@@ -571,21 +488,21 @@ function CtaSection({ text }: { text?: string }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────
 export default async function HomePage() {
-  const { videos, photos, testimonials, content } = await getHomeData();
+  const { videos, testimonials, content, stats, homeSections, services } = await getHomeData();
 
   return (
     <>
       <CinemaBackground theme={{ primary: "gold", secondary: "amber" }} />
       <HeroSection 
         title={content?.heroTitle} 
-        subtitle={content?.heroSubtitle} 
+        subtitle={content?.heroSubtitle}
+        stats={stats}
       />
       <TrustBar />
-      <StatCounters />
-      <InfiniteHighlights />
-      <FeaturedWorks photos={photos} />
-      <HowItWorks />
-      <ServiceCards />
+      <StatCounters stats={stats} />
+      <InfiniteHighlights highlights={homeSections?.highlights} />
+      <HowItWorks steps={homeSections?.howItWorks} />
+      <ServiceCards services={services} />
       <YouTubeSection videos={videos} />
       <TestimonialsSection testimonials={testimonials} />
       <CtaSection text={content?.contactFooterText} />

@@ -6,91 +6,54 @@ import { ArrowRight, Camera, Film, Monitor, Radio, Share2, Video } from "lucide-
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
-const services = [
+import * as Icons from "lucide-react";
+
+const iconMap: Record<string, any> = {
+  Camera: Icons.Camera,
+  Film: Icons.Film,
+  Monitor: Icons.Monitor,
+  Radio: Icons.Radio,
+  Share2: Icons.Share2,
+  Video: Icons.Video,
+  Users: Icons.Users,
+  MonitorPlay: Icons.MonitorPlay,
+  PackageOpen: Icons.PackageOpen,
+  Award: Icons.Award,
+};
+
+const defaultServices = [
   {
     num: "01",
     title: "Pre-Wedding",
-    description: "Atmospheric outdoor sessions that capture the chemistry between souls — golden hour, dramatic landscapes.",
+    desc: "Atmospheric outdoor sessions that capture the chemistry between souls — golden hour, dramatic landscapes.",
     href: "/services",
-    icon: Camera,
+    iconName: "Camera",
     image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=800",
     tag: "Most Popular",
   },
   {
     num: "02",
     title: "Wedding Shoot",
-    description: "Every vow, every tear, every smile — captured with cinema-grade precision that stands the test of time.",
+    desc: "Every vow, every tear, every smile — captured with cinema-grade precision that stands the test of time.",
     href: "/services",
-    icon: Film,
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800", // Grand wedding
+    iconName: "Film",
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800",
     tag: "",
   },
   {
     num: "03",
     title: "Photography",
-    description: "High-end portraiture, corporate, and event photography. Studio and on-location available.",
+    desc: "High-end portraiture, corporate, and event photography. Studio and on-location available.",
     href: "/services",
-    icon: Camera,
-    image: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&q=80&w=800", // Portrait/fashion
-    tag: "",
-  },
-  {
-    num: "04",
-    title: "Videography",
-    description: "Cinematic 4K storytelling tailored for your special moments — color-graded and delivered in 48h.",
-    href: "/services",
-    icon: Video,
-    image: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?auto=format&fit=crop&q=80&w=800", // Video camera
-    tag: "",
-  },
-  {
-    num: "05",
-    title: "Crane Services",
-    description: "Sweeping aerial angles with professional camera jibs and cranes for truly cinematic productions.",
-    href: "/services",
-    icon: Film,
-    image: "https://images.unsplash.com/photo-1522204657746-fccce0824cfd?auto=format&fit=crop&q=80&w=800",
-    tag: "",
-  },
-  {
-    num: "06",
-    title: "LED Screens",
-    description: "High-resolution LED walls and stage backdrops that transform any venue into a visual spectacle.",
-    href: "/services",
-    icon: Monitor,
-    image: "https://images.unsplash.com/photo-1470229722913-7c090be5c520?auto=format&fit=crop&q=80&w=800", // Stage concert LED
-    tag: "",
-  },
-  {
-    num: "07",
-    title: "Live Telecast",
-    description: "Multi-camera live mixing and projection for large venues — seamless broadcast quality.",
-    href: "/services",
-    icon: Radio,
-    image: "https://images.unsplash.com/photo-1521362800473-12502e4ebc52?auto=format&fit=crop&q=80&w=800",
-    tag: "",
-  },
-  {
-    num: "08",
-    title: "Facebook Live",
-    description: "Stream your event to your audience in real-time. Stable connection, professional quality.",
-    href: "/services",
-    icon: Share2,
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=800",
-    tag: "",
-  },
-  {
-    num: "09",
-    title: "YouTube Live",
-    description: "High-quality YouTube broadcasting for global reach — your moment, seen by thousands.",
-    href: "/services",
-    icon: Video,
-    image: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&q=80&w=800",
+    iconName: "Camera",
+    image: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&q=80&w=800",
     tag: "",
   },
 ];
 
-export function ServiceCards() {
+export function ServiceCards({ services }: { services?: any[] }) {
+  const items = services && services.length > 0 ? services : defaultServices;
+
   return (
     <section className="svc-section">
       <SectionDecorator watermark="SERVICES" />
@@ -116,8 +79,8 @@ export function ServiceCards() {
 
         {/* ── Grid ── */}
         <div className="svc-grid">
-          {services.map((svc, i) => {
-            const Icon = svc.icon;
+          {items.map((svc, i) => {
+            const Icon = iconMap[svc.iconName] || Icons.Camera;
             return (
               <motion.div
                 key={svc.title}
@@ -140,10 +103,10 @@ export function ServiceCards() {
                   <Link href={svc.href} className="svc-card-link">
                     {/* Image */}
                     <div className="svc-img-wrap">
-                      <img src={svc.image} alt={svc.title} className="svc-img" />
+                      <img src={svc.image || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800"} alt={svc.title} className="svc-img" />
                       <div className="svc-img-overlay" />
                       {/* Step number */}
-                      <div className="svc-num">{svc.num}</div>
+                      <div className="svc-num">{svc.num || (i+1).toString().padStart(2, '0')}</div>
                       {/* Tag */}
                       {svc.tag && (
                         <div className="svc-tag">{svc.tag}</div>
@@ -158,7 +121,7 @@ export function ServiceCards() {
                         </div>
                         <h3 className="svc-name">{svc.title}</h3>
                       </div>
-                      <p className="svc-desc">{svc.description}</p>
+                      <p className="svc-desc">{svc.desc || svc.description}</p>
                       <div className="svc-link">
                         Explore <ArrowRight size={13} />
                       </div>

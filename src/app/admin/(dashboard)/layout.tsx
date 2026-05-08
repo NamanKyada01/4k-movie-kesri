@@ -14,7 +14,6 @@ const navItems = [
   { label: "Events",              href: "/admin/event-management",    icon: CalendarIcon },
   { label: "Inventory",           href: "/admin/equipment",           icon: Wrench },
   { label: "Personnel",           href: "/admin/staff",               icon: Users },
-  { label: "Gallery Manager",     href: "/admin/gallery-manager",     icon: Image },
   { label: "YouTube Manager",     href: "/admin/youtube-manager",     icon: PlayCircle },
   { label: "Calendar",           href: "/admin/calendar",            icon: LayoutDashboard },
   { label: "Blog Manager",        href: "/admin/blog-manager",        icon: FileText },

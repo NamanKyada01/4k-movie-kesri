@@ -9,13 +9,13 @@ import CustomDropdown from "./CustomDropdown";
 import CustomDatePicker from "./CustomDatePicker";
 import ImageUpload from "./ImageUpload";
 import { 
-  createEvent, createEquipment, createStaff, createGalleryPhoto, createBlogPost,
-  updateEvent, updateEquipment, updateStaff, updateGalleryPhoto, updateBlogPost,
+  createEvent, createEquipment, createStaff, createBlogPost,
+  updateEvent, updateEquipment, updateStaff, updateBlogPost,
   generateAIContent 
 } from "@/actions/admin";
 import { toast } from "sonner";
 
-type ModalType = "event" | "equipment" | "staff" | "gallery" | "blog";
+type ModalType = "event" | "equipment" | "staff" | "blog";
 
 interface CreationModalProps {
   isOpen: boolean;
@@ -42,12 +42,6 @@ const typeConfig = {
     editTitle: "Update Staff Profile",
     subtitle: "Onboard or manage the creative talent on the active roster",
     steps: ["Profile", "Role", "Review"]
-  },
-  gallery: {
-    createTitle: "Upload Photos",
-    editTitle: "Update Photo Info",
-    subtitle: "Add new cinematic assets to your professional showcase",
-    steps: ["Select Media", "Category", "Review"]
   },
   blog: {
     createTitle: "Write Article",
@@ -82,10 +76,6 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
             data.customCategory = data.category;
             data.category = "custom";
         }
-        if (type === "gallery") {
-            data.url = data.cloudinaryUrl;
-            data.isFeatured = data.featured;
-        }
         setFormData(data);
       } else {
         // Initialize with default values so validation matches UI view
@@ -99,9 +89,6 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
             defaults.quantity = "1";
         } else if (type === "staff") {
             defaults.position = "photographer";
-        } else if (type === "gallery") {
-            defaults.category = "wedding";
-            defaults.isFeatured = false;
         } else if (type === "blog") {
             defaults.category = "news";
             defaults.status = "draft";
@@ -159,9 +146,6 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
       if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Invalid Email format";
     }
 
-    if (type === "gallery" && step === 0) {
-      if (!formData.url && !formData.selectedFiles) errors.url = "Please select at least one photo";
-    }
 
     if (type === "blog" && step === 0) {
       if (!formData.title) errors.title = "Post Title is required";
@@ -191,12 +175,6 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
       }
       delete payload.customCategory;
 
-      if (type === "gallery") {
-          payload.cloudinaryUrl = payload.url;
-          payload.featured = !!payload.isFeatured;
-          delete payload.url;
-          delete payload.isFeatured;
-      }
 
       if (type === "blog") {
           res = id ? await updateBlogPost(id, payload) : await createBlogPost(payload);
@@ -204,10 +182,6 @@ export default function CreationModal({ isOpen, onClose, type, editData }: Creat
         res = id ? await updateEvent(id, payload) : await createEvent(payload);
       } else if (type === "equipment") {
         res = id ? await updateEquipment(id, payload) : await createEquipment(payload);
-      } else if (type === "gallery") {
-        // Gallery might have bulk upload if we use the same modal, 
-        // but for now let's handle the specific image selected in ImageUpload
-        res = id ? await updateGalleryPhoto(id, payload) : await createGalleryPhoto(payload);
       } else {
         res = id ? await updateStaff(id, payload) : await createStaff(payload);
       }
@@ -507,43 +481,6 @@ function StepContent({ type, step, formData, onChange, isSubmitting, errors }: a
     );
   }
 
-  if (type === "gallery") {
-    if (step === 0) return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        <ImageUpload 
-          value={formData.url} 
-          onChange={(v: string) => onChange("url", v)} 
-          folder="4kmoviekesri-gallery" 
-          label="Gallery Image"
-        />
-        <Input label="Short Title (Optional)" value={formData.title} onChange={(v: string) => onChange("title", v)} placeholder="e.g. Dreamy Couple Logout" />
-      </div>
-    );
-    if (step === 1) return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        <LabelWrapper label="Gallery Category">
-          <CustomDropdown 
-            options={[
-              { value: "wedding", label: "Wedding" },
-              { value: "engagement", label: "Engagement" },
-              { value: "portrait", label: "Portrait" },
-              { value: "corporate", label: "Corporate" }
-            ]}
-            value={formData.category || "wedding"}
-            onChange={(v: any) => onChange("category", v)}
-          />
-        </LabelWrapper>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-            <input 
-                type="checkbox" id="isFeatured" checked={formData.isFeatured || false} 
-                onChange={e => onChange("isFeatured", e.target.checked)} 
-                style={{ width: "18px", height: "18px", accentColor: "var(--accent)" }} 
-            />
-            <label htmlFor="isFeatured" style={{ fontSize: "0.9rem", color: "var(--text-secondary)", cursor: "pointer" }}>Highlight this in Showcase?</label>
-        </div>
-      </div>
-    );
-  }
 
   if (type === "blog") {
     if (step === 0) return (

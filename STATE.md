@@ -1,7 +1,15 @@
 # Current State
 
 ## Tasks in Progress
-- **Wave 8**: Re-design of complete multi-screen luxury cinematic UI based on new "Lumina Onyx" system in Stitch.
+- **Wave 9**: Scroll-reactive 3D camera object in hero section.
+
+## Recent Changes (Wave 9)
+- Installed `three`, `@react-three/fiber`, `@react-three/drei`, `@types/three`.
+- **`src/components/three/CameraScene.tsx`** [NEW]: Procedural cinema camera built from Three.js geometry (BoxGeometry, CylinderGeometry, TorusGeometry). Styled in anodized black + antique gold (Lumina Onyx). Animated with `useFrame` — responds to scrollY, mouseX/Y, and drag delta.
+- **`src/components/three/Camera3D.tsx`** [NEW]: Client-side canvas wrapper. Tracks scroll via framer-motion `useScroll`/`useSpring`, mouse via window event, and drag via pointer events. Renders R3F `<Canvas>` with SSR disabled via `next/dynamic`.
+- **`HeroSection.tsx`** [MODIFIED]: Replaced floating stats card with a `hero-right-panel` stacking the 3D camera on top + horizontal stats bar below. Dynamic import ensures no SSR hydration issues.
+
+## Completed Wave 8
 
 ## Recent Changes (Wave 8)
 - Configured **"Lumina Onyx" Design System** in Stitch with cinematic black, antique gold accents, Playfair Display and Outfit fonts, and glassmorphism elements.

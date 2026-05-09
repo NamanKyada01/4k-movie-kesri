@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, Camera } from "lucide-react";
+import { ArrowRight, Camera } from "lucide-react";
+
+// Dynamic import — Three.js must NOT run on SSR
+const Camera3D = dynamic(
+  () => import("@/components/three/Camera3D").then((m) => ({ default: m.Camera3D })),
+  { ssr: false, loading: () => <div className="camera3d-ssr-placeholder" /> }
+);
 
 const STAGGER = {
   container: { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } } },
@@ -88,26 +95,32 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           </motion.div>
         </motion.div>
 
-        {/* ── Floating stats card ── */}
+        {/* ── Right panel: 3D Camera + Stats card ── */}
         <motion.div
-          initial={{ opacity: 0, x: 40, scale: 0.95 }}
+          initial={{ opacity: 0, x: 50, scale: 0.92 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="hero-stats-card"
+          transition={{ duration: 1.0, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="hero-right-panel"
         >
-          <div className="hero-stat">
-            <span className="hero-stat-num">{stats?.resolution || "4K"}</span>
-            <span className="hero-stat-label">Cinema Quality</span>
-          </div>
-          <div className="hero-stat-divider" />
-          <div className="hero-stat">
-            <span className="hero-stat-num">{stats?.eventsCount || "500+"}</span>
-            <span className="hero-stat-label">Events Shot</span>
-          </div>
-          <div className="hero-stat-divider" />
-          <div className="hero-stat">
-            <span className="hero-stat-num">{stats?.deliveryHours || "48h"}</span>
-            <span className="hero-stat-label">Delivery</span>
+          {/* 3D Camera */}
+          <Camera3D />
+
+          {/* Stats card — sits below the 3D scene */}
+          <div className="hero-stats-card">
+            <div className="hero-stat">
+              <span className="hero-stat-num">{stats?.resolution || "4K"}</span>
+              <span className="hero-stat-label">Cinema Quality</span>
+            </div>
+            <div className="hero-stat-divider" />
+            <div className="hero-stat">
+              <span className="hero-stat-num">{stats?.eventsCount || "500+"}</span>
+              <span className="hero-stat-label">Events Shot</span>
+            </div>
+            <div className="hero-stat-divider" />
+            <div className="hero-stat">
+              <span className="hero-stat-num">{stats?.deliveryHours || "48h"}</span>
+              <span className="hero-stat-label">Delivery</span>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -361,25 +374,44 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           font-weight: 700;
         }
 
+        /* ── Right panel ── */
+        .hero-right-panel {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--space-4);
+          flex-shrink: 0;
+        }
+
+        /* SSR placeholder matches canvas size */
+        .camera3d-ssr-placeholder {
+          width: 420px;
+          height: 420px;
+          flex-shrink: 0;
+        }
+
         /* ── Stats card ── */
         .hero-stats-card {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           gap: var(--space-5);
+          align-items: center;
           background: rgba(10,10,10,0.7);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(212,160,23,0.15);
           border-radius: var(--radius-2xl);
-          padding: var(--space-6) var(--space-8);
-          min-width: 180px;
+          padding: var(--space-4) var(--space-7);
+          width: 100%;
+          max-width: 420px;
+          justify-content: center;
           box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,160,23,0.08);
         }
         .hero-stat { text-align: center; }
         .hero-stat-num {
           display: block;
           font-family: var(--font-heading);
-          font-size: 2.4rem;
+          font-size: 1.9rem;
           font-weight: 700;
           color: var(--accent);
           line-height: 1;
@@ -387,7 +419,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         }
         .hero-stat-label {
           display: block;
-          font-size: 0.68rem;
+          font-size: 0.62rem;
           color: rgba(250,250,248,0.5);
           text-transform: uppercase;
           letter-spacing: 0.1em;
@@ -395,8 +427,10 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           font-weight: 500;
         }
         .hero-stat-divider {
-          height: 1px;
-          background: rgba(212,160,23,0.1);
+          width: 1px;
+          height: 36px;
+          background: rgba(212,160,23,0.15);
+          flex-shrink: 0;
         }
 
         /* ── Scroll indicator ── */
@@ -457,7 +491,9 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
 
         /* ── Responsive ── */
         @media (max-width: 900px) {
-          .hero-stats-card { display: none; }
+          .hero-right-panel { display: none; }
+          .hero-stats-card  { display: none; }
+          .camera3d-ssr-placeholder { display: none; }
           .hero-content { justify-content: flex-start; }
         }
         @media (max-width: 768px) {

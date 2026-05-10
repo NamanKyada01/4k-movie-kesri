@@ -35,7 +35,7 @@ export default async function BlogPage() {
             <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
               Journal
             </span>
-            <h1 style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)" }}>
+            <h1 className="public-page-title" style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)", fontSize: "clamp(2.5rem, 8vw, 4.5rem)" }}>
               News & Stories
             </h1>
             <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>

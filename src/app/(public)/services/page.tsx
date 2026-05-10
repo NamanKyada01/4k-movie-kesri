@@ -48,11 +48,9 @@ export default async function ServicesPage() {
               The Repository
             </span>
             <h1
+              className="public-page-title"
               style={{
                 fontSize: "clamp(2.5rem, 10vw, 4.5rem)",
-                lineHeight: 0.95,
-                fontWeight: 900,
-                letterSpacing: "-0.04em",
                 marginBottom: "var(--space-6)",
               }}
             >

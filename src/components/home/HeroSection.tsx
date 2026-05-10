@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, Camera } from "lucide-react";
+import { SplitTextReveal } from "@/components/scroll/SplitTextReveal";
 
 // Dynamic import — Three.js must NOT run on SSR
 const Camera3D = dynamic(
@@ -11,19 +13,77 @@ const Camera3D = dynamic(
   { ssr: false, loading: () => <div className="camera3d-ssr-placeholder" /> }
 );
 
-const STAGGER = {
-  container: { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } } },
-  item: {
-    hidden: { opacity: 0, y: 32 },
-    show:   { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" as const } },
-  },
-};
+// ── Film Curtain ─────────────────────────────────────────────────────────────
+// Two black panels that retract (top up, bottom down) on mount like a film curtain.
+function FilmCurtain() {
+  return (
+    <>
+      <motion.div
+        className="curtain-panel curtain-top"
+        initial={{ scaleY: 1 }}
+        animate={{ scaleY: 0 }}
+        transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
+      />
+      <motion.div
+        className="curtain-panel curtain-bottom"
+        initial={{ scaleY: 1 }}
+        animate={{ scaleY: 0 }}
+        transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
+      />
+    </>
+  );
+}
+
+// ── Lens Flare ───────────────────────────────────────────────────────────────
+// Decorative animated flare that drifts on its own (no cursor tracking — per design rules)
+function LensFlare() {
+  return (
+    <div className="lens-flare-wrap" aria-hidden="true">
+      <div className="lens-flare lens-flare-main" />
+      <div className="lens-flare lens-flare-secondary" />
+      <div className="lens-flare lens-flare-streak" />
+    </div>
+  );
+}
+
+// ── Scroll Depth Bar ─────────────────────────────────────────────────────────
+function ScrollDepthBar({ progress }: { progress: any }) {
+  const scaleY = useSpring(progress, { stiffness: 120, damping: 22 });
+  return (
+    <div className="scroll-depth-track" aria-hidden="true">
+      <motion.div className="scroll-depth-fill" style={{ scaleY, originY: 0 }} />
+    </div>
+  );
+}
 
 export function HeroSection({ title, subtitle, stats }: { title?: string; subtitle?: string; stats?: any }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+
+  // Parallax layers: bg moves slowest, text in the middle
+  const bgY    = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const textY  = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const scaleIn= useTransform(scrollYProgress, [0, 1], [1, 1.06]);
+  // Exit fade-to-black as hero leaves
+  const exitOpacity = useTransform(scrollYProgress, [0.6, 1], [1, 0]);
+
+  const STAGGER = {
+    container: { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.6 } } },
+    item: {
+      hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
+      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as any } },
+    },
+  };
+
   return (
-    <section className="hero-section">
-      {/* ── Background Image with Ken Burns ── */}
-      <div className="hero-bg">
+    <section className="hero-section" ref={sectionRef} style={{ position: "relative" }}>
+      <FilmCurtain />
+
+      {/* ── Background (parallax) ── */}
+      <motion.div
+        className="hero-bg"
+        style={{ y: bgY, scale: scaleIn, willChange: "transform" }}
+      >
         <div className="hero-ken-burns">
           <img
             src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2400"
@@ -31,14 +91,21 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
             className="hero-img"
           />
         </div>
-        {/* Multi-stop cinematic gradient overlay */}
         <div className="hero-overlay" />
-        {/* Noise grain texture */}
         <div className="hero-grain" />
-      </div>
+      </motion.div>
 
-      {/* ── Content ── */}
-      <div className="container hero-content">
+      {/* ── Lens Flare ── */}
+      <LensFlare />
+
+      {/* ── Scroll Depth Bar (right edge) ── */}
+      <ScrollDepthBar progress={scrollYProgress} />
+
+      {/* ── Content (parallax mid-layer) ── */}
+      <motion.div
+        className="container hero-content"
+        style={{ y: textY, opacity: exitOpacity, willChange: "transform" }}
+      >
         <motion.div
           variants={STAGGER.container}
           initial="hidden"
@@ -51,15 +118,17 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
             <span className="hero-eyebrow">Photography &amp; Videography · Surat, Gujarat</span>
           </motion.div>
 
-          {/* Headline */}
+          {/* Headline — word-split reveal */}
           <motion.h1 variants={STAGGER.item} className="hero-headline">
             {title ? (
-              title
+              <SplitTextReveal text={title} delay={0.8} stagger={0.07} />
             ) : (
               <>
-                Capture<br />
-                the moment.<br />
-                <em className="hero-headline-accent">Keep the memory.</em>
+                <SplitTextReveal text="Capture the moment." delay={0.8} stagger={0.07} />
+                <br />
+                <em className="hero-headline-accent">
+                  <SplitTextReveal text="Keep the memory." delay={1.2} stagger={0.07} />
+                </em>
               </>
             )}
           </motion.h1>
@@ -99,7 +168,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         <motion.div
           initial={{ opacity: 0, x: 50, scale: 0.92 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 1.0, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.0, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="hero-right-panel"
         >
           {/* 3D Camera */}
@@ -123,13 +192,13 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
             </div>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* ── Scroll indicator ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 1 }}
+        transition={{ delay: 1.8, duration: 1 }}
         className="hero-scroll"
       >
         <div className="hero-scroll-line">
@@ -146,7 +215,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
+        transition={{ delay: 1.4, duration: 0.6 }}
         className="hero-badge"
       >
         <Camera size={14} />
@@ -165,11 +234,25 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           overflow: hidden;
         }
 
+        /* ── Curtain panels ── */
+        .curtain-panel {
+          position: absolute;
+          inset-inline: 0;
+          height: 50%;
+          background: #060606;
+          z-index: 20;
+          transform-origin: top;
+          pointer-events: none;
+        }
+        .curtain-top    { top: 0; transform-origin: top; }
+        .curtain-bottom { bottom: 0; transform-origin: bottom; }
+
         /* ── Background ── */
         .hero-bg {
           position: absolute;
-          inset: 0;
+          inset: -15%;
           z-index: 0;
+          will-change: transform;
         }
 
         .hero-ken-burns {
@@ -196,17 +279,81 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           position: absolute;
           inset: 0;
           background:
-            linear-gradient(to right,  rgba(6,6,6,0.82) 0%, rgba(6,6,6,0.55) 45%, rgba(6,6,6,0.10) 100%),
-            linear-gradient(to bottom, rgba(6,6,6,0.25) 0%, rgba(6,6,6,0) 40%, rgba(6,6,6,0.65) 100%);
+            linear-gradient(to right,  rgba(6,6,6,0.85) 0%, rgba(6,6,6,0.55) 45%, rgba(6,6,6,0.12) 100%),
+            linear-gradient(to bottom, rgba(6,6,6,0.30) 0%, rgba(6,6,6,0) 40%, rgba(6,6,6,0.70) 100%);
         }
 
         .hero-grain {
           position: absolute;
           inset: 0;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-          opacity: 0.025;
+          opacity: 0.028;
           mix-blend-mode: overlay;
           pointer-events: none;
+        }
+
+        /* ── Lens flare ── */
+        .lens-flare-wrap {
+          position: absolute;
+          top: 18%;
+          right: 30%;
+          z-index: 1;
+          pointer-events: none;
+        }
+        .lens-flare {
+          position: absolute;
+          border-radius: 50%;
+          mix-blend-mode: screen;
+        }
+        .lens-flare-main {
+          width: 180px; height: 180px;
+          background: radial-gradient(circle, rgba(212,160,23,0.22) 0%, rgba(212,160,23,0.06) 50%, transparent 70%);
+          filter: blur(18px);
+          animation: lensFloat 8s ease-in-out infinite;
+        }
+        .lens-flare-secondary {
+          width: 80px; height: 80px;
+          top: 30px; left: 60px;
+          background: radial-gradient(circle, rgba(255,220,100,0.35) 0%, transparent 60%);
+          filter: blur(8px);
+          animation: lensFloat 6s ease-in-out infinite reverse;
+        }
+        .lens-flare-streak {
+          width: 300px; height: 2px;
+          top: 90px; left: -60px;
+          background: linear-gradient(90deg, transparent, rgba(212,160,23,0.3), transparent);
+          filter: blur(2px);
+          animation: streakPulse 4s ease-in-out infinite;
+        }
+        @keyframes lensFloat {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33%       { transform: translate(12px, -18px) scale(1.05); }
+          66%       { transform: translate(-8px, 10px) scale(0.96); }
+        }
+        @keyframes streakPulse {
+          0%, 100% { opacity: 0.6; transform: scaleX(1); }
+          50%       { opacity: 1.0; transform: scaleX(1.12); }
+        }
+
+        /* ── Scroll depth bar (right edge) ── */
+        .scroll-depth-track {
+          position: fixed;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          background: rgba(255,255,255,0.06);
+          z-index: 50;
+          pointer-events: none;
+        }
+        .scroll-depth-fill {
+          position: absolute;
+          inset-inline: 0;
+          top: 0;
+          bottom: 0;
+          background: linear-gradient(to bottom, var(--accent), var(--gold));
+          transform-origin: top;
+          border-radius: 0 0 2px 2px;
         }
 
         /* ── Content ── */
@@ -346,12 +493,9 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           align-items: center;
           gap: var(--space-3);
         }
-        .hero-proof-avatars {
-          display: flex;
-        }
+        .hero-proof-avatars { display: flex; }
         .hero-avatar {
-          width: 30px;
-          height: 30px;
+          width: 30px; height: 30px;
           border-radius: 50%;
           background: linear-gradient(135deg, var(--accent) 0%, var(--gold) 100%);
           border: 2px solid rgba(6,6,6,0.8);
@@ -365,14 +509,8 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           flex-shrink: 0;
         }
         .hero-avatar:first-child { margin-left: 0; }
-        .hero-proof-text {
-          font-size: 0.78rem;
-          color: rgba(250,250,248,0.6);
-        }
-        .hero-proof-text strong {
-          color: var(--gold);
-          font-weight: 700;
-        }
+        .hero-proof-text { font-size: 0.78rem; color: rgba(250,250,248,0.6); }
+        .hero-proof-text strong { color: var(--gold); font-weight: 700; }
 
         /* ── Right panel ── */
         .hero-right-panel {
@@ -385,9 +523,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
 
         /* SSR placeholder matches canvas size */
         .camera3d-ssr-placeholder {
-          width: 420px;
-          height: 420px;
-          flex-shrink: 0;
+          width: 420px; height: 420px; flex-shrink: 0;
         }
 
         /* ── Stats card ── */
@@ -427,8 +563,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           font-weight: 500;
         }
         .hero-stat-divider {
-          width: 1px;
-          height: 36px;
+          width: 1px; height: 36px;
           background: rgba(212,160,23,0.15);
           flex-shrink: 0;
         }
@@ -446,8 +581,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           color: rgba(250,250,248,0.5);
         }
         .hero-scroll-line {
-          width: 1px;
-          height: 40px;
+          width: 1px; height: 40px;
           background: rgba(250,250,248,0.15);
           position: relative;
           overflow: hidden;
@@ -455,8 +589,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         .hero-scroll-line-inner {
           position: absolute;
           inset-inline: 0;
-          top: 0;
-          bottom: 0;
+          top: 0; bottom: 0;
           background: var(--accent);
           transform-origin: top;
         }
@@ -472,7 +605,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         .hero-badge {
           position: absolute;
           bottom: var(--space-6);
-          right: var(--space-6);
+          right: calc(var(--space-6) + 12px); /* offset from scroll-depth bar */
           z-index: 3;
           display: flex;
           align-items: center;
@@ -495,6 +628,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           .hero-stats-card  { display: none; }
           .camera3d-ssr-placeholder { display: none; }
           .hero-content { justify-content: flex-start; }
+          .scroll-depth-track { display: none; }
         }
         @media (max-width: 768px) {
           .hero-overlay {
@@ -508,6 +642,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           .hero-proof { justify-content: center; }
           .hero-scroll { left: 50%; transform: translateX(-50%); }
           .hero-badge { display: none; }
+          .lens-flare-wrap { display: none; }
         }
       `}</style>
     </section>

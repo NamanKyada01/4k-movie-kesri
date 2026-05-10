@@ -110,7 +110,20 @@ a {
   animation: gold-shimmer 5s linear infinite;
 }
 
-/* ── Section gold divider line ── */
+/* ─────────────── PUBLIC PAGE TITLE (consistent across all public pages) ─────────────── */
+/* Matches "Cinematic Portfolio" style: Playfair Display, 700, no uppercase, tight tracking */
+.public-page-title {
+  font-family: 'Playfair Display', var(--font-heading), Georgia, serif !important;
+  font-weight: 700 !important;
+  font-style: normal;
+  text-transform: none !important;
+  letter-spacing: -0.04em;
+  line-height: 1.0;
+  -webkit-text-stroke: 0 !important; /* remove any outline effect */
+  -webkit-text-fill-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+}
+
 .section-gold-line {
   width: 48px;
   height: 2px;

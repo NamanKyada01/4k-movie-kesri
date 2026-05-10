@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
 import { useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
 import { CameraScene } from "./CameraScene";
 
@@ -107,7 +106,6 @@ export function Camera3D() {
 
       <Canvas
         camera={{ position: [0, 0, 6], fov: 40 }}
-        shadows
         gl={{
           antialias: true,
           alpha: true,

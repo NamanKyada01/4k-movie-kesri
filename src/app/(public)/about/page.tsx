@@ -74,12 +74,11 @@ export default async function AboutPage() {
               Who We Are
             </span>
             <h1
+              className="public-page-title"
               style={{
                 marginTop: "var(--space-3)",
                 marginBottom: "var(--space-5)",
                 fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
-                lineHeight: 1,
-                letterSpacing: "-0.03em",
               }}
             >
               The Visionaries<br />

@@ -80,15 +80,11 @@ export default function ContactPage() {
             }}>
               Connect With Us
             </span>
-            <h1 style={{ 
+            <h1 className="public-page-title" style={{ 
               fontSize: "clamp(2rem, 7vw, 5rem)", 
-              textTransform: "uppercase", 
-              fontWeight: 900,
-              lineHeight: 1,
-              letterSpacing: "-0.03em",
               maxWidth: "900px"
             }}>
-              Let&apos;s Frame Your <span style={{ color: "transparent", WebkitTextStroke: "1px var(--text-primary)" }}>Story</span>
+              Let&apos;s Frame Your <span style={{ color: "var(--accent)" }}>Story</span>
             </h1>
             <p style={{ 
               fontSize: "clamp(1.1rem, 1.5vw, 1.3rem)", 

@@ -2,7 +2,7 @@
 
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 
 // ── Gold & Black material palette ─────────────────────────────────────────
@@ -198,12 +198,14 @@ interface CameraSceneProps {
 
 export function CameraScene({ scrollY, mouseX, mouseY, isDragging, dragDelta }: CameraSceneProps) {
   const groupRef = useRef<THREE.Group>(null!);
+  const timeRef  = useRef(0); // accumulated time — avoids deprecated THREE.Clock API
 
   // Target rotation accumulator
   const target = useRef({ rotY: 0.3, rotX: 0.1, posY: 0 });
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
+  useFrame((_, delta) => {
+    timeRef.current += delta;
+    const t = timeRef.current;
     const g = groupRef.current;
     if (!g) return;
 
@@ -243,8 +245,6 @@ export function CameraScene({ scrollY, mouseX, mouseY, isDragging, dragDelta }: 
         position={[5, 5, 5]}
         intensity={2.2}
         color="#F5D76E"
-        castShadow
-        shadow-mapSize={[1024, 1024]}
       />
       {/* Rim light — cool silver/blue */}
       <directionalLight position={[-4, 2, -3]} intensity={0.8} color="#B0C4DE" />
@@ -260,15 +260,16 @@ export function CameraScene({ scrollY, mouseX, mouseY, isDragging, dragDelta }: 
         <LensFlare />
       </group>
 
-      {/* Ground shadow */}
-      <ContactShadows
-        position={[0, -1.5, 0]}
-        opacity={0.5}
-        scale={6}
-        blur={2.5}
-        far={3}
-        color="#D4A017"
-      />
+      {/* Subtle ground shadow plane */}
+      <mesh position={[0, -1.5, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[8, 8]} />
+        <meshStandardMaterial
+          color="#D4A017"
+          transparent
+          opacity={0.0}
+          depthWrite={false}
+        />
+      </mesh>
     </>
   );
 }

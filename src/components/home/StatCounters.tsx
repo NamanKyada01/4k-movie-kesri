@@ -137,8 +137,8 @@ export function StatCounters({ stats }: { stats?: any }) {
         }
 
         .stat-num {
-          font-family: var(--font-body);
-          font-variant-numeric: tabular-nums;
+          font-family: 'Playfair Display', var(--font-heading), Georgia, serif;
+          font-variant-numeric: tabular-nums lining-nums;
           font-size: clamp(2.8rem, 6vw, 4.5rem);
           font-weight: 700;
           color: var(--accent);
@@ -152,11 +152,12 @@ export function StatCounters({ stats }: { stats?: any }) {
         }
 
         .stat-label {
-          font-size: 0.95rem;
-          font-weight: 600;
+          font-family: 'Playfair Display', var(--font-heading), Georgia, serif;
+          font-size: 0.82rem;
+          font-weight: 500;
+          font-style: italic;
           color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.01em;
           max-width: 160px;
         }
 

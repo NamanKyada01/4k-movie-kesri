@@ -84,10 +84,11 @@ export function ServiceCards({ services }: { services?: any[] }) {
             return (
               <motion.div
                 key={svc.title}
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 60, rotateX: 22, scale: 0.94 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.55, delay: (i % 3) * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.7, delay: (i % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                style={{ perspective: "800px", transformStyle: "preserve-3d" }}
               >
                 <SpotlightCard
                   className="svc-card"

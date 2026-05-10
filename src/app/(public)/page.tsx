@@ -11,6 +11,9 @@ import { ArrowRight, Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "
 import TiltedCard from "@/components/ui/TiltedCard";
 import { CinemaBackground } from "@/components/layout/CinemaBackground";
 import { SectionDecorator } from "@/components/ui/SectionDecorator";
+import { ScrollMarquee } from "@/components/home/ScrollMarquee";
+import { PinnedHowItWorks } from "@/components/home/PinnedHowItWorks";
+import { ScrollCta } from "@/components/home/ScrollCta";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -43,7 +46,7 @@ async function getHomeData() {
   }
 }
 
-// ─── Trust Bar ────────────────────────────────────────────────────────────
+// ─── Trust Bar ─────────────────────────────────────────────────────────────
 function TrustBar() {
   const items = [
     { icon: <Award size={15} />, text: "50+ Industry Awards" },
@@ -55,282 +58,67 @@ function TrustBar() {
   ];
 
   return (
-    <section style={{ background: "var(--bg-card)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "var(--space-4) 0" }}>
+    <section className="trust-bar-section">
       <div className="container">
         <div className="trust-bar-grid">
           {items.map((item, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", justifyContent: "center" }}>
-              <span style={{ color: "var(--accent)" }}>{item.icon}</span>
-              <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>{item.text}</span>
-            </div>
+            <ScrollReveal key={i} direction="up" delay={i * 0.07} blur>
+              <div className="trust-bar-item">
+                <span className="trust-bar-icon">{item.icon}</span>
+                <span className="trust-bar-text">{item.text}</span>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
       <style>{`
+        .trust-bar-section {
+          background: var(--bg-card);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          padding: var(--space-5) 0;
+        }
         .trust-bar-grid {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
           gap: var(--space-4);
         }
-        @media (max-width: 900px) {
-          .trust-bar-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (max-width: 480px) {
-          .trust-bar-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-      `}</style>
-    </section>
-  );
-}
-
-
-// ─── How It Works Section ─────────────────────────────────────────────────
-function HowItWorks({ steps }: { steps?: any[] }) {
-  const defaultSteps = [
-    {
-      number: "01",
-      title: "Consultation",
-      desc: "Free discovery call to understand your vision, timeline, and aesthetic preferences.",
-      icon: "💬",
-      color: "rgba(212,160,23,0.08)",
-    },
-    {
-      number: "02",
-      title: "Planning",
-      desc: "Location scouting, lighting design, and a detailed shot list crafted just for your event.",
-      icon: "📋",
-      color: "rgba(200,16,46,0.06)",
-    },
-    {
-      number: "03",
-      title: "Production",
-      desc: "We arrive early, deploy cinema-grade gear, and capture every moment with precision.",
-      icon: "🎬",
-      color: "rgba(212,160,23,0.08)",
-    },
-    {
-      number: "04",
-      title: "Delivery",
-      desc: "Color-graded 4K films and edited photos delivered within 48 hours to a private gallery.",
-      icon: "✨",
-      color: "rgba(200,16,46,0.06)",
-    },
-  ];
-
-  const displaySteps = steps && steps.length > 0 ? steps : defaultSteps;
-
-  return (
-    <section style={{ background: "transparent", position: "relative", overflow: "hidden", paddingBlock: "clamp(4rem, 10vw, 7rem)" }}>
-      <SectionDecorator watermark="PROCESS" />
-
-
-      <div className="container">
-        <ScrollReveal>
-          <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-10), 6vw, var(--space-16))" }}>
-            <span style={{ fontSize: "0.72rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
-              — The Process
-            </span>
-            <h2 style={{ marginTop: "var(--space-3)", fontSize: "clamp(2rem, 6vw, 3.5rem)", letterSpacing: "-0.03em" }}>
-              From Vision to<br />
-              <span className="text-gradient-gold">Masterpiece.</span>
-            </h2>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginTop: "var(--space-4)", maxWidth: 460, marginInline: "auto", lineHeight: 1.7 }}>
-              A seamless four-step journey that turns your most important moments into cinematic art.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="process-grid">
-          {displaySteps.map((step, i) => (
-            <ScrollReveal key={step.number} delay={i * 0.12}>
-              <div className="process-card" style={{ background: `linear-gradient(135deg, var(--bg-card) 0%, ${step.color} 100%)`, border: "1px solid var(--border)", borderRadius: "var(--radius-2xl)", padding: "var(--space-8)", position: "relative", overflow: "hidden", height: "100%" }}>
-                {/* Giant step watermark */}
-                <div style={{
-                  position: "absolute",
-                  bottom: -16,
-                  right: 12,
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "7rem",
-                  fontWeight: 900,
-                  color: "var(--accent)",
-                  opacity: 0.06,
-                  lineHeight: 1,
-                  userSelect: "none",
-                  letterSpacing: "-0.04em",
-                }}>{step.number}</div>
-
-                {/* Gold top accent line */}
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: i % 2 === 0 ? "linear-gradient(90deg, var(--accent), transparent)" : "linear-gradient(90deg, var(--accent-2), transparent)", borderRadius: "var(--radius-2xl) var(--radius-2xl) 0 0" }} />
-
-                <div style={{ fontSize: "2rem", marginBottom: "var(--space-5)" }}>{step.icon}</div>
-                <div style={{ fontSize: "0.62rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: "var(--space-2)", fontFamily: "var(--font-body)" }}>
-                  Step {step.number}
-                </div>
-                <h3 style={{ fontSize: "1.3rem", fontWeight: 800, marginBottom: "var(--space-3)", letterSpacing: "-0.01em" }}>{step.title}</h3>
-                <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", lineHeight: 1.7 }}>{step.desc}</p>
-
-                {/* Arrow connector (not on last) */}
-                {i < displaySteps.length - 1 && (
-                  <div className="process-connector" />
-                )}
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-
-        <ScrollReveal delay={0.4}>
-          <div style={{ textAlign: "center", marginTop: "var(--space-12)" }}>
-            <Link href="/contact" className="btn btn-primary btn-lg" style={{ borderRadius: "var(--radius-full)" }}>
-              Start Your Journey <ArrowRight size={16} />
-            </Link>
-          </div>
-        </ScrollReveal>
-      </div>
-
-      <style>{`
-        .process-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: var(--space-5);
+        .trust-bar-item {
+          display: flex;
+          align-items: center;
+          gap: var(--space-2);
+          justify-content: center;
           position: relative;
         }
-        .process-card {
-          transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        .process-card:hover {
-          transform: translateY(-6px);
-          border-color: var(--border-accent) !important;
-          box-shadow: var(--shadow-accent);
-        }
-        .process-connector {
+        .trust-bar-item::after {
+          content: "";
           position: absolute;
-          top: 50%;
-          right: -18px;
-          transform: translateY(-50%);
-          width: 16px;
-          height: 2px;
-          background: linear-gradient(90deg, var(--accent), transparent);
-          z-index: 10;
+          bottom: -4px;
+          left: 50%;
+          transform: translateX(-50%) scaleX(0);
+          width: 80%;
+          height: 1px;
+          background: linear-gradient(90deg, var(--accent), var(--gold));
+          transform-origin: left;
+          transition: transform 0.4s ease;
         }
-        @media (max-width: 1024px) {
-          .process-grid { grid-template-columns: repeat(2, 1fr); }
-          .process-connector { display: none; }
+        .trust-bar-item:hover::after { transform: translateX(-50%) scaleX(1); }
+        .trust-bar-icon { color: var(--accent); display: flex; }
+        .trust-bar-text {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--text-secondary);
+          white-space: nowrap;
         }
-        @media (max-width: 600px) {
-          .process-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .trust-bar-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 480px) { .trust-bar-grid { grid-template-columns: repeat(2, 1fr); } }
       `}</style>
     </section>
   );
 }
 
-// ─── Infinite Highlights Marquee (Dual Row Bidirectional) ─────────────────
-function InfiniteHighlights({ highlights }: { highlights?: any[] }) {
-  const defaultRow1 = [
-    { title: "Weddings",     emoji: "💍", desc: "Cinematic wedding films" },
-    { title: "Pre-Wedding",  emoji: "💑", desc: "Golden hour sessions" },
-    { title: "Corporate",    emoji: "🏢", desc: "Professional event coverage" },
-    { title: "Portraits",    emoji: "📸", desc: "Studio & outdoor sessions" },
-    { title: "Products",     emoji: "🛍️", desc: "High-end commercial" },
-    { title: "Videography",  emoji: "🎬", desc: "4K cinematic films" },
-  ];
-  const defaultRow2 = [
-    { title: "LED Screens",  emoji: "📺", desc: "Stage & event backdrops" },
-    { title: "Crane Shots",  emoji: "🎥", desc: "Aerial & jib coverage" },
-    { title: "Live Telecast",emoji: "📡", desc: "Multi-camera production" },
-    { title: "YouTube Live", emoji: "▶️", desc: "Global streaming" },
-    { title: "Facebook Live",emoji: "👥", desc: "Social broadcast" },
-    { title: "Post-Wedding", emoji: "✨", desc: "Album design & print" },
-  ];
-
-  const items = highlights && highlights.length > 0 ? highlights : [...defaultRow1, ...defaultRow2];
-  const row1 = items.slice(0, Math.ceil(items.length / 2));
-  const row2 = items.slice(Math.ceil(items.length / 2));
-
-  const MarqueeRow = ({ items, direction = "left" }: { items: typeof row1; direction?: "left" | "right" }) => {
-    const tripled = [...items, ...items, ...items];
-    return (
-      <div style={{ overflow: "hidden", width: "100%" }}>
-        <div
-          style={{
-            display: "flex",
-            gap: "var(--space-4)",
-            width: "max-content",
-            animation: `marquee-${direction} 35s linear infinite`,
-          }}
-        >
-          {tripled.map((item, i) => (
-            <div
-              key={i}
-              style={{
-                width: 220,
-                flexShrink: 0,
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--space-3)",
-                background: "var(--bg-card)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-xl)",
-                padding: "var(--space-3) var(--space-4)",
-                transition: "border-color 0.25s ease",
-              }}
-            >
-              <div style={{
-                fontSize: "1.4rem",
-                background: "var(--bg-elevated)",
-                width: 42,
-                height: 42,
-                borderRadius: "var(--radius-lg)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}>
-                {item.emoji}
-              </div>
-              <div>
-                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 1 }}>{item.title}</div>
-                <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{item.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <section style={{
-      overflow: "hidden",
-      padding: "var(--space-8) 0",
-      background: "transparent",
-      borderTop: "1px solid var(--border)",
-      borderBottom: "1px solid var(--border)",
-      display: "flex",
-      flexDirection: "column",
-      gap: "var(--space-4)",
-    }}>
-      <MarqueeRow items={row1} direction="left" />
-      <MarqueeRow items={row2} direction="right" />
-      <style>{`
-        @keyframes marquee-left {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(calc(-33.333333% - (var(--space-4) / 3))); }
-        }
-        @keyframes marquee-right {
-          0%   { transform: translateX(calc(-33.333333% - (var(--space-4) / 3))); }
-          100% { transform: translateX(0); }
-        }
-      `}</style>
-    </section>
-  );
-}
-
-
-// ─── Testimonials Section ─────────────────────────────────────────────────
+// ─── Testimonials Section ──────────────────────────────────────────────────
 function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
-  const displayItems = testimonials;
-
   return (
     <section className="section" style={{ background: "transparent" }}>
       <div className="container">
@@ -349,8 +137,8 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
         </ScrollReveal>
 
         <div className="testimonials-grid">
-          {displayItems.slice(0, 6).map((t, i) => (
-            <ScrollReveal key={t.id} delay={i * 0.08}>
+          {testimonials.slice(0, 6).map((t, i) => (
+            <ScrollReveal key={t.id} delay={i * 0.08} direction="scale">
               <TiltedCard>
                 <div
                   className="card"
@@ -365,33 +153,16 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
                     borderRadius: "var(--radius-xl)",
                   }}
                 >
-                  {/* Stars */}
                   <div style={{ display: "flex", gap: 3, marginBottom: "var(--space-4)" }}>
                     {Array.from({ length: t.rating }).map((_, j) => (
                       <Star key={j} size={13} fill="var(--gold)" color="var(--gold)" />
                     ))}
                   </div>
-
                   <p style={{ fontSize: "0.88rem", lineHeight: 1.65, color: "var(--text-secondary)", fontStyle: "italic", flexGrow: 1, marginBottom: "var(--space-5)" }}>
                     &ldquo;{t.text}&rdquo;
                   </p>
-
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", borderTop: "1px solid var(--border)", paddingTop: "var(--space-4)" }}>
-                    {/* Avatar initials */}
-                    <div style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: "50%",
-                      background: "var(--accent-muted)",
-                      border: "1px solid var(--border-accent)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.75rem",
-                      fontWeight: 800,
-                      color: "var(--accent)",
-                      flexShrink: 0,
-                    }}>
+                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--accent-muted)", border: "1px solid var(--border-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 800, color: "var(--accent)", flexShrink: 0 }}>
                       {t.clientName.charAt(0)}
                     </div>
                     <div>
@@ -412,108 +183,55 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
           grid-template-columns: repeat(3, 1fr);
           gap: var(--space-4);
         }
-        @media (max-width: 900px) {
-          .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 560px) {
-          .testimonials-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .testimonials-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .testimonials-grid { grid-template-columns: 1fr; } }
       `}</style>
     </section>
   );
 }
 
-// ─── CTA Section ──────────────────────────────────────────────────────────
-function CtaSection({ text }: { text?: string }) {
-  return (
-    <section style={{ position: "relative", overflow: "hidden", paddingBlock: "clamp(5rem, 12vw, 9rem)", textAlign: "center" }}>
-      <SectionDecorator watermark="LEGACY" />
-
-
-      {/* Top border glow line */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, var(--accent), var(--gold), var(--accent), transparent)", zIndex: 2 }} />
-
-      <div className="container" style={{ maxWidth: 760, position: "relative", zIndex: 3 }}>
-        <ScrollReveal>
-          {/* Badge */}
-          <div style={{ marginBottom: "var(--space-6)" }}>
-            <span className="badge badge-accent" style={{ fontSize: "0.72rem", padding: "7px 18px" }}>
-              ✦ Limited Slots Available for 2026
-            </span>
-          </div>
-
-          {/* Large headline with serif mix */}
-          <h2 style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "clamp(2.5rem, 8vw, 5rem)",
-            fontWeight: 700,
-            lineHeight: 1.0,
-            letterSpacing: "-0.03em",
-            marginBottom: "var(--space-6)",
-          }}>
-            Ready to Tell<br />
-            <span className="text-gradient-gold">Your Story?</span>
-          </h2>
-
-          <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", marginBottom: "var(--space-10)", maxWidth: 520, marginInline: "auto", lineHeight: 1.7 }}>
-            {text || "Wedding, corporate, portrait or live event — we'd love to capture your moments in cinematic 4K."}
-          </p>
-
-          <div style={{ display: "flex", gap: "var(--space-4)", justifyContent: "center", flexWrap: "wrap", marginBottom: "var(--space-10)" }}>
-            <Link href="/contact" className="btn btn-primary btn-xl" style={{ borderRadius: "var(--radius-full)", boxShadow: "0 12px 40px rgba(212,160,23,0.35)" }}>
-              Book a Session <ArrowRight size={16} />
-            </Link>
-            <Link href="/contact" className="btn btn-ghost btn-xl" style={{ borderRadius: "var(--radius-full)" }}>
-              View Portfolio
-            </Link>
-          </div>
-
-          {/* Social proof */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-4)", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", gap: 3 }}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={15} fill="var(--gold)" color="var(--gold)" />
-              ))}
-            </div>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-              Rated 5/5 by <strong style={{ color: "var(--gold)", fontWeight: 700 }}>500+ clients</strong> across Gujarat
-            </span>
-          </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-}
-
-
-// ─── Main Page ────────────────────────────────────────────────────────────
+// ─── Main Page ─────────────────────────────────────────────────────────────
 export default async function HomePage() {
   const { videos, testimonials, content, stats, homeSections, services } = await getHomeData();
 
   return (
     <>
       <CinemaBackground theme={{ primary: "gold", secondary: "amber" }} />
-      <HeroSection 
-        title={content?.heroTitle} 
+
+      {/* Scene 1 — Hero: curtain wipe + parallax + word-split headline */}
+      <HeroSection
+        title={content?.heroTitle}
         subtitle={content?.heroSubtitle}
         stats={stats}
       />
+
+      {/* Scene 2 — Trust Bar: blur slide-in stagger */}
       <TrustBar />
+
+      {/* Scene 3 — Stat Counters: scroll-triggered count-up */}
       <StatCounters stats={stats} />
-      <InfiniteHighlights highlights={homeSections?.highlights} />
-      <HowItWorks steps={homeSections?.howItWorks} />
+
+      {/* Scene 4 — Marquee: scroll-velocity reactive speed */}
+      <ScrollMarquee highlights={homeSections?.highlights} />
+
+      {/* Scene 5 — How It Works: pinned vertical reveal */}
+      <PinnedHowItWorks steps={homeSections?.howItWorks} />
+
+      {/* Scene 6 — Services: 3D perspective card entrance */}
       <ServiceCards services={services} />
+
+      {/* YouTube */}
       <YouTubeSection videos={videos} />
+
+      {/* Testimonials: scale reveal stagger */}
       <TestimonialsSection testimonials={testimonials} />
-      <CtaSection text={content?.contactFooterText} />
+
+      {/* Scene 7 — CTA: split text + particles */}
+      <ScrollCta text={content?.contactFooterText} />
 
       <style>{`
-        @media (max-width: 768px) {
-          .section { padding: var(--space-8) 0 !important; }
-        }
-        @media (max-width: 480px) {
-          .section { padding: var(--space-6) 0 !important; }
-        }
+        @media (max-width: 768px) { .section { padding: var(--space-8) 0 !important; } }
+        @media (max-width: 480px) { .section { padding: var(--space-6) 0 !important; } }
       `}</style>
     </>
   );

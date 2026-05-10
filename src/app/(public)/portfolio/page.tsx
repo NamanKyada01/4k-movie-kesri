@@ -42,7 +42,7 @@ export default async function PortfolioPage() {
             <span style={{ fontSize: "0.8rem", color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 600 }}>
               Featured Collections
             </span>
-            <h1 style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)", fontSize: "clamp(2.5rem, 8vw, 4.5rem)", lineHeight: 1, letterSpacing: "-0.04em" }}>
+            <h1 className="public-page-title" style={{ marginTop: "var(--space-3)", marginBottom: "var(--space-5)", fontSize: "clamp(2.5rem, 8vw, 4.5rem)" }}>
               Cinematic Portfolio
             </h1>
             <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>

@@ -42,8 +42,8 @@
   --bg-card-hover: #1A1A1A;
   --bg-elevated:   #1C1C1C;
   --bg-overlay:    rgba(0, 0, 0, 0.85);
-  --bg-glass:      rgba(10, 10, 10, 0.72);
-  --bg-glass-border: rgba(212, 160, 23, 0.08);
+  --bg-glass:      #0a0a0a;
+  --bg-glass-border: var(--border);
 
   /* ── Text — Clean White with Gold Warmth ── */
   --text-primary:   #FAFAF8;   /* Near-white, clean and readable */

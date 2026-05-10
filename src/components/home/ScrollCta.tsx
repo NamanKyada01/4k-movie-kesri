@@ -119,7 +119,7 @@ export function ScrollCta({ text }: { text?: string }) {
           position: fixed;
           top: 0; left: 0;
           width: 500px; height: 500px;
-          background: radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(212,160,23,0.02) 0%, transparent 70%);
           border-radius: 50%;
           pointer-events: none;
           z-index: 1;
@@ -180,7 +180,7 @@ export function ScrollCta({ text }: { text?: string }) {
         }
         .scroll-cta-btn-primary {
           border-radius: var(--radius-full) !important;
-          box-shadow: 0 12px 40px rgba(212,160,23,0.35) !important;
+          box-shadow: 0 12px 40px rgba(212,160,23,0.15) !important;
         }
         .scroll-cta-proof {
           display: flex;

@@ -7,8 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Camera } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { StaggeredMenu } from "@/components/ui/StaggeredMenu";
-import { useScrollPercent } from "@/components/ui/ScrollProgress";
-
 const navLinks = [
   { label: "Home",      href: "/" },
   { label: "Portfolio", href: "/portfolio" },
@@ -23,7 +21,6 @@ export function Navbar() {
   const pathname             = usePathname();
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
-  const scrollPercent              = useScrollPercent();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -62,10 +59,8 @@ export function Navbar() {
             height: "var(--nav-height)",
             display: "flex",
             alignItems: "center",
-            background: "var(--bg-glass)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid var(--bg-glass-border)",
+            background: "var(--bg-primary)",
+            border: "1px solid var(--border-strong)",
             borderRadius: scrolled ? "9999px" : "var(--radius-2xl)",
             paddingInline: "var(--space-5)",
             boxShadow: scrolled

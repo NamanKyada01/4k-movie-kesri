@@ -99,7 +99,7 @@ export function StatCounters({ stats }: { stats?: any }) {
           transform: translate(-50%, -50%);
           width: 600px;
           height: 200px;
-          background: radial-gradient(ellipse, rgba(212,160,23,0.07) 0%, transparent 70%);
+          background: radial-gradient(ellipse, rgba(212,160,23,0.02) 0%, transparent 70%);
           filter: blur(40px);
           pointer-events: none;
         }

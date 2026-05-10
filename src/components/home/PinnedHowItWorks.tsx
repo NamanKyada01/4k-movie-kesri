@@ -102,7 +102,9 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
         .hw-section {
           position: relative;
           padding-block: clamp(5rem, 12vw, 9rem);
-          background: var(--bg-primary);
+          background-color: #050505;
+          background-image: radial-gradient(rgba(212, 160, 23, 0.06) 1px, transparent 1px);
+          background-size: 32px 32px;
           border-top: 1px solid var(--border);
           overflow: hidden;
         }
@@ -175,9 +177,7 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
 
         .hw-timeline-content {
           width: 45%;
-          background: rgba(10,10,10,0.5);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          background: #0a0a0a;
           border: 1px solid var(--border);
           padding: var(--space-10);
           border-radius: var(--radius-2xl);
@@ -217,14 +217,14 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
         .hw-visual-placeholder {
           position: absolute;
           inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+          background: #111;
           opacity: 0.2;
         }
         .hw-visual-glow {
           position: absolute;
           inset: 20%;
           filter: blur(40px);
-          opacity: 0.15;
+          opacity: 0.05;
           border-radius: 50%;
         }
 

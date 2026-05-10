@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, Camera } from "lucide-react";
 import { SplitTextReveal } from "@/components/scroll/SplitTextReveal";
+import { StarBorder } from "@/components/ui/StarBorder";
+import { Particles } from "@/components/ui/Particles";
 
 // Dynamic import — Three.js must NOT run on SSR
 const Camera3D = dynamic(
@@ -70,21 +72,21 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
     <section className="hero-section" style={{ position: "relative" }}>
       <FilmCurtain />
 
-      {/* ── Background (parallax) ── */}
+      {/* ── Background (Cinematic Light Rays) ── */}
       <motion.div
-        className="hero-bg"
+        className="hero-bg cinematic-rays-bg"
         style={{ willChange: "transform" }}
       >
-        <div className="hero-ken-burns">
-          <Image
-            src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2400"
-            alt="4K Movie Kesri – Cinematic Wedding Photography Surat"
-            className="hero-img"
-            fill
-            priority
-            sizes="100vw"
-          />
+        {/* Projector Beams */}
+        <div className="projector-beam beam-left" />
+        <div className="projector-beam beam-center" />
+        <div className="projector-beam beam-right" />
+        
+        {/* Floating Dust */}
+        <div className="dust-particles" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+          <Particles particleCount={50} particleColors={["#ffffff", "#D4A017"]} speed={0.008} particleBaseSize={18} />
         </div>
+
         <div className="hero-overlay" />
         <div className="hero-grain" />
       </motion.div>
@@ -135,9 +137,12 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
 
           {/* CTAs */}
           <motion.div variants={STAGGER.item} className="hero-ctas">
-            <Link href="/contact" className="hero-btn-primary">
-              Book a Session <ArrowRight size={16} />
-            </Link>
+            <StarBorder color="var(--gold)" speed="4s">
+              <Link href="/contact" className="hero-btn-primary">
+                Book Your Session
+                <ArrowRight size={18} />
+              </Link>
+            </StarBorder>
             <Link href="/portfolio" className="hero-btn-ghost">
               View Our Work
             </Link>
@@ -249,32 +254,48 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           will-change: transform;
         }
 
-        .hero-ken-burns {
+        .cinematic-rays-bg {
+          background: #050505;
+        }
+
+        .projector-beam {
           position: absolute;
-          inset: 0;
-          overflow: hidden;
+          top: -30%;
+          width: 200%;
+          height: 200%;
+          left: -50%;
+          mix-blend-mode: screen;
+          transform-origin: top center;
+          pointer-events: none;
         }
 
-        .hero-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center 30%;
-          animation: kenBurns 35s ease-in-out infinite alternate;
-          transform-origin: center center;
+        .beam-left {
+          background: conic-gradient(from 165deg at 50% 0%, transparent 0deg, rgba(200,16,46,0.15) 5deg, rgba(212,160,23,0.08) 10deg, transparent 15deg);
+          animation: beam-swing 18s ease-in-out infinite alternate;
         }
 
-        @keyframes kenBurns {
-          0%   { transform: scale(1.0) translateX(0px); }
-          100% { transform: scale(1.08) translateX(-30px); }
+        .beam-center {
+          background: conic-gradient(from 175deg at 50% 0%, transparent 0deg, rgba(212,160,23,0.15) 4deg, rgba(200,16,46,0.10) 8deg, transparent 12deg);
+          animation: beam-swing 24s ease-in-out infinite alternate-reverse;
+          opacity: 0.9;
+        }
+
+        .beam-right {
+          background: conic-gradient(from 185deg at 50% 0%, transparent 0deg, rgba(200,16,46,0.12) 6deg, rgba(212,160,23,0.15) 12deg, transparent 18deg);
+          animation: beam-swing 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes beam-swing {
+          0%   { transform: rotate(-3deg) scale(1.0); }
+          100% { transform: rotate(3deg) scale(1.05); }
         }
 
         .hero-overlay {
           position: absolute;
           inset: 0;
           background:
-            linear-gradient(to right,  rgba(6,6,6,0.85) 0%, rgba(6,6,6,0.55) 45%, rgba(6,6,6,0.12) 100%),
-            linear-gradient(to bottom, rgba(6,6,6,0.30) 0%, rgba(6,6,6,0) 40%, rgba(6,6,6,0.70) 100%);
+            radial-gradient(ellipse at 50% 0%, rgba(6,6,6,0) 0%, rgba(6,6,6,0.8) 80%, rgba(6,6,6,1) 100%);
+          z-index: 2;
         }
 
         .hero-grain {
@@ -301,21 +322,21 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         }
         .lens-flare-main {
           width: 180px; height: 180px;
-          background: radial-gradient(circle, rgba(212,160,23,0.22) 0%, rgba(212,160,23,0.06) 50%, transparent 70%);
+          background: radial-gradient(circle, rgba(212,160,23,0.11) 0%, rgba(212,160,23,0.03) 50%, transparent 70%);
           filter: blur(18px);
           animation: lensFloat 8s ease-in-out infinite;
         }
         .lens-flare-secondary {
           width: 80px; height: 80px;
           top: 30px; left: 60px;
-          background: radial-gradient(circle, rgba(255,220,100,0.35) 0%, transparent 60%);
+          background: radial-gradient(circle, rgba(255,220,100,0.15) 0%, transparent 60%);
           filter: blur(8px);
           animation: lensFloat 6s ease-in-out infinite reverse;
         }
         .lens-flare-streak {
           width: 300px; height: 2px;
           top: 90px; left: -60px;
-          background: linear-gradient(90deg, transparent, rgba(212,160,23,0.3), transparent);
+          background: linear-gradient(90deg, transparent, rgba(212,160,23,0.15), transparent);
           filter: blur(2px);
           animation: streakPulse 4s ease-in-out infinite;
         }
@@ -372,12 +393,11 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           display: inline-flex;
           align-items: center;
           gap: var(--space-3);
-          background: rgba(212,160,23,0.06);
-          border: 1px solid rgba(212,160,23,0.15);
+          background: #0a0a0a;
+          border: 1px solid rgba(212,160,23,0.3);
           border-radius: var(--radius-full);
           padding: 6px 16px 6px 12px;
           margin-bottom: var(--space-6);
-          backdrop-filter: blur(8px);
         }
         .hero-scene-label {
           font-size: 0.62rem;
@@ -462,12 +482,10 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           border-radius: var(--radius-full);
           text-decoration: none;
           letter-spacing: 0.02em;
-          box-shadow: 0 8px 30px rgba(212,160,23,0.35), 0 2px 8px rgba(0,0,0,0.4);
-          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
+          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
         }
         .hero-btn-primary:hover {
           transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 12px 40px rgba(212,160,23,0.50), 0 4px 16px rgba(0,0,0,0.5);
         }
         .hero-btn-primary:active { transform: translateY(0) scale(0.99); }
 
@@ -475,15 +493,13 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: rgba(255,255,255,0.06);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          background: #111;
           color: #FAFAF8;
           font-weight: 600;
           font-size: 0.9rem;
           padding: 0.75rem 1.75rem;
           border-radius: var(--radius-full);
-          border: 1px solid rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.2);
           text-decoration: none;
           transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
         }
@@ -538,10 +554,8 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           flex-direction: row;
           gap: var(--space-5);
           align-items: center;
-          background: rgba(10,10,10,0.7);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(212,160,23,0.15);
+          background: #0a0a0a;
+          border: 1px solid rgba(212,160,23,0.25);
           border-radius: var(--radius-2xl);
           padding: var(--space-4) var(--space-7);
           width: 100%;
@@ -616,10 +630,8 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           display: flex;
           align-items: center;
           gap: 6px;
-          background: rgba(10,10,10,0.7);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(212,160,23,0.15);
+          background: #0a0a0a;
+          border: 1px solid rgba(212,160,23,0.25);
           border-radius: var(--radius-full);
           padding: 6px 12px;
           font-size: 0.68rem;

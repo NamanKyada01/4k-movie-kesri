@@ -171,9 +171,7 @@ export function ScrollMarquee({ highlights }: { highlights?: MarqueeItem[] }) {
           display: flex;
           align-items: center;
           gap: var(--space-3);
-          background: rgba(10,10,10,0.5);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          background: #0a0a0a;
           border: 1px solid var(--border);
           border-radius: var(--radius-xl);
           padding: var(--space-3) var(--space-4);

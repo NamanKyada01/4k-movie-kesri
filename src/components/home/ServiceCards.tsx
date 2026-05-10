@@ -308,6 +308,7 @@ export function ServiceCards({ services }: { services?: ServiceItem[] }) {
           flex-direction: column;
           flex: 1;
           gap: var(--space-2);
+          background: var(--bg-card);
         }
 
         .svc-icon-row {

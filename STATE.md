@@ -43,8 +43,16 @@
 - **Wave 6**: Stock imagery fallback arrays, Premium stock photos for ServiceCards, cinematic dark theme applied, Playfair Display + Outfit typography standardized.
 - **Wave 7**: Final review and client presentation prep.
 
+## Accumulated Context
+
+### Pending Todos
+- [ ] **Generate epic background and improve whole public UI** (ui)
+      User wants a high-impact, premium background and overall UI polish to stand out from generic sites.
+      `src/components/layout/CinemaBackground.tsx`, `src/app/(public)/page.tsx`
+
 ## Next Steps
-- Implement frontend code using the generated Stitch screens.
+- Implement the "Epic Background" and UI polish as requested.
+- Verify across all public pages.
 
 ## Blockers
 - None.

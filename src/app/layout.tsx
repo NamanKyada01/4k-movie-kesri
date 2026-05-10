@@ -3,9 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { AlertProvider } from "@/contexts/AlertContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { Toaster } from "sonner";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
 
 
 export const metadata: Metadata = {
@@ -54,7 +52,6 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <ScrollProgress />
         <ThemeProvider>
           <Toaster 
             position="top-right" 
@@ -73,9 +70,7 @@ export default function RootLayout({
           />
           <AlertProvider>
             <AuthProvider>
-              <SmoothScroll>
-                {children}
-              </SmoothScroll>
+              {children}
             </AuthProvider>
           </AlertProvider>
         </ThemeProvider>

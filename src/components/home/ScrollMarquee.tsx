@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useVelocity, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
 
 const defaultRow1 = [
   { title: "Weddings",    emoji: "💍", desc: "Cinematic wedding films" },
@@ -30,14 +30,7 @@ function MarqueeRow({
   const tripled = [...items, ...items, ...items];
   const ref = useRef<HTMLDivElement>(null);
 
-  // Scroll velocity drives marquee speed reactively
-  const { scrollY } = useScroll();
-  const scrollVelocity = useVelocity(scrollY);
-  const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
-  const velocityFactor = useTransform(smoothVelocity, [-3000, 0, 3000], [2, 1, 2], { clamp: false });
 
-  // Direction flips based on scroll direction for reverse row
-  const directionFactor = baseVelocity > 0 ? 1 : -1;
 
   return (
     <div style={{ overflow: "hidden", width: "100%", position: "relative" }}>
@@ -67,7 +60,13 @@ function MarqueeRow({
   );
 }
 
-export function ScrollMarquee({ highlights }: { highlights?: any[] }) {
+interface MarqueeItem {
+  title: string;
+  emoji: string;
+  desc: string;
+}
+
+export function ScrollMarquee({ highlights }: { highlights?: MarqueeItem[] }) {
   const items = highlights && highlights.length > 0 ? highlights : [...defaultRow1, ...defaultRow2];
   const row1 = items.slice(0, Math.ceil(items.length / 2));
   const row2 = items.slice(Math.ceil(items.length / 2));

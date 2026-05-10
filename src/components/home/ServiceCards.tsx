@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, Camera, Film, Monitor, Radio, Share2, Video } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
 import * as Icons from "lucide-react";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ElementType> = {
   Camera: Icons.Camera,
   Film: Icons.Film,
   Monitor: Icons.Monitor,
@@ -51,7 +52,17 @@ const defaultServices = [
   },
 ];
 
-export function ServiceCards({ services }: { services?: any[] }) {
+interface ServiceItem {
+  num?: string;
+  title: string;
+  desc?: string;
+  href: string;
+  iconName: string;
+  image?: string;
+  tag?: string;
+}
+
+export function ServiceCards({ services }: { services?: ServiceItem[] }) {
   const items = services && services.length > 0 ? services : defaultServices;
 
   return (
@@ -80,15 +91,14 @@ export function ServiceCards({ services }: { services?: any[] }) {
         {/* ── Grid ── */}
         <div className="svc-grid">
           {items.map((svc, i) => {
-            const Icon = iconMap[svc.iconName] || Icons.Camera;
+            const Icon = (iconMap[svc.iconName] || Icons.Camera) as any;
             return (
               <motion.div
                 key={svc.title}
-                initial={{ opacity: 0, y: 60, rotateX: 22, scale: 0.94 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.7, delay: (i % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
-                style={{ perspective: "800px", transformStyle: "preserve-3d" }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: (i % 3) * 0.1, ease: "easeOut" }}
               >
                 <SpotlightCard
                   className="svc-card"
@@ -104,7 +114,13 @@ export function ServiceCards({ services }: { services?: any[] }) {
                   <Link href={svc.href} className="svc-card-link">
                     {/* Image */}
                     <div className="svc-img-wrap">
-                      <img src={svc.image || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800"} alt={svc.title} className="svc-img" />
+                      <Image 
+                        src={svc.image || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800"} 
+                        alt={svc.title} 
+                        className="svc-img" 
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
                       <div className="svc-img-overlay" />
                       {/* Step number */}
                       <div className="svc-num">{svc.num || (i+1).toString().padStart(2, '0')}</div>
@@ -122,7 +138,7 @@ export function ServiceCards({ services }: { services?: any[] }) {
                         </div>
                         <h3 className="svc-name">{svc.title}</h3>
                       </div>
-                      <p className="svc-desc">{svc.desc || svc.description}</p>
+                      <p className="svc-desc">{svc.desc}</p>
                       <div className="svc-link">
                         Explore <ArrowRight size={13} />
                       </div>

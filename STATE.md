@@ -6,19 +6,15 @@
 ## Tasks in Progress
 - None.
 
-## Recent Changes (Wave 10 — Cinematic Scroll Home)
-- **Lenis smooth scroll** activated globally in `(public)/layout.tsx`
-- **`src/components/scroll/ScrollScene.tsx`** [NEW]: Scroll context provider
-- **`src/components/scroll/ScrollParallax.tsx`** [NEW]: Parallax layer wrapper
-- **`src/components/scroll/SplitTextReveal.tsx`** [NEW]: Word-by-word text reveal
-- **`src/components/scroll/ScrollParticles.tsx`** [NEW]: Canvas gold particle field
-- **`src/components/ui/ScrollReveal.tsx`** [UPGRADED]: Added `direction`, `blur`, `once` props
-- **`HeroSection.tsx`** [REBUILT]: Film curtain wipe on load, 3-layer parallax, lens flare, scroll depth bar (right edge), word-split headline, fade-to-black exit
-- **`ScrollMarquee.tsx`** [NEW]: Scroll-velocity-reactive bidirectional marquee
-- **`PinnedHowItWorks.tsx`** [NEW]: Sticky pinned section, cards reveal sequentially per scroll segment, gold spine line, live step counter
-- **`ScrollCta.tsx`** [NEW]: Word-split CTA, floating gold particles canvas, pulsing vignette
-- **`ServiceCards.tsx`** [MODIFIED]: 3D rotateX(22°) perspective entrance
-- **`Camera3D.tsx`** [FIXED]: `shadows="pcf"` — eliminates PCFSoftShadowMap deprecation warning
+## Recent Changes (Wave 11 — De-scrolling)
+- **Removed Lenis smooth scroll** and **ScrollProgress** bar from global layout.
+- **HeroSection Simplified**: Removed parallax layers, scroll depth bar, and exit fade logic.
+- **PinnedHowItWorks Simplified**: Converted from sticky-pinned reveal to a static 4-column grid layout.
+- **ServiceCards Simplified**: Removed 3D scroll entrance animation (rotateX/scale).
+- **ScrollMarquee Simplified**: Removed scroll-velocity reactive speed hooks.
+- **ScrollCta Simplified**: Removed floating gold particles canvas and scroll-linked vignette.
+- **Removed ScrollReveal**: All component wrappers removed from home screen for a static scroll experience.
+
 
 ## Recent Changes (Wave 9)
 - Installed `three`, `@react-three/fiber`, `@react-three/drei`, `@types/three`.

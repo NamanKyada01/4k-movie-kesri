@@ -22,8 +22,9 @@ export const StarBorder = ({
   style,
   ...rest
 }: StarBorderProps) => {
+  const Tag = Component as any;
   return (
-    <Component 
+    <Tag 
       className={`relative inline-block overflow-hidden rounded-[var(--radius-xl)] ${className}`} 
       style={{ padding: thickness, ...style }}
       {...rest}
@@ -67,7 +68,7 @@ export const StarBorder = ({
           animation: star-movement-top linear infinite;
         }
       `}</style>
-    </Component>
+    </Tag>
   );
 };
 

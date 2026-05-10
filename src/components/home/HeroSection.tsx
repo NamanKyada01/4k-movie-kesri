@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
+import Image from "next/image";
 import { ArrowRight, Camera } from "lucide-react";
 import { SplitTextReveal } from "@/components/scroll/SplitTextReveal";
 
@@ -46,49 +46,43 @@ function LensFlare() {
   );
 }
 
-// ── Scroll Depth Bar ─────────────────────────────────────────────────────────
-function ScrollDepthBar({ progress }: { progress: any }) {
-  const scaleY = useSpring(progress, { stiffness: 120, damping: 22 });
-  return (
-    <div className="scroll-depth-track" aria-hidden="true">
-      <motion.div className="scroll-depth-fill" style={{ scaleY, originY: 0 }} />
-    </div>
-  );
+
+
+interface HeroStats {
+  clientsCount?: string | number;
+  resolution?: string | number;
+  eventsCount?: string | number;
+  deliveryHours?: string | number;
 }
 
-export function HeroSection({ title, subtitle, stats }: { title?: string; subtitle?: string; stats?: any }) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+export function HeroSection({ title, subtitle, stats }: { title?: string; subtitle?: string; stats?: HeroStats | null }) {
 
-  // Parallax layers: bg moves slowest, text in the middle
-  const bgY    = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const textY  = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
-  const scaleIn= useTransform(scrollYProgress, [0, 1], [1, 1.06]);
-  // Exit fade-to-black as hero leaves
-  const exitOpacity = useTransform(scrollYProgress, [0.6, 1], [1, 0]);
 
   const STAGGER = {
     container: { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.6 } } },
     item: {
       hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
-      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as any } },
+      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const } },
     },
   };
 
   return (
-    <section className="hero-section" ref={sectionRef} style={{ position: "relative" }}>
+    <section className="hero-section" style={{ position: "relative" }}>
       <FilmCurtain />
 
       {/* ── Background (parallax) ── */}
       <motion.div
         className="hero-bg"
-        style={{ y: bgY, scale: scaleIn, willChange: "transform" }}
+        style={{ willChange: "transform" }}
       >
         <div className="hero-ken-burns">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2400"
             alt="4K Movie Kesri – Cinematic Wedding Photography Surat"
             className="hero-img"
+            fill
+            priority
+            sizes="100vw"
           />
         </div>
         <div className="hero-overlay" />
@@ -98,13 +92,12 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
       {/* ── Lens Flare ── */}
       <LensFlare />
 
-      {/* ── Scroll Depth Bar (right edge) ── */}
-      <ScrollDepthBar progress={scrollYProgress} />
+
 
       {/* ── Content (parallax mid-layer) ── */}
       <motion.div
         className="container hero-content"
-        style={{ y: textY, opacity: exitOpacity, willChange: "transform" }}
+        style={{ willChange: "transform" }}
       >
         <motion.div
           variants={STAGGER.container}
@@ -121,13 +114,13 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           {/* Headline — word-split reveal */}
           <motion.h1 variants={STAGGER.item} className="hero-headline">
             {title ? (
-              <SplitTextReveal text={title} delay={0.8} stagger={0.07} />
+              <SplitTextReveal text={title} delay={0.2} stagger={0.05} />
             ) : (
               <>
-                <SplitTextReveal text="Capture the moment." delay={0.8} stagger={0.07} />
+                <SplitTextReveal text="Capture the moment." delay={0.2} stagger={0.05} />
                 <br />
                 <em className="hero-headline-accent">
-                  <SplitTextReveal text="Keep the memory." delay={1.2} stagger={0.07} />
+                  <SplitTextReveal text="Keep the memory." delay={0.6} stagger={0.05} />
                 </em>
               </>
             )}
@@ -168,7 +161,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         <motion.div
           initial={{ opacity: 0, x: 50, scale: 0.92 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 1.0, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.0, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="hero-right-panel"
         >
           {/* 3D Camera */}
@@ -410,13 +403,14 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           font-family: 'Playfair Display', var(--font-heading), Georgia, serif;
           font-size: clamp(3rem, 8vw, 6.5rem);
           font-weight: 700;
-          line-height: 1.0;
+          line-height: 1.15;
           color: #FAFAF8;
           margin-bottom: var(--space-6);
           letter-spacing: -0.02em;
           font-style: italic;
         }
         .hero-headline-accent {
+          display: inline-block;
           font-style: italic;
           background: linear-gradient(110deg, var(--gold) 0%, var(--accent) 50%, var(--gold) 100%);
           background-size: 200% auto;

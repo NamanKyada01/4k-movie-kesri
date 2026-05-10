@@ -1,37 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
+
 import { ArrowRight, Star } from "lucide-react";
-import { ScrollParticles } from "@/components/scroll/ScrollParticles";
 import { SplitTextReveal } from "@/components/scroll/SplitTextReveal";
+import { ScrollParticles } from "@/components/scroll/ScrollParticles";
 
 export function ScrollCta({ text }: { text?: string }) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-15% 0px -15% 0px" });
+
 
   return (
-    <section ref={sectionRef} className="scroll-cta-section">
-      {/* Floating gold particles */}
-      <ScrollParticles count={32} />
+    <section className="scroll-cta-section">
+      {/* Golden Sparks Background */}
+      <ScrollParticles count={40} />
+
 
       {/* Top glow line */}
       <div className="scroll-cta-topline" />
 
-      {/* Radial vignette that pulses on entry */}
-      <motion.div
-        className="scroll-cta-vignette"
-        initial={{ opacity: 0 }}
-        animate={inView ? { opacity: [0, 0.55, 0.35] } : {}}
-        transition={{ duration: 2.2, times: [0, 0.4, 1], ease: "easeOut" }}
-      />
+
 
       <div className="container scroll-cta-inner">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
           <span className="badge badge-accent" style={{ fontSize: "0.72rem", padding: "7px 18px" }}>
@@ -52,7 +46,7 @@ export function ScrollCta({ text }: { text?: string }) {
         <motion.p
           className="scroll-cta-subtext"
           initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           {text || "Wedding, corporate, portrait or live event — we'd love to capture your moments in cinematic 4K."}
@@ -62,7 +56,7 @@ export function ScrollCta({ text }: { text?: string }) {
         <motion.div
           className="scroll-cta-buttons"
           initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.72 }}
         >
           <Link href="/contact" className="btn btn-primary btn-xl scroll-cta-btn-primary">
@@ -77,7 +71,7 @@ export function ScrollCta({ text }: { text?: string }) {
         <motion.div
           className="scroll-cta-proof"
           initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
         >
           <div style={{ display: "flex", gap: 3 }}>
@@ -105,13 +99,7 @@ export function ScrollCta({ text }: { text?: string }) {
           background: linear-gradient(90deg, transparent, var(--accent), var(--gold), var(--accent), transparent);
           z-index: 2;
         }
-        .scroll-cta-vignette {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse at center, rgba(212,160,23,0.06) 0%, transparent 65%);
-          pointer-events: none;
-          z-index: 0;
-        }
+
         .scroll-cta-inner {
           position: relative;
           z-index: 3;
@@ -125,7 +113,7 @@ export function ScrollCta({ text }: { text?: string }) {
           font-family: var(--font-heading);
           font-size: clamp(2.5rem, 8vw, 5rem);
           font-weight: 700;
-          line-height: 1.0;
+          line-height: 1.15;
           letter-spacing: -0.03em;
         }
         .scroll-cta-subtext {

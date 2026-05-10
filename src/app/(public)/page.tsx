@@ -5,12 +5,11 @@ import { YouTubeSection } from "@/components/home/YouTubeSection";
 import { StatCounters } from "@/components/home/StatCounters";
 import { adminDb } from "@/lib/firebase-admin";
 import type { YouTubeVideo, Testimonial } from "@/types";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import Link from "next/link";
-import { ArrowRight, Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "lucide-react";
+
+import { Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "lucide-react";
 import TiltedCard from "@/components/ui/TiltedCard";
 import { CinemaBackground } from "@/components/layout/CinemaBackground";
-import { SectionDecorator } from "@/components/ui/SectionDecorator";
+
 import { ScrollMarquee } from "@/components/home/ScrollMarquee";
 import { PinnedHowItWorks } from "@/components/home/PinnedHowItWorks";
 import { ScrollCta } from "@/components/home/ScrollCta";
@@ -62,12 +61,10 @@ function TrustBar() {
       <div className="container">
         <div className="trust-bar-grid">
           {items.map((item, i) => (
-            <ScrollReveal key={i} direction="up" delay={i * 0.07} blur>
-              <div className="trust-bar-item">
-                <span className="trust-bar-icon">{item.icon}</span>
-                <span className="trust-bar-text">{item.text}</span>
-              </div>
-            </ScrollReveal>
+            <div key={i} className="trust-bar-item">
+              <span className="trust-bar-icon">{item.icon}</span>
+              <span className="trust-bar-text">{item.text}</span>
+            </div>
           ))}
         </div>
       </div>
@@ -122,7 +119,6 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   return (
     <section className="section" style={{ background: "transparent" }}>
       <div className="container">
-        <ScrollReveal>
           <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-6), 6vw, var(--space-10))" }}>
             <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
               Client Love
@@ -134,45 +130,42 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
               Over 500 families and businesses trust us to capture their most important moments.
             </p>
           </div>
-        </ScrollReveal>
 
         <div className="testimonials-grid">
-          {testimonials.slice(0, 6).map((t, i) => (
-            <ScrollReveal key={t.id} delay={i * 0.08} direction="scale">
-              <TiltedCard>
-                <div
-                  className="card"
-                  style={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    background: "var(--bg-card)",
-                    padding: "var(--space-6)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius-xl)",
-                  }}
-                >
-                  <div style={{ display: "flex", gap: 3, marginBottom: "var(--space-4)" }}>
-                    {Array.from({ length: t.rating }).map((_, j) => (
-                      <Star key={j} size={13} fill="var(--gold)" color="var(--gold)" />
-                    ))}
+          {testimonials.slice(0, 6).map((t) => (
+            <TiltedCard key={t.id}>
+              <div
+                className="card"
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  background: "var(--bg-card)",
+                  padding: "var(--space-6)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-xl)",
+                }}
+              >
+                <div style={{ display: "flex", gap: 3, marginBottom: "var(--space-4)" }}>
+                  {Array.from({ length: t.rating }).map((_, j) => (
+                    <Star key={j} size={13} fill="var(--gold)" color="var(--gold)" />
+                  ))}
+                </div>
+                <p style={{ fontSize: "0.88rem", lineHeight: 1.65, color: "var(--text-secondary)", fontStyle: "italic", flexGrow: 1, marginBottom: "var(--space-5)" }}>
+                  &ldquo;{t.text}&rdquo;
+                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", borderTop: "1px solid var(--border)", paddingTop: "var(--space-4)" }}>
+                  <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--accent-muted)", border: "1px solid var(--border-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 800, color: "var(--accent)", flexShrink: 0 }}>
+                    {t.clientName.charAt(0)}
                   </div>
-                  <p style={{ fontSize: "0.88rem", lineHeight: 1.65, color: "var(--text-secondary)", fontStyle: "italic", flexGrow: 1, marginBottom: "var(--space-5)" }}>
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", borderTop: "1px solid var(--border)", paddingTop: "var(--space-4)" }}>
-                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--accent-muted)", border: "1px solid var(--border-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 800, color: "var(--accent)", flexShrink: 0 }}>
-                      {t.clientName.charAt(0)}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--text-primary)" }}>{t.clientName}</div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--accent)", marginTop: 1 }}>{t.eventType}</div>
-                    </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--text-primary)" }}>{t.clientName}</div>
+                    <div style={{ fontSize: "0.7rem", color: "var(--accent)", marginTop: 1 }}>{t.eventType}</div>
                   </div>
                 </div>
-              </TiltedCard>
-            </ScrollReveal>
+              </div>
+            </TiltedCard>
           ))}
         </div>
       </div>

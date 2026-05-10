@@ -47,11 +47,22 @@ function MarqueeRow({
         }}
       >
         {tripled.map((item, i) => (
-          <div key={i} className="marquee-item">
-            <div className="marquee-emoji">{item.emoji}</div>
-            <div>
-              <div className="marquee-title">{item.title}</div>
-              <div className="marquee-desc">{item.desc}</div>
+          <div key={i} className="marquee-strip-unit">
+            <div className="marquee-item">
+              <div className="marquee-emoji">{item.emoji}</div>
+              <div>
+                <div className="marquee-title">{item.title}</div>
+                <div className="marquee-desc">{item.desc}</div>
+              </div>
+            </div>
+            <div className="marquee-interstitial">
+              <div className="marquee-film-frame">
+                <img 
+                  src={`https://images.unsplash.com/photo-${1500000000000 + i}?auto=format&fit=crop&q=40&w=100`} 
+                  alt="" 
+                  loading="lazy" 
+                />
+              </div>
             </div>
           </div>
         ))}
@@ -73,6 +84,10 @@ export function ScrollMarquee({ highlights }: { highlights?: MarqueeItem[] }) {
 
   return (
     <section className="marquee-section">
+      <div className="container" style={{ marginBottom: "var(--space-6)" }}>
+        <div className="marquee-scene-label">SCENE 03</div>
+        <span className="marquee-eyebrow">— Highlights</span>
+      </div>
       <div className="marquee-rows">
         <MarqueeRow items={row1} baseVelocity={1} />
         <MarqueeRow items={row2} baseVelocity={-1} />
@@ -102,13 +117,63 @@ export function ScrollMarquee({ highlights }: { highlights?: MarqueeItem[] }) {
           0%   { transform: translateX(0); }
           100% { transform: translateX(calc(-33.3333%)); }
         }
+        .marquee-scene-label {
+          display: inline-block;
+          font-size: 0.6rem;
+          font-weight: 800;
+          color: #060606;
+          background: var(--gold);
+          padding: 2px 8px;
+          border-radius: 4px;
+          letter-spacing: 0.05em;
+          margin-bottom: var(--space-2);
+        }
+        .marquee-eyebrow {
+          font-size: 0.75rem;
+          color: var(--accent);
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          font-weight: 600;
+          display: block;
+        }
+        .marquee-strip-unit {
+          display: flex;
+          align-items: center;
+          gap: var(--space-4);
+        }
+        .marquee-interstitial {
+          width: 80px;
+          height: 48px;
+          flex-shrink: 0;
+          position: relative;
+        }
+        .marquee-film-frame {
+          width: 100%;
+          height: 100%;
+          background: #111;
+          border: 1px solid var(--border);
+          border-radius: 4px;
+          overflow: hidden;
+          filter: grayscale(1) blur(1px) opacity(0.4);
+          transition: filter 0.3s ease;
+        }
+        .marquee-strip-unit:hover .marquee-film-frame {
+          filter: grayscale(0) blur(0px) opacity(1);
+        }
+        .marquee-film-frame img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
         .marquee-item {
           width: 220px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
           gap: var(--space-3);
-          background: var(--bg-card);
+          background: rgba(10,10,10,0.5);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
           border: 1px solid var(--border);
           border-radius: var(--radius-xl);
           padding: var(--space-3) var(--space-4);

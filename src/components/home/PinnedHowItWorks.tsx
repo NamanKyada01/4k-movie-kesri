@@ -52,6 +52,7 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
       <div className="container">
         {/* ── Header ── */}
         <div className="hw-header">
+          <div className="hw-scene-label">SCENE 02</div>
           <span className="hw-eyebrow">— The Process</span>
           <h2 className="hw-title">
             From Vision to<br />
@@ -59,29 +60,41 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
           </h2>
         </div>
 
-        {/* ── Grid ── */}
-        <div className="hw-grid">
-          {displaySteps.map((step, i) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: i * 0.12 }}
-              className="hw-card"
-            >
-              <div
-                className="hw-card-line"
-                style={{ background: `linear-gradient(90deg, ${step.accent}, transparent)` }}
-              />
-              <div className="hw-card-icon">{step.icon}</div>
-              <div className="hw-card-step-label" style={{ color: step.accent }}>
-                Step {step.number}
-              </div>
-              <h3 className="hw-card-title">{step.title}</h3>
-              <p className="hw-card-desc">{step.desc}</p>
-            </motion.div>
-          ))}
+        {/* ── Timeline ── */}
+        <div className="hw-timeline-container">
+          {/* The Stitch Line */}
+          <div className="hw-stitch-line" />
+
+          <div className="hw-timeline-list">
+            {displaySteps.map((step, i) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: i * 0.15, ease: [0.76, 0, 0.24, 1] }}
+                className={`hw-timeline-item ${i % 2 === 0 ? "item-left" : "item-right"}`}
+              >
+                <div className="hw-timeline-content">
+                  <div className="hw-timeline-dot" style={{ background: step.accent }} />
+                  <div className="hw-card-icon">{step.icon}</div>
+                  <div className="hw-card-step-label" style={{ color: step.accent }}>
+                    Step {step.number}
+                  </div>
+                  <h3 className="hw-card-title">{step.title}</h3>
+                  <p className="hw-card-desc">{step.desc}</p>
+                </div>
+
+                {/* Floating Image Frame (Mockup) */}
+                <div className="hw-timeline-visual">
+                  <div className="hw-visual-frame">
+                    <div className="hw-visual-placeholder" />
+                    <div className="hw-visual-glow" style={{ background: step.accent }} />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -112,30 +125,109 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
           line-height: 1.1;
         }
 
-        .hw-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: var(--space-5);
+        .hw-scene-label {
+          display: inline-block;
+          font-size: 0.6rem;
+          font-weight: 800;
+          color: #060606;
+          background: var(--gold);
+          padding: 2px 8px;
+          border-radius: 4px;
+          letter-spacing: 0.05em;
+          margin-bottom: var(--space-3);
+        }
+        
+        .hw-timeline-container {
+          position: relative;
+          max-width: 1000px;
+          margin: 0 auto;
+          padding-block: var(--space-10);
         }
 
-        .hw-card {
+        .hw-stitch-line {
+          position: absolute;
+          left: 50%;
+          top: 0;
+          bottom: 0;
+          width: 1px;
+          background: linear-gradient(to bottom, transparent, var(--border), var(--gold), var(--border), transparent);
+          transform: translateX(-50%);
+          z-index: 1;
+        }
+
+        .hw-timeline-list {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-20);
+          position: relative;
+          z-index: 2;
+        }
+
+        .hw-timeline-item {
+          display: flex;
+          align-items: center;
+          gap: var(--space-12);
+          width: 100%;
+        }
+
+        .item-left { flex-direction: row; }
+        .item-right { flex-direction: row-reverse; }
+
+        .hw-timeline-content {
+          width: 45%;
+          background: rgba(10,10,10,0.5);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid var(--border);
+          padding: var(--space-10);
+          border-radius: var(--radius-2xl);
+          position: relative;
+        }
+        .item-left .hw-timeline-content { text-align: right; }
+        .item-right .hw-timeline-content { text-align: left; }
+
+        .hw-timeline-dot {
+          position: absolute;
+          top: 50%;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: 3px solid #060606;
+          z-index: 5;
+          transform: translateY(-50%);
+        }
+        .item-left .hw-timeline-dot { right: -54px; }
+        .item-right .hw-timeline-dot { left: -54px; }
+
+        .hw-timeline-visual {
+          width: 45%;
+          display: flex;
+          justify-content: center;
+        }
+
+        .hw-visual-frame {
+          position: relative;
+          width: 240px;
+          height: 160px;
+          border-radius: var(--radius-xl);
           background: var(--bg-card);
           border: 1px solid var(--border);
-          border-radius: var(--radius-2xl);
-          padding: var(--space-8);
-          position: relative;
           overflow: hidden;
-          transition: transform 0.3s ease, border-color 0.3s ease;
         }
-        .hw-card:hover {
-          transform: translateY(-5px);
-          border-color: var(--border-accent);
-        }
-        .hw-card-line {
+        .hw-visual-placeholder {
           position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 2px;
+          inset: 0;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+          opacity: 0.2;
         }
+        .hw-visual-glow {
+          position: absolute;
+          inset: 20%;
+          filter: blur(40px);
+          opacity: 0.15;
+          border-radius: 50%;
+        }
+
         .hw-card-icon {
           font-size: 2.2rem;
           margin-bottom: var(--space-4);
@@ -148,10 +240,11 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
           margin-bottom: var(--space-2);
         }
         .hw-card-title {
-          font-size: 1.5rem;
+          font-size: 1.8rem;
           font-weight: 800;
           letter-spacing: -0.02em;
           margin-bottom: var(--space-3);
+          font-family: var(--font-heading);
         }
         .hw-card-desc {
           font-size: 0.95rem;
@@ -159,11 +252,12 @@ export function PinnedHowItWorks({ steps }: { steps?: StepItem[] }) {
           line-height: 1.7;
         }
 
-        @media (max-width: 1024px) {
-          .hw-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 640px) {
-          .hw-grid { grid-template-columns: 1fr; }
+        @media (max-width: 900px) {
+          .hw-stitch-line { left: 20px; transform: none; }
+          .hw-timeline-item { flex-direction: column; align-items: flex-start; gap: var(--space-6); padding-left: 50px; }
+          .hw-timeline-content { width: 100%; text-align: left !important; }
+          .hw-timeline-visual { width: 100%; justify-content: flex-start; }
+          .hw-timeline-dot { left: -36px !important; right: auto !important; }
         }
       `}</style>
     </section>

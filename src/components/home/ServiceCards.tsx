@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import TiltedCard from "@/components/ui/TiltedCard";
 import { SectionDecorator } from "@/components/ui/SectionDecorator";
 
 import * as Icons from "lucide-react";
@@ -100,51 +101,55 @@ export function ServiceCards({ services }: { services?: ServiceItem[] }) {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: (i % 3) * 0.1, ease: "easeOut" }}
               >
-                <SpotlightCard
-                  className="svc-card"
-                  spotlightColor="rgba(212,160,23,0.12)"
-                  style={{
-                    background: "var(--bg-card)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius-2xl)",
-                    overflow: "hidden",
-                    height: "100%",
-                  }}
-                >
-                  <Link href={svc.href} className="svc-card-link">
-                    {/* Image */}
-                    <div className="svc-img-wrap">
-                      <Image 
-                        src={svc.image || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800"} 
-                        alt={svc.title} 
-                        className="svc-img" 
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                      <div className="svc-img-overlay" />
-                      {/* Step number */}
-                      <div className="svc-num">{svc.num || (i+1).toString().padStart(2, '0')}</div>
-                      {/* Tag */}
-                      {svc.tag && (
-                        <div className="svc-tag">{svc.tag}</div>
-                      )}
-                    </div>
+                <TiltedCard>
+                  <SpotlightCard
+                    className="svc-card"
+                    spotlightColor="rgba(212,160,23,0.12)"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "var(--radius-2xl)",
+                      overflow: "hidden",
+                      height: "100%",
+                      position: "relative",
+                    }}
+                  >
+                    <div className="svc-card-shimmer" />
+                    <Link href={svc.href} className="svc-card-link">
+                      {/* Image */}
+                      <div className="svc-img-wrap">
+                        <Image 
+                          src={svc.image || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800"} 
+                          alt={svc.title} 
+                          className="svc-img" 
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        <div className="svc-img-overlay" />
+                        {/* Step number */}
+                        <div className="svc-num">{svc.num || (i+1).toString().padStart(2, '0')}</div>
+                        {/* Tag */}
+                        {svc.tag && (
+                          <div className="svc-tag">{svc.tag}</div>
+                        )}
+                      </div>
 
-                    {/* Content */}
-                    <div className="svc-content">
-                      <div className="svc-icon-row">
-                        <div className="svc-icon-bg">
-                          <Icon size={15} />
+                      {/* Content */}
+                      <div className="svc-content">
+                        <div className="svc-icon-row">
+                          <div className="svc-icon-bg">
+                            <Icon size={15} />
+                          </div>
+                          <h3 className="svc-name">{svc.title}</h3>
                         </div>
-                        <h3 className="svc-name">{svc.title}</h3>
+                        <p className="svc-desc">{svc.desc}</p>
+                        <div className="svc-link">
+                          Explore <ArrowRight size={13} />
+                        </div>
                       </div>
-                      <p className="svc-desc">{svc.desc}</p>
-                      <div className="svc-link">
-                        Explore <ArrowRight size={13} />
-                      </div>
-                    </div>
-                  </Link>
-                </SpotlightCard>
+                    </Link>
+                  </SpotlightCard>
+                </TiltedCard>
               </motion.div>
             );
           })}
@@ -216,12 +221,29 @@ export function ServiceCards({ services }: { services?: ServiceItem[] }) {
         }
 
         .svc-card {
-          transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, border-color 0.3s ease;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
         }
         .svc-card:hover {
-          transform: translateY(-6px);
-          box-shadow: var(--shadow-accent) !important;
-          border-color: var(--border-accent) !important;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(212,160,23,0.1) !important;
+          border-color: rgba(212,160,23,0.3) !important;
+        }
+        .svc-card-shimmer {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, transparent 45%, rgba(212,160,23,0.1) 50%, transparent 55%);
+          background-size: 200% 200%;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          pointer-events: none;
+          z-index: 2;
+        }
+        .svc-card:hover .svc-card-shimmer {
+          opacity: 1;
+          animation: card-shimmer 2s infinite linear;
+        }
+        @keyframes card-shimmer {
+          0% { background-position: 200% 200%; }
+          100% { background-position: -200% -200%; }
         }
         .svc-card-link {
           display: flex;

@@ -1,19 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect } from "react";
 
 import { ArrowRight, Star } from "lucide-react";
 import { SplitTextReveal } from "@/components/scroll/SplitTextReveal";
 import { ScrollParticles } from "@/components/scroll/ScrollParticles";
 
 export function ScrollCta({ text }: { text?: string }) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 150 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
 
 
   return (
     <section className="scroll-cta-section">
       {/* Golden Sparks Background */}
       <ScrollParticles count={40} />
+
+      {/* Interactive Mouse Flare */}
+      <motion.div 
+        className="cta-mouse-flare"
+        style={{
+          x: springX,
+          y: springY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+      />
 
 
       {/* Top glow line */}
@@ -28,6 +55,8 @@ export function ScrollCta({ text }: { text?: string }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
+          <div className="cta-scene-label">SCENE 04</div>
+          <br />
           <span className="badge badge-accent" style={{ fontSize: "0.72rem", padding: "7px 18px" }}>
             ✦ Limited Slots Available for 2026
           </span>
@@ -86,6 +115,27 @@ export function ScrollCta({ text }: { text?: string }) {
       </div>
 
       <style>{`
+        .cta-mouse-flare {
+          position: fixed;
+          top: 0; left: 0;
+          width: 500px; height: 500px;
+          background: radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 70%);
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 1;
+          filter: blur(80px);
+        }
+        .cta-scene-label {
+          display: inline-block;
+          font-size: 0.6rem;
+          font-weight: 800;
+          color: #060606;
+          background: var(--gold);
+          padding: 2px 8px;
+          border-radius: 4px;
+          letter-spacing: 0.05em;
+          margin-bottom: var(--space-2);
+        }
         .scroll-cta-section {
           position: relative;
           overflow: hidden;

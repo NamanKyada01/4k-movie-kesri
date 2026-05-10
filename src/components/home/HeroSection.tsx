@@ -62,7 +62,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
     container: { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.6 } } },
     item: {
       hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
-      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const } },
+      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.1, ease: [0.76, 0, 0.24, 1] as const } },
     },
   };
 
@@ -107,6 +107,7 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         >
           {/* Eyebrow badge */}
           <motion.div variants={STAGGER.item} className="hero-eyebrow-wrap">
+            <span className="hero-scene-label">SCENE 01</span>
             <span className="hero-eyebrow-dot" />
             <span className="hero-eyebrow">Photography &amp; Videography · Surat, Gujarat</span>
           </motion.div>
@@ -259,13 +260,13 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
           height: 100%;
           object-fit: cover;
           object-position: center 30%;
-          animation: kenBurns 22s ease-in-out infinite alternate;
+          animation: kenBurns 35s ease-in-out infinite alternate;
           transform-origin: center center;
         }
 
         @keyframes kenBurns {
           0%   { transform: scale(1.0) translateX(0px); }
-          100% { transform: scale(1.06) translateX(-20px); }
+          100% { transform: scale(1.08) translateX(-30px); }
         }
 
         .hero-overlay {
@@ -370,19 +371,30 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         .hero-eyebrow-wrap {
           display: inline-flex;
           align-items: center;
-          gap: var(--space-2);
-          background: rgba(212,160,23,0.1);
-          border: 1px solid rgba(212,160,23,0.25);
+          gap: var(--space-3);
+          background: rgba(212,160,23,0.06);
+          border: 1px solid rgba(212,160,23,0.15);
           border-radius: var(--radius-full);
-          padding: 5px 14px 5px 10px;
-          margin-bottom: var(--space-5);
+          padding: 6px 16px 6px 12px;
+          margin-bottom: var(--space-6);
+          backdrop-filter: blur(8px);
+        }
+        .hero-scene-label {
+          font-size: 0.62rem;
+          font-weight: 800;
+          color: #060606;
+          background: var(--gold);
+          padding: 2px 8px;
+          border-radius: 4px;
+          letter-spacing: 0.05em;
+          margin-right: 2px;
         }
         .hero-eyebrow-dot {
-          width: 6px;
-          height: 6px;
+          width: 5px;
+          height: 5px;
           border-radius: 50%;
           background: var(--accent);
-          box-shadow: 0 0 6px 2px rgba(212,160,23,0.5);
+          box-shadow: 0 0 8px 2px rgba(212,160,23,0.6);
           animation: pulse-dot 2s ease-in-out infinite;
         }
         @keyframes pulse-dot {

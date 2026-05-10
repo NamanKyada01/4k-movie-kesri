@@ -1,4 +1,5 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Camera, Phone, Mail, MapPin, ArrowUp, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -75,8 +76,47 @@ export function Footer({ config }: { config?: any }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  const [sparks, setSparks] = useState<any[]>([]);
+
+  useEffect(() => {
+    setSparks([...Array(20)].map((_, i) => ({
+      id: i,
+      xStart: Math.random() * 100 + "%",
+      xEnd: (Math.random() * 100) + (Math.random() * 20 - 10) + "%",
+      scale: Math.random() * 0.5 + 0.5,
+      duration: Math.random() * 10 + 15,
+      delay: Math.random() * 20
+    })));
+  }, []);
+
   return (
     <footer className="site-footer">
+      {/* ── Light Spark Particles (Drifting, not cursor-following) ── */}
+      <div className="footer-spark-system">
+        {sparks.map((s) => (
+          <motion.div
+            key={s.id}
+            className="footer-spark"
+            initial={{ 
+              x: s.xStart, 
+              y: "100%", 
+              opacity: 0,
+              scale: s.scale
+            }}
+            animate={{ 
+              y: "-20%", 
+              opacity: [0, 0.6, 0.4, 0],
+              x: s.xEnd
+            }}
+            transition={{ 
+              duration: s.duration, 
+              repeat: Infinity, 
+              ease: "linear",
+              delay: s.delay
+            }}
+          />
+        ))}
+      </div>
       {/* ── Noise grain overlay ── */}
       <div className="footer-grain" aria-hidden />
 
@@ -244,15 +284,33 @@ export function Footer({ config }: { config?: any }) {
         /* ─── Glow orb ─── */
         .footer-orb {
           position: absolute;
-          bottom: -80px;
+          bottom: -40px;
           left: 50%;
           transform: translateX(-50%);
-          width: 700px;
-          height: 280px;
-          background: radial-gradient(ellipse, rgba(212,160,23,0.07) 0%, transparent 65%);
-          filter: blur(60px);
+          width: 400px;
+          height: 180px;
+          background: radial-gradient(ellipse, rgba(212,160,23,0.05) 0%, transparent 65%);
+          filter: blur(40px);
           pointer-events: none;
           z-index: 0;
+        }
+
+        /* ─── Light Sparks ─── */
+        .footer-spark-system {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1;
+          overflow: hidden;
+        }
+        .footer-spark {
+          position: absolute;
+          width: 2px;
+          height: 2px;
+          background: var(--gold);
+          border-radius: 50%;
+          filter: blur(1px);
+          box-shadow: 0 0 10px var(--accent);
         }
 
         /* ─── Top gold gradient rule ─── */

@@ -10,9 +10,14 @@ interface Particle {
   size: number;
   alpha: number;
   decay: number;
+  baseVy: number; 
 }
 
-export function ScrollParticles({ count = 28 }: { count?: number }) {
+/**
+ * Atmospheric drifting particles.
+ * Removed mouse attraction/gravity logic as per user request.
+ */
+export function ScrollParticles({ count = 40 }: { count?: number; gravityFlipped?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
@@ -28,15 +33,19 @@ export function ScrollParticles({ count = 28 }: { count?: number }) {
       const h = canvas.offsetHeight;
       canvas.width = w;
       canvas.height = h;
-      particles.current = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: h + Math.random() * 60,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: -(0.3 + Math.random() * 0.9),
-        size: 1.5 + Math.random() * 3,
-        alpha: 0.4 + Math.random() * 0.5,
-        decay: 0.003 + Math.random() * 0.004,
-      }));
+      particles.current = Array.from({ length: count }, () => {
+        const baseVy = -(0.2 + Math.random() * 0.5); // Slower, more elegant rise
+        return {
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: baseVy,
+          baseVy,
+          size: 1 + Math.random() * 2,
+          alpha: 0.1 + Math.random() * 0.4,
+          decay: 0.001 + Math.random() * 0.002,
+        };
+      });
     };
 
     spawn();
@@ -47,21 +56,28 @@ export function ScrollParticles({ count = 28 }: { count?: number }) {
       ctx.clearRect(0, 0, w, h);
 
       for (const p of particles.current) {
+        // Natural drift
         p.x += p.vx;
         p.y += p.vy;
         p.alpha -= p.decay;
 
-        if (p.alpha <= 0 || p.y < -20) {
-          // Respawn at bottom
+        // Reset if alpha gone or out of bounds
+        if (p.alpha <= 0 || p.y < -20 || p.x < -20 || p.x > w + 20) {
           p.x = Math.random() * w;
           p.y = h + 10;
-          p.alpha = 0.4 + Math.random() * 0.5;
+          p.alpha = 0.2 + Math.random() * 0.5;
+          p.vy = -(0.2 + Math.random() * 0.5);
+          p.vx = (Math.random() - 0.5) * 0.4;
         }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212,160,23,${p.alpha.toFixed(3)})`;
+        ctx.fillStyle = `rgba(212,160,23,${Math.max(0, p.alpha).toFixed(3)})`;
         ctx.fill();
+        
+        // Add a tiny glow to each particle
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = "rgba(212,160,23,0.3)";
       }
 
       rafRef.current = requestAnimationFrame(animate);

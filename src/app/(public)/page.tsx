@@ -10,7 +10,7 @@ import { Star, CheckCircle2, Camera, Clock, Award, Sparkles } from "lucide-react
 import TiltedCard from "@/components/ui/TiltedCard";
 import { CinemaBackground } from "@/components/layout/CinemaBackground";
 
-import { ScrollMarquee } from "@/components/home/ScrollMarquee";
+import { HighlightsSection } from "@/components/home/HighlightsSection";
 import { PinnedHowItWorks } from "@/components/home/PinnedHowItWorks";
 import { ScrollCta } from "@/components/home/ScrollCta";
 
@@ -117,17 +117,17 @@ function TrustBar() {
 // ─── Testimonials Section ──────────────────────────────────────────────────
 function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   return (
-    <section className="section" style={{ background: "transparent" }}>
+    <section className="section" style={{ background: "transparent", paddingBlock: "clamp(3rem, 6vw, 4rem)" }}>
       <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "clamp(var(--space-6), 6vw, var(--space-10))" }}>
-            <span style={{ fontSize: "0.65rem", color: "var(--accent)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>
+          <div style={{ textAlign: "center", marginBottom: "var(--space-6)" }}>
+            <span style={{ fontSize: "0.6rem", color: "rgba(212,160,23,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700 }}>
               Client Love
             </span>
-            <h2 style={{ marginTop: "var(--space-1)", fontSize: "clamp(1.5rem, 5vw, 2.22rem)" }}>
+            <h2 style={{ marginTop: "4px", fontSize: "clamp(1.2rem, 4vw, 1.8rem)", fontWeight: 800 }}>
               What Our Clients Say
             </h2>
-            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "var(--space-3)", maxWidth: 420, marginInline: "auto" }}>
-              Over 500 families and businesses trust us to capture their most important moments.
+            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "8px", maxWidth: 400, marginInline: "auto", opacity: 0.8 }}>
+              Over 500 families and businesses trust our cinematic vision.
             </p>
           </div>
 
@@ -135,33 +135,33 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
           {testimonials.slice(0, 6).map((t) => (
             <TiltedCard key={t.id}>
               <div
-                className="card"
+                className="testimonial-card"
                 style={{
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  background: "var(--bg-card)",
-                  padding: "var(--space-6)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-xl)",
+                  background: "#080808",
+                  padding: "1.5rem",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: "16px",
                 }}
               >
-                <div style={{ display: "flex", gap: 3, marginBottom: "var(--space-4)" }}>
+                <div style={{ display: "flex", gap: 2, marginBottom: "1rem" }}>
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} size={13} fill="var(--gold)" color="var(--gold)" />
+                    <Star key={j} size={11} fill="#D4A017" color="#D4A017" style={{ opacity: 0.8 }} />
                   ))}
                 </div>
-                <p style={{ fontSize: "0.88rem", lineHeight: 1.65, color: "var(--text-secondary)", fontStyle: "italic", flexGrow: 1, marginBottom: "var(--space-5)" }}>
+                <p style={{ fontSize: "0.82rem", lineHeight: 1.6, color: "rgba(255,255,255,0.7)", fontStyle: "italic", flexGrow: 1, marginBottom: "1.25rem" }}>
                   &ldquo;{t.text}&rdquo;
                 </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", borderTop: "1px solid var(--border)", paddingTop: "var(--space-4)" }}>
-                  <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--accent-muted)", border: "1px solid var(--border-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 800, color: "var(--accent)", flexShrink: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "1rem" }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(212,160,23,0.05)", border: "1px solid rgba(212,160,23,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: 800, color: "var(--accent)", flexShrink: 0 }}>
                     {t.clientName.charAt(0)}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--text-primary)" }}>{t.clientName}</div>
-                    <div style={{ fontSize: "0.7rem", color: "var(--accent)", marginTop: 1 }}>{t.eventType}</div>
+                    <div style={{ fontWeight: 700, fontSize: "0.78rem", color: "#fff" }}>{t.clientName}</div>
+                    <div style={{ fontSize: "0.65rem", color: "var(--accent)", marginTop: 1, opacity: 0.8 }}>{t.eventType}</div>
                   </div>
                 </div>
               </div>
@@ -174,8 +174,10 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
         .testimonials-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: var(--space-4);
+          gap: 1.25rem;
         }
+        .testimonial-card { transition: border-color 0.3s ease; }
+        .testimonial-card:hover { border-color: rgba(212,160,23,0.2) !important; }
         @media (max-width: 900px) { .testimonials-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 560px) { .testimonials-grid { grid-template-columns: 1fr; } }
       `}</style>
@@ -204,8 +206,8 @@ export default async function HomePage() {
       {/* Scene 3 — Stat Counters: scroll-triggered count-up */}
       <StatCounters stats={stats} />
 
-      {/* Scene 4 — Marquee: scroll-velocity reactive speed */}
-      <ScrollMarquee highlights={homeSections?.highlights} />
+      {/* Scene 4 — Highlights: Asymmetrical Editorial Grid */}
+      <HighlightsSection />
 
       {/* Scene 5 — How It Works: pinned vertical reveal */}
       <PinnedHowItWorks steps={homeSections?.howItWorks} />

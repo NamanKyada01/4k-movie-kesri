@@ -14,9 +14,7 @@ const Camera3D = dynamic(
   () => import("@/components/three/Camera3D").then((m) => ({ default: m.Camera3D })),
   { ssr: false, loading: () => <div className="camera3d-ssr-placeholder" /> }
 );
-
 // ── Film Curtain ─────────────────────────────────────────────────────────────
-// Two black panels that retract (top up, bottom down) on mount like a film curtain.
 function FilmCurtain() {
   return (
     <>
@@ -36,20 +34,6 @@ function FilmCurtain() {
   );
 }
 
-// ── Lens Flare ───────────────────────────────────────────────────────────────
-// Decorative animated flare that drifts on its own (no cursor tracking — per design rules)
-function LensFlare() {
-  return (
-    <div className="lens-flare-wrap" aria-hidden="true">
-      <div className="lens-flare lens-flare-main" />
-      <div className="lens-flare lens-flare-secondary" />
-      <div className="lens-flare lens-flare-streak" />
-    </div>
-  );
-}
-
-
-
 interface HeroStats {
   clientsCount?: string | number;
   resolution?: string | number;
@@ -57,180 +41,182 @@ interface HeroStats {
   deliveryHours?: string | number;
 }
 
+function HeroGoldenSparks() {
+  return (
+    <div className="hero-sparks-container" aria-hidden>
+      {Array.from({ length: 25 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="hero-spark"
+          initial={{ 
+            opacity: 0,
+            x: `${Math.random() * 100}vw`,
+            y: `${Math.random() * 100}vh`,
+            scale: Math.random() * 0.5 + 0.5
+          }}
+          animate={{ 
+            y: [null, `${Math.random() * -200}px`],
+            opacity: [0, 0.8, 0],
+            scale: [null, Math.random() * 1.2 + 0.5]
+          }}
+          transition={{ 
+            duration: Math.random() * 3 + 2,
+            repeat: Infinity,
+            ease: "linear",
+            delay: Math.random() * 5
+          }}
+          style={{
+            width: `${Math.random() * 3 + 1}px`,
+            height: `${Math.random() * 3 + 1}px`,
+            backgroundColor: "var(--gold)",
+            boxShadow: "0 0 10px var(--accent)",
+            borderRadius: "50%",
+            position: "absolute",
+            zIndex: 1
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+function PolaroidCard({ 
+  src, 
+  rotate = 0, 
+  x = 0, 
+  y = 0, 
+  delay = 0, 
+  label 
+}: { 
+  src: string; 
+  rotate?: number; 
+  x: number | string; 
+  y: number | string; 
+  delay?: number;
+  label?: string;
+}) {
+  return (
+    <motion.div
+      className="hero-polaroid"
+      initial={{ opacity: 0, scale: 0.8, rotate: rotate - 10, x, y }}
+      animate={{ opacity: 1, scale: 1, rotate: rotate, x, y }}
+      transition={{ 
+        duration: 1.2, 
+        delay, 
+        ease: [0.16, 1, 0.3, 1] 
+      }}
+      whileHover={{ scale: 1.05, rotate: rotate + 2, zIndex: 10, transition: { duration: 0.4 } }}
+    >
+      <div className="polaroid-inner">
+        <div className="polaroid-image-wrap">
+          <Image src={src} alt="" fill className="polaroid-img" sizes="300px" />
+          <div className="polaroid-tape" />
+        </div>
+        {label && <div className="polaroid-caption">{label}</div>}
+      </div>
+    </motion.div>
+  );
+}
+
 export function HeroSection({ title, subtitle, stats }: { title?: string; subtitle?: string; stats?: HeroStats | null }) {
-
-
   const STAGGER = {
-    container: { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.6 } } },
+    container: { hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.5 } } },
     item: {
-      hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
-      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.1, ease: [0.76, 0, 0.24, 1] as const } },
+      hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
+      show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
     },
   };
 
   return (
-    <section className="hero-section" style={{ position: "relative" }}>
+    <section className="hero-section">
       <FilmCurtain />
+      <HeroGoldenSparks />
 
-      {/* ── Background (Cinematic Light Rays) ── */}
-      <motion.div
-        className="hero-bg cinematic-rays-bg"
-        style={{ willChange: "transform" }}
-      >
-        {/* Projector Beams */}
+      {/* ── Background Layer ── */}
+      <div className="hero-bg-layer">
         <div className="projector-beam beam-left" />
-        <div className="projector-beam beam-center" />
         <div className="projector-beam beam-right" />
-        
-        {/* Floating Dust */}
-        <div className="dust-particles" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-          <Particles particleCount={50} particleColors={["#ffffff", "#D4A017"]} speed={0.008} particleBaseSize={18} />
-        </div>
-
-        <div className="hero-overlay" />
         <div className="hero-grain" />
-      </motion.div>
+        <div className="hero-paper-texture" />
+      </div>
 
-      {/* ── Lens Flare ── */}
-      <LensFlare />
+      {/* ── Scattered Polaroids (Braai Style) ── */}
+      <div className="hero-scatter-container" aria-hidden="true">
+        <PolaroidCard 
+          src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=600" 
+          rotate={-8} x="-22vw" y="-12vh" delay={0.8} label="Est. 2018"
+        />
+        <PolaroidCard 
+          src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=600" 
+          rotate={5} x="28vw" y="-10vh" delay={1.0} label="Cinematic"
+        />
+        <PolaroidCard 
+          src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=600" 
+          rotate={-12} x="24vw" y="18vh" delay={1.2} label="Surat, GJ"
+        />
+        <PolaroidCard 
+          src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600" 
+          rotate={10} x="-26vw" y="20vh" delay={1.4} label="4K Movie"
+        />
+      </div>
 
-
-
-      {/* ── Content (parallax mid-layer) ── */}
-      <motion.div
-        className="container hero-content"
-        style={{ willChange: "transform" }}
-      >
+      <div className="container hero-content">
         <motion.div
           variants={STAGGER.container}
           initial="hidden"
           animate="show"
-          className="hero-text-block"
+          className="hero-text-center"
         >
-          {/* Eyebrow badge */}
-          <motion.div variants={STAGGER.item} className="hero-eyebrow-wrap">
-            <span className="hero-scene-label">SCENE 01</span>
-            <span className="hero-eyebrow-dot" />
-            <span className="hero-eyebrow">Photography &amp; Videography · Surat, Gujarat</span>
+          <motion.div variants={STAGGER.item} className="hero-eyebrow-pill">
+            Photography & Videography · Premium Studio
           </motion.div>
 
-          {/* Headline — word-split reveal */}
-          <motion.h1 variants={STAGGER.item} className="hero-headline">
+          <motion.h1 variants={STAGGER.item} className="hero-main-title">
             {title ? (
-              <SplitTextReveal text={title} delay={0.2} stagger={0.05} />
+              <SplitTextReveal text={title} delay={0.1} />
             ) : (
               <>
-                <SplitTextReveal text="Capture the moment." delay={0.2} stagger={0.05} />
+                <span className="hero-title-top">Capture the <em className="hero-italic">Essence</em></span>
                 <br />
-                <em className="hero-headline-accent">
-                  <SplitTextReveal text="Keep the memory." delay={0.6} stagger={0.05} />
-                </em>
+                <span className="hero-title-bottom">of Your Story.</span>
               </>
             )}
           </motion.h1>
 
-          {/* Tagline */}
-          <motion.p variants={STAGGER.item} className="hero-tagline">
-            {subtitle ||
-              "Premium 4K photography and videography in Surat. Every frame treated with cinematic precision — your story told beautifully, forever."}
+          <motion.p variants={STAGGER.item} className="hero-description">
+            {subtitle || "Surat's premiere cinematic destination. We blend heritage with modern 4K technology to create timeless visual masterpieces."}
           </motion.p>
 
-          {/* CTAs */}
-          <motion.div variants={STAGGER.item} className="hero-ctas">
-            <StarBorder color="var(--gold)" speed="4s">
-              <Link href="/contact" className="hero-btn-primary">
-                Book Your Session
-                <ArrowRight size={18} />
-              </Link>
-            </StarBorder>
-            <Link href="/portfolio" className="hero-btn-ghost">
-              View Our Work
+          <motion.div variants={STAGGER.item} className="hero-actions">
+            <Link href="/contact" className="hero-cta-gold">
+              <span className="hero-cta-shimmer" />
+              Book Your Session
+              <ArrowRight size={18} />
+            </Link>
+            <Link href="/portfolio" className="hero-cta-secondary">
+              View Work
             </Link>
           </motion.div>
 
-          {/* Social proof strip */}
-          <motion.div variants={STAGGER.item} className="hero-proof">
-            <div className="hero-proof-avatars">
-              {["P","A","R","S","M"].map((initial, i) => (
-                <div key={i} className="hero-avatar" style={{ "--i": i } as React.CSSProperties}>
-                  {initial}
-                </div>
-              ))}
+          {/* Social Proof Mini */}
+          <motion.div variants={STAGGER.item} className="hero-trust">
+            <div className="hero-trust-dots">
+               {[1,2,3,4].map(i => <div key={i} className="trust-dot" />)}
             </div>
-            <span className="hero-proof-text">
-              <strong>{stats?.clientsCount || "500+"}</strong> happy clients across Gujarat
-            </span>
+            <span>Trusted by 500+ couples & businesses</span>
           </motion.div>
         </motion.div>
-
-        {/* ── Right panel: 3D Camera + Stats card ── */}
-        <motion.div
-          initial={{ opacity: 0, x: 50, scale: 0.92 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 1.0, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="hero-right-panel"
-        >
-          {/* 3D Camera */}
-          <Camera3D />
-
-          {/* Stats card — sits below the 3D scene */}
-          <div className="hero-stats-card">
-            <div className="hero-stat">
-              <span className="hero-stat-num">{stats?.resolution || "4K"}</span>
-              <span className="hero-stat-label">Cinema Quality</span>
-            </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
-              <span className="hero-stat-num">{stats?.eventsCount || "500+"}</span>
-              <span className="hero-stat-label">Events Shot</span>
-            </div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat">
-              <span className="hero-stat-num">{stats?.deliveryHours || "48h"}</span>
-              <span className="hero-stat-label">Delivery</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* ── Scroll indicator ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 1 }}
-        className="hero-scroll"
-      >
-        <div className="hero-scroll-line">
-          <motion.div
-            className="hero-scroll-line-inner"
-            animate={{ scaleY: [0, 1, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          />
-        </div>
-        <span className="hero-scroll-txt">Scroll</span>
-      </motion.div>
-
-      {/* ── Camera icon badge ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.4, duration: 0.6 }}
-        className="hero-badge"
-      >
-        <Camera size={14} />
-        <span>Shot in 4K</span>
-      </motion.div>
+      </div>
 
       <style>{`
-        /* ── Section ── */
         .hero-section {
           position: relative;
-          min-height: 100svh;
+          min-height: 94svh; /* Balanced height: cinematic feel + trust bar hint */
           display: flex;
           align-items: center;
-          margin-top: calc(var(--nav-height) * -1);
-          padding-top: calc(var(--nav-height) + var(--space-8));
+          justify-content: center;
+          background: #050505;
           overflow: hidden;
+          padding-top: var(--nav-height);
         }
 
         /* ── Curtain panels ── */
@@ -246,421 +232,237 @@ export function HeroSection({ title, subtitle, stats }: { title?: string; subtit
         .curtain-top    { top: 0; transform-origin: top; }
         .curtain-bottom { bottom: 0; transform-origin: bottom; }
 
-        /* ── Background ── */
-        .hero-bg {
+        .hero-bg-layer {
           position: absolute;
-          inset: -15%;
+          inset: 0;
           z-index: 0;
-          will-change: transform;
-        }
-
-        .cinematic-rays-bg {
-          background: #050505;
-        }
-
-        .projector-beam {
-          position: absolute;
-          top: -30%;
-          width: 200%;
-          height: 200%;
-          left: -50%;
-          mix-blend-mode: screen;
-          transform-origin: top center;
           pointer-events: none;
         }
 
-        .beam-left {
-          background: conic-gradient(from 165deg at 50% 0%, transparent 0deg, rgba(200,16,46,0.15) 5deg, rgba(212,160,23,0.08) 10deg, transparent 15deg);
-          animation: beam-swing 18s ease-in-out infinite alternate;
-        }
-
-        .beam-center {
-          background: conic-gradient(from 175deg at 50% 0%, transparent 0deg, rgba(212,160,23,0.15) 4deg, rgba(200,16,46,0.10) 8deg, transparent 12deg);
-          animation: beam-swing 24s ease-in-out infinite alternate-reverse;
-          opacity: 0.9;
-        }
-
-        .beam-right {
-          background: conic-gradient(from 185deg at 50% 0%, transparent 0deg, rgba(200,16,46,0.12) 6deg, rgba(212,160,23,0.15) 12deg, transparent 18deg);
-          animation: beam-swing 20s ease-in-out infinite alternate;
-        }
-
-        @keyframes beam-swing {
-          0%   { transform: rotate(-3deg) scale(1.0); }
-          100% { transform: rotate(3deg) scale(1.05); }
-        }
-
-        .hero-overlay {
+        .hero-paper-texture {
           position: absolute;
           inset: 0;
-          background:
-            radial-gradient(ellipse at 50% 0%, rgba(6,6,6,0) 0%, rgba(6,6,6,0.8) 80%, rgba(6,6,6,1) 100%);
-          z-index: 2;
+          background-image: url("https://www.transparenttextures.com/patterns/lined-paper.png");
+          opacity: 0.03;
+          mix-blend-mode: overlay;
         }
 
         .hero-grain {
           position: absolute;
           inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-          opacity: 0.028;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+          opacity: 0.05;
           mix-blend-mode: overlay;
-          pointer-events: none;
         }
 
-        /* ── Lens flare ── */
-        .lens-flare-wrap {
+        .projector-beam {
           position: absolute;
-          top: 18%;
-          right: 30%;
-          z-index: 1;
+          top: -20%;
+          width: 150%;
+          height: 150%;
           pointer-events: none;
-        }
-        .lens-flare {
-          position: absolute;
-          border-radius: 50%;
           mix-blend-mode: screen;
+          filter: blur(40px);
         }
-        .lens-flare-main {
-          width: 180px; height: 180px;
-          background: radial-gradient(circle, rgba(212,160,23,0.11) 0%, rgba(212,160,23,0.03) 50%, transparent 70%);
-          filter: blur(18px);
-          animation: lensFloat 8s ease-in-out infinite;
+        .beam-left {
+          left: -40%;
+          background: conic-gradient(from 180deg at 50% 0%, transparent 0deg, rgba(212,160,23,0.04) 10deg, transparent 20deg);
         }
-        .lens-flare-secondary {
-          width: 80px; height: 80px;
-          top: 30px; left: 60px;
-          background: radial-gradient(circle, rgba(255,220,100,0.15) 0%, transparent 60%);
-          filter: blur(8px);
-          animation: lensFloat 6s ease-in-out infinite reverse;
-        }
-        .lens-flare-streak {
-          width: 300px; height: 2px;
-          top: 90px; left: -60px;
-          background: linear-gradient(90deg, transparent, rgba(212,160,23,0.15), transparent);
-          filter: blur(2px);
-          animation: streakPulse 4s ease-in-out infinite;
-        }
-        @keyframes lensFloat {
-          0%, 100% { transform: translate(0px, 0px) scale(1); }
-          33%       { transform: translate(12px, -18px) scale(1.05); }
-          66%       { transform: translate(-8px, 10px) scale(0.96); }
-        }
-        @keyframes streakPulse {
-          0%, 100% { opacity: 0.6; transform: scaleX(1); }
-          50%       { opacity: 1.0; transform: scaleX(1.12); }
+        .beam-right {
+          right: -40%;
+          background: conic-gradient(from 180deg at 50% 0%, transparent 0deg, rgba(212,160,23,0.04) 10deg, transparent 20deg);
         }
 
-        /* ── Scroll depth bar (right edge) ── */
-        .scroll-depth-track {
-          position: fixed;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          width: 3px;
-          background: rgba(255,255,255,0.06);
-          z-index: 50;
+        .hero-sparks-container {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1;
+          overflow: hidden;
+        }
+
+        /* ── Polaroids ── */
+        .hero-scatter-container {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           pointer-events: none;
         }
-        .scroll-depth-fill {
+
+        .hero-polaroid {
           position: absolute;
-          inset-inline: 0;
-          top: 0;
-          bottom: 0;
-          background: linear-gradient(to bottom, var(--accent), var(--gold));
-          transform-origin: top;
-          border-radius: 0 0 2px 2px;
+          width: 220px;
+          background: #fff;
+          padding: 10px 10px 30px 10px;
+          box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+          pointer-events: auto;
+        }
+
+        .polaroid-inner {
+          position: relative;
+        }
+
+        .polaroid-image-wrap {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1;
+          background: #111;
+          overflow: hidden;
+        }
+
+        .polaroid-img {
+          object-fit: cover;
+          filter: sepia(0.2) contrast(1.1);
+        }
+
+        .polaroid-tape {
+          position: absolute;
+          top: -15px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60px;
+          height: 25px;
+          background: rgba(255,255,255,0.2);
+          backdrop-filter: blur(4px);
+          mask-image: radial-gradient(circle, #fff 40%, transparent 100%);
+          z-index: 2;
+        }
+
+        .polaroid-caption {
+          margin-top: 15px;
+          font-family: 'Playfair Display', serif;
+          color: #222;
+          font-size: 0.8rem;
+          font-weight: 700;
+          text-align: center;
+          font-style: italic;
         }
 
         /* ── Content ── */
         .hero-content {
           position: relative;
-          z-index: 2;
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: var(--space-8);
-          padding-block: var(--space-16);
+          z-index: 5;
+          text-align: center;
         }
 
-        .hero-text-block {
-          max-width: 640px;
-          flex-shrink: 0;
+        .hero-text-center {
+          max-width: 800px;
+          margin: 0 auto;
         }
 
-        /* Eyebrow */
-        .hero-eyebrow-wrap {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--space-3);
-          background: #0a0a0a;
-          border: 1px solid rgba(212,160,23,0.3);
-          border-radius: var(--radius-full);
-          padding: 6px 16px 6px 12px;
-          margin-bottom: var(--space-6);
-        }
-        .hero-scene-label {
-          font-size: 0.62rem;
-          font-weight: 800;
-          color: #060606;
-          background: var(--gold);
-          padding: 2px 8px;
-          border-radius: 4px;
-          letter-spacing: 0.05em;
-          margin-right: 2px;
-        }
-        .hero-eyebrow-dot {
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: var(--accent);
-          box-shadow: 0 0 8px 2px rgba(212,160,23,0.6);
-          animation: pulse-dot 2s ease-in-out infinite;
-        }
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%       { opacity: 0.5; transform: scale(0.8); }
-        }
-        .hero-eyebrow {
-          font-size: 0.7rem;
-          font-weight: 600;
-          color: var(--accent);
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          font-family: var(--font-body);
-        }
-
-        /* Headline */
-        .hero-headline {
-          font-family: 'Playfair Display', var(--font-heading), Georgia, serif;
-          font-size: clamp(3rem, 8vw, 6.5rem);
-          font-weight: 700;
-          line-height: 1.15;
-          color: #FAFAF8;
-          margin-bottom: var(--space-6);
-          letter-spacing: -0.02em;
-          font-style: italic;
-        }
-        .hero-headline-accent {
+        .hero-eyebrow-pill {
           display: inline-block;
-          font-style: italic;
-          background: linear-gradient(110deg, var(--gold) 0%, var(--accent) 50%, var(--gold) 100%);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: gold-shimmer 4s linear infinite;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--gold);
+          background: rgba(212,160,23,0.1);
+          padding: 6px 18px;
+          border-radius: 100px;
+          border: 1px solid rgba(212,160,23,0.2);
+          margin-bottom: 1.5rem;
         }
 
-        /* Tagline */
-        .hero-tagline {
-          font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-          color: rgba(250,250,248,0.7);
-          line-height: 1.75;
-          margin-bottom: var(--space-8);
-          max-width: 480px;
+        .hero-main-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(3rem, 7vw, 4.2rem); /* Slightly smaller */
+          font-weight: 800;
+          line-height: 1.05;
+          letter-spacing: -0.04em;
+          color: #FAFAF8;
+          margin-bottom: 1.5rem;
+        }
+
+        .hero-italic {
+          font-style: italic;
+          color: var(--gold);
           font-weight: 400;
         }
 
-        /* CTAs */
-        .hero-ctas {
-          display: flex;
-          gap: var(--space-3);
-          flex-wrap: wrap;
-          margin-bottom: var(--space-8);
+        .hero-description {
+          font-size: clamp(1rem, 1.5vw, 1.15rem);
+          color: rgba(255,255,255,0.6);
+          line-height: 1.6;
+          max-width: 500px;
+          margin: 0 auto 2rem auto;
         }
 
-        .hero-btn-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: linear-gradient(135deg, var(--accent) 0%, var(--gold) 100%);
-          color: #060606;
-          font-weight: 700;
-          font-size: 0.9rem;
-          padding: 0.75rem 1.75rem;
-          border-radius: var(--radius-full);
-          text-decoration: none;
-          letter-spacing: 0.02em;
-          transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .hero-btn-primary:hover {
-          transform: translateY(-2px) scale(1.02);
-        }
-        .hero-btn-primary:active { transform: translateY(0) scale(0.99); }
-
-        .hero-btn-ghost {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: #111;
-          color: #FAFAF8;
-          font-weight: 600;
-          font-size: 0.9rem;
-          padding: 0.75rem 1.75rem;
-          border-radius: var(--radius-full);
-          border: 1px solid rgba(255,255,255,0.2);
-          text-decoration: none;
-          transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .hero-btn-ghost:hover {
-          background: rgba(255,255,255,0.12);
-          border-color: rgba(255,255,255,0.3);
-          transform: translateY(-2px);
-        }
-
-        /* Social proof */
-        .hero-proof {
-          display: flex;
-          align-items: center;
-          gap: var(--space-3);
-        }
-        .hero-proof-avatars { display: flex; }
-        .hero-avatar {
-          width: 30px; height: 30px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, var(--accent) 0%, var(--gold) 100%);
-          border: 2px solid rgba(6,6,6,0.8);
+        .hero-actions {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 0.6rem;
+          gap: 1.5rem;
+          margin-bottom: 2.5rem;
+        }
+
+        .hero-cta-gold {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          background: linear-gradient(135deg, var(--gold) 0%, var(--accent) 100%);
+          color: #000;
+          padding: 1.1rem 2.4rem;
+          border-radius: 100px;
           font-weight: 800;
-          color: #060606;
-          margin-left: -8px;
-          flex-shrink: 0;
+          text-decoration: none;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(212,160,23,0.3);
         }
-        .hero-avatar:first-child { margin-left: 0; }
-        .hero-proof-text { font-size: 0.78rem; color: rgba(250,250,248,0.6); }
-        .hero-proof-text strong { color: var(--gold); font-weight: 700; }
+        .hero-cta-gold:hover { 
+          transform: translateY(-4px) scale(1.02); 
+          box-shadow: 0 15px 40px rgba(212,160,23,0.5); 
+          filter: brightness(1.1);
+        }
+        .hero-cta-shimmer {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          transform: translateX(-100%);
+          animation: hero-shimmer 3s infinite;
+        }
+        @keyframes hero-shimmer {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(100%); }
+          100% { transform: translateX(100%); }
+        }
 
-        /* ── Right panel ── */
-        .hero-right-panel {
+        .hero-cta-secondary {
+          color: #fff;
+          font-weight: 600;
+          text-decoration: none;
+          border-bottom: 1px solid rgba(255,255,255,0.3);
+          padding-bottom: 4px;
+          transition: border-color 0.3s ease;
+        }
+        .hero-cta-secondary:hover { border-color: var(--gold); }
+
+        .hero-trust {
           display: flex;
-          flex-direction: column;
           align-items: center;
-          gap: var(--space-4);
-          flex-shrink: 0;
-        }
-
-        /* SSR placeholder matches canvas size */
-        .camera3d-ssr-placeholder {
-          width: 420px; height: 420px; flex-shrink: 0;
-        }
-
-        /* ── Stats card ── */
-        .hero-stats-card {
-          display: flex;
-          flex-direction: row;
-          gap: var(--space-5);
-          align-items: center;
-          background: #0a0a0a;
-          border: 1px solid rgba(212,160,23,0.25);
-          border-radius: var(--radius-2xl);
-          padding: var(--space-4) var(--space-7);
-          width: 100%;
-          max-width: 420px;
           justify-content: center;
-          box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,160,23,0.08);
-        }
-        .hero-stat { text-align: center; }
-        .hero-stat-num {
-          display: block;
-          font-family: var(--font-heading);
-          font-size: 1.9rem;
-          font-weight: 700;
-          color: var(--accent);
-          line-height: 1;
-          letter-spacing: -0.02em;
-        }
-        .hero-stat-label {
-          display: block;
-          font-size: 0.62rem;
-          color: rgba(250,250,248,0.5);
+          gap: 12px;
+          font-size: 0.75rem;
+          color: rgba(255,255,255,0.4);
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          margin-top: 4px;
-          font-weight: 500;
-        }
-        .hero-stat-divider {
-          width: 1px; height: 36px;
-          background: rgba(212,160,23,0.15);
-          flex-shrink: 0;
-        }
-
-        /* ── Scroll indicator ── */
-        .hero-scroll {
-          position: absolute;
-          bottom: var(--space-6);
-          left: var(--space-6);
-          z-index: 3;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 6px;
-          color: rgba(250,250,248,0.5);
-        }
-        .hero-scroll-line {
-          width: 1px; height: 40px;
-          background: rgba(250,250,248,0.15);
-          position: relative;
-          overflow: hidden;
-        }
-        .hero-scroll-line-inner {
-          position: absolute;
-          inset-inline: 0;
-          top: 0; bottom: 0;
-          background: var(--accent);
-          transform-origin: top;
-        }
-        .hero-scroll-txt {
-          font-size: 0.6rem;
           font-weight: 600;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          writing-mode: vertical-rl;
+        }
+        .hero-trust-dots { display: flex; gap: 4px; }
+        .trust-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+        @media (max-width: 1200px) {
+          .hero-polaroid { width: 180px; }
         }
 
-        /* ── Shot badge ── */
-        .hero-badge {
-          position: absolute;
-          bottom: var(--space-6);
-          right: calc(var(--space-6) + 12px); /* offset from scroll-depth bar */
-          z-index: 3;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: #0a0a0a;
-          border: 1px solid rgba(212,160,23,0.25);
-          border-radius: var(--radius-full);
-          padding: 6px 12px;
-          font-size: 0.68rem;
-          font-weight: 600;
-          color: var(--accent);
-          letter-spacing: 0.08em;
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 900px) {
-          .hero-right-panel { display: none; }
-          .hero-stats-card  { display: none; }
-          .camera3d-ssr-placeholder { display: none; }
-          .hero-content { justify-content: flex-start; }
-          .scroll-depth-track { display: none; }
-        }
         @media (max-width: 768px) {
-          .hero-overlay {
-            background:
-              linear-gradient(to bottom, rgba(6,6,6,0.55) 0%, rgba(6,6,6,0.4) 40%, rgba(6,6,6,0.8) 100%),
-              linear-gradient(to right, rgba(6,6,6,0.6) 0%, rgba(6,6,6,0.2) 100%);
-          }
-          .hero-text-block { text-align: center; margin: 0 auto; }
-          .hero-eyebrow-wrap { justify-content: center; }
-          .hero-ctas { justify-content: center; }
-          .hero-proof { justify-content: center; }
-          .hero-scroll { left: 50%; transform: translateX(-50%); }
-          .hero-badge { display: none; }
-          .lens-flare-wrap { display: none; }
+          .hero-scatter-container { display: none; }
+          .hero-main-title { font-size: clamp(2.5rem, 12vw, 4rem); }
         }
       `}</style>
     </section>

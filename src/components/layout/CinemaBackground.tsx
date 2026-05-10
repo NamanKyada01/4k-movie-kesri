@@ -81,7 +81,7 @@ export function CinemaBackground({ theme }: CinemaBackgroundProps) {
           position: absolute;
           inset: -20%;
           filter: blur(140px);
-          opacity: 0.22;
+          opacity: 0.12;
         }
 
         .aurora {

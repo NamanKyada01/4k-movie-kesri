@@ -85,7 +85,6 @@ export function ScrollMarquee({ highlights }: { highlights?: MarqueeItem[] }) {
   return (
     <section className="marquee-section">
       <div className="container" style={{ marginBottom: "var(--space-6)" }}>
-        <div className="marquee-scene-label">SCENE 03</div>
         <span className="marquee-eyebrow">— Highlights</span>
       </div>
       <div className="marquee-rows">
@@ -96,7 +95,7 @@ export function ScrollMarquee({ highlights }: { highlights?: MarqueeItem[] }) {
       <style>{`
         .marquee-section {
           overflow: hidden;
-          padding: var(--space-8) 0;
+          padding: var(--space-4) 0;
           background: transparent;
           border-top: 1px solid var(--border);
           border-bottom: 1px solid var(--border);
